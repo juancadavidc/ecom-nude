@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { MarcaNude } from '@/components/brand/Logo'
 import { BotonLink } from '@/components/ui/Button'
 import { Panel } from '@/components/ui/Panel'
-import { ShoppingBag } from '@/components/ui/icons'
+import { Handbag } from '@/components/ui/icons'
 
 /**
  * SPEC §4.4 — El carrito es un panel lateral que entra desde la derecha,
@@ -30,7 +30,7 @@ export function BotonCarrito({ cantidad = 0 }: { cantidad?: number }) {
         }
         aria-expanded={abierto}
       >
-        <ShoppingBag size={22} weight="light" />
+        <Handbag size={22} weight="light" />
         {cantidad > 0 && (
           <span className="cart-count" aria-hidden="true">
             {cantidad}
