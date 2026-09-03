@@ -32,6 +32,23 @@
   --line-soft: rgba(196, 149, 106, 0.25);
   --line-invert: rgba(222, 182, 142, 0.35);
 
+  /* Velo sobre fotografia. No amplia la paleta: es Umber rebajado a sombra
+     (65% Umber + negro) y servido con alfa.
+
+     Existe por contraste, no por estetica: la pared clara del estudio deja el
+     parrafo en Dune sobre 1,3:1 — invisible. Los tres niveles se calibraron
+     midiendo el pixel compuesto (foto + velo) bajo cada bloque de texto, no a
+     ojo. Con el actual, el peor caso del hero es 5,06:1 en movil y 7,17:1 desde
+     768px; el minimo AA para 16px es 4,5:1 (SPEC §12).
+
+     Solo `fuerte` y `medio` van debajo de texto. `suave` no: es el respiro de
+     los bordes, donde no hay nada que leer. Bajar cualquiera de los dos obliga
+     a volver a medir. */
+  --velo-base: color-mix(in srgb, var(--umber) 65%, #000);
+  --velo-fuerte: color-mix(in srgb, var(--velo-base) 86%, transparent);
+  --velo-medio: color-mix(in srgb, var(--velo-base) 62%, transparent);
+  --velo-suave: color-mix(in srgb, var(--velo-base) 22%, transparent);
+
   /* DESVIACION DEL SPEC §5, deliberada.
      El SPEC pide "Placeholder en Dune". Dune sobre White da 1.87:1 — ilegible,
      y §12 marca el contraste como critico. Se usa --text-muted: 5.58:1 sobre
@@ -283,6 +300,18 @@
 
   .measure {
     max-width: var(--w-measure);
+  }
+
+  /* Foto a sangre: llena el contenedor posicionado que la envuelve y recorta
+     por el centro. `width/height` del <img> siguen declarados en el HTML para
+     que el navegador reserve el hueco, pero aqui manda la caja, no la foto. */
+  .foto-fondo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
   }
 
   .section {
@@ -1268,12 +1297,72 @@
 
 /* Eje izquierdo constante con margen derecho generoso (SPEC §11.2).
    Lee como editorial de moda impresa, no como plantilla centrada. */
+/* El hero es la unica seccion con foto a sangre. `isolation: isolate` abre un
+   contexto de apilado propio para que el z-index negativo de la foto y el velo
+   se quede dentro de la seccion y no se meta detras del fondo del <body>. */
 .hero {
   position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   align-items: center;
   min-height: 72vh;
+  /* svh, no vh: en movil `vh` cuenta la barra del navegador que aun no se ha
+     retraido, y el hero arranca mas alto de lo que se ve. */
+  min-height: 72svh;
   padding-block: 80px 120px;
+  /* Sobre foto el texto invierte. Se cambia el token, no cada clase: `label
+     text-muted`, `.hero-texto` y el trazo siguen pidiendo el mismo rol. */
+  --text-muted: var(--text-invert-muted);
+  --line: var(--dune);
+}
+
+@media (min-width: 768px) {
+  .hero {
+    min-height: 78vh;
+    min-height: min(78svh, 820px);
+  }
+}
+
+.hero-foto {
+  z-index: -2;
+  /* La foto es un triptico apaisado (1366x768). En escritorio manda el ancho:
+     el recorte es vertical y se sesga hacia abajo para no cortar los tenis de
+     la toma de cuerpo entero, que aun deja aire sobre las cabezas. En movil
+     manda el alto y el recorte pasa a ser horizontal: se queda con el panel
+     central —la toma frontal—, que es la unica que aguanta sola. */
+  object-position: 50% 40%;
+}
+
+.hero-velo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  /* Movil: el recorte vertical deja la pared clara del estudio justo debajo del
+     texto, que ahi cruza todo el ancho — no hay mitad limpia a la que huir. El
+     velo baja entonces en vertical y entra en fuerte antes de la etiqueta; solo
+     el primer cuarto queda suave, que es donde esta la cabeza. */
+  background: linear-gradient(
+    180deg,
+    var(--velo-suave) 0%,
+    var(--velo-fuerte) 24%,
+    var(--velo-fuerte) 100%
+  );
+}
+
+/* Desde tablet el texto vuelve al eje izquierdo (§11.2) y el velo con el: pesa
+   sobre la mitad izquierda y suelta la derecha, donde esta el producto. */
+@media (min-width: 768px) {
+  .hero-velo {
+    background: linear-gradient(
+      90deg,
+      var(--velo-fuerte) 0%,
+      var(--velo-fuerte) 28%,
+      var(--velo-medio) 42%,
+      var(--velo-suave) 58%,
+      transparent 74%
+    );
+  }
 }
 
 .hero-inner {

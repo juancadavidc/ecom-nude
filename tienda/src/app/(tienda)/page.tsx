@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { FotoFondo } from '@/components/media/FotoFondo'
 import { Reveal } from '@/components/motion/Reveal'
 import { TrazoColumna } from '@/components/motion/Trazo'
 import { BotonLink } from '@/components/ui/Button'
@@ -10,8 +11,8 @@ import { promesas, site } from '@/lib/site'
  *
  * Existe para ver el design system en contexto real (header fijo, eje izquierdo,
  * franja Umber centrada, el trazo, los reveals) y no para ser la home definitiva:
- * el hero fotografico, las tres tiles de categoria, los destacados y la captura
- * de correo son de la fase 6, cuando haya fotografia de producto.
+ * las tres tiles de categoria, los destacados y la captura de correo son de la
+ * fase 6, cuando haya catalogo. El hero ya es fotografico.
  *
  * Los bloques que si estan usan copy ya aprobado — manifiesto de la tarjeta de
  * agradecimiento y los tres pilares de la landing. No se invento nada.
@@ -23,9 +24,27 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      {/* Hero — SPEC §4.1 bloque 2. Sin foto todavia; el texto va en HTML sobre
-          la imagen, nunca quemado dentro del JPG, asi que la estructura ya sirve. */}
-      <section className="hero">
+      {/* Hero — SPEC §4.1 bloque 2. La foto va a sangre y el texto encima en
+          HTML, nunca quemado dentro del JPG: asi se traduce, se indexa, lo lee
+          un lector de pantalla y no se pixela en pantallas grandes. Es lo unico
+          que separa este hero del carrusel de la referencia (assets/reference).
+
+          Sobre la foto el texto invierte: Cream sobre el velo. El secundario y
+          el trazo cambian de tono en `.hero` via token, no clase por clase. */}
+      <section className="hero on-dark">
+        <FotoFondo
+          nombre="home-hero"
+          anchos={[768, 1024, 1366]}
+          ancho={1366}
+          alto={768}
+          prioridad
+          alt="Tres vistas de la modelo con el conjunto NUDE: top corto y leggings negros con paneles de malla."
+          className="hero-foto"
+        />
+        {/* Velo: es lo que hace legible el texto sobre la pared clara del
+            estudio. Va en su propia capa, no como filtro de la foto, porque
+            cambia de direccion entre movil y escritorio (ver globals.css). */}
+        <div className="hero-velo" aria-hidden="true" />
         <div className="container-nude hero-inner">
           <Reveal>
             <p className="label text-muted">Proximamente</p>
@@ -39,7 +58,7 @@ export default function Home() {
             </p>
           </Reveal>
           <Reveal delay={240}>
-            <BotonLink href="/sistema" variante="secundario">
+            <BotonLink href="/sistema" variante="outline-invert">
               Ver el sistema
             </BotonLink>
           </Reveal>
