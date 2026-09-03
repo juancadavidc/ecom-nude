@@ -50,16 +50,18 @@
   /* Layout */
   --w-content: 1280px;
   --w-measure: 640px;
-  /* El header crece con el logo. El limite lo pone SPORTSWEAR: su trazo es la
-     mitad del de NUDE (4 vs 8 unidades del original), asi que a 46px de logo
-     cae en 0.92px CSS y se lava en pantallas 1x. A 62px queda en 1.25px. */
-  --header-h: 76px;
+  /* El header ya no crece con el logo. SPORTSWEAR llevaba un trazo casi tres
+     veces mas fino que NUDE (3.0 vs 8.6 unidades) y era quien fijaba el minimo:
+     a 62px de logo rendia 0.73px CSS. Con el ajuste del generador (ancho al ras
+     de NUDE, +2 unidades de contorno) ese trazo sube a 5.0 unidades y a 40px de
+     logo ya da 0.86px, a 48px 1.05px. Ver scripts/gen-logos.mjs, bloque AJUSTE. */
+  --header-h: 64px;
   --anuncio-h: 36px;
 }
 
 @media (min-width: 768px) {
   :root {
-    --header-h: 100px;
+    --header-h: 72px;
     --anuncio-h: 40px;
   }
 }
@@ -960,6 +962,18 @@
   gap: 16px;
 }
 
+/* Por debajo de 360px la fila no da de si para el logo a su ancho real: el SVG
+   se encoge (preserveAspectRatio lo centra, no lo deforma) y con el encogen los
+   trazos, justo lo que este ajuste venia a resolver. Se recupera el sitio
+   apretando el canal — padding y gap —, nunca el logo. Va sin capa a proposito:
+   tiene que ganarle al padding de .container-nude, que si esta en @layer. */
+@media (max-width: 359px) {
+  .header-inner {
+    gap: 8px;
+    padding-inline: 16px;
+  }
+}
+
 .header-inner-checkout {
   grid-template-columns: 1fr;
   justify-items: center;
@@ -978,6 +992,11 @@
   display: block;
   grid-column: 2;
   color: var(--text); /* Guia de marca: sobre claros el logotipo va en Umber */
+  /* Segundo tono del wordmark. SPORTSWEAR es la linea secundaria del lockup y
+     se lee como tal: Umber al 80%, que sigue dando 4.93:1 sobre Cream. En hover
+     no se toca — solo NUDE cambia a Ochre, y el contraste entre los dos
+     renglones es lo que mantiene la jerarquia. */
+  --logo-acento: var(--text-muted);
   transition: color var(--dur-fast) var(--ease);
 }
 
@@ -986,7 +1005,7 @@
    no apretar los cuatro botones de los lados. */
 .header-logo > svg {
   display: block;
-  height: 44px;
+  height: 40px;
   width: auto;
 }
 
@@ -1023,7 +1042,7 @@
   }
 
   .header-logo > svg {
-    height: 62px;
+    height: 48px;
   }
 
   .header-nav {

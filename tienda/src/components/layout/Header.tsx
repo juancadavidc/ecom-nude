@@ -27,7 +27,7 @@ export function Header({ variante = 'tienda' }: { variante?: 'tienda' | 'checkou
       <header className="header header-checkout">
         <div className="container-nude header-inner header-inner-checkout">
           <Link href="/" className="header-logo" aria-label={`${site.nombre}, ir al inicio`}>
-            <LogoNude alto={62} />
+            <LogoNude alto={48} />
           </Link>
         </div>
       </header>
@@ -49,7 +49,7 @@ export function Header({ variante = 'tienda' }: { variante?: 'tienda' | 'checkou
           </div>
 
           <Link href="/" className="header-logo" aria-label={`${site.nombre}, ir al inicio`}>
-            <LogoNude alto={62} />
+            <LogoNude alto={48} />
           </Link>
 
           <nav className="header-nav" aria-label="Navegacion principal">

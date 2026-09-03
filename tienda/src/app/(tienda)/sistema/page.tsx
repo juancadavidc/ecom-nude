@@ -146,29 +146,31 @@ export default function SistemaPage() {
       <Bloque numero="03" titulo="Logo">
         <p className="field-hint measure">
           Los SVG viven en <code>currentColor</code>: un solo archivo sirve para cualquier color de
-          la paleta y se controla desde CSS. No hay version positiva y negativa por separado. El
-          lockup Principal anade un segundo tono opcional en <code>--logo-acento</code>: sin esa
-          variable sale monocromo y sigue sirviendo sobre cualquier fondo.
+          la paleta y se controla desde CSS. No hay version positiva y negativa por separado.
+          Principal y Wordmark anaden un segundo tono opcional en <code>--logo-acento</code> — el
+          punto del isotipo y SPORTSWEAR: sin esa variable salen monocromos y siguen sirviendo
+          sobre cualquier fondo. En el header ese tono es <code>--text-muted</code>, para que
+          SPORTSWEAR lea como la linea secundaria que es.
         </p>
         <div className="logo-grid">
           <div className="logo-caja">
             <LogoPrincipal alto={70} title="NUDE SPORTSWEAR" />
-            <p className="field-hint">Principal 70px — header</p>
+            <p className="field-hint">Principal 70px</p>
           </div>
           <div className="logo-caja on-dark">
             <LogoPrincipal alto={70} title="NUDE SPORTSWEAR" />
             <p className="field-hint">Principal sobre Umber — monocromo sin --logo-acento</p>
           </div>
           <div className="logo-caja">
-            <LogoNude alto={22} title="NUDE SPORTSWEAR" />
-            <p className="field-hint">Wordmark 22px</p>
+            <LogoNude alto={48} title="NUDE SPORTSWEAR" />
+            <p className="field-hint">Wordmark 48px — header desktop</p>
           </div>
           <div className="logo-caja">
-            <LogoNude alto={32} title="NUDE SPORTSWEAR" />
-            <p className="field-hint">Wordmark 32px</p>
+            <LogoNude alto={40} title="NUDE SPORTSWEAR" />
+            <p className="field-hint">Wordmark 40px — header movil, y el minimo</p>
           </div>
           <div className="logo-caja on-dark">
-            <LogoNude alto={32} title="NUDE SPORTSWEAR" />
+            <LogoNude alto={40} title="NUDE SPORTSWEAR" />
             <p className="field-hint">Sobre Umber — mismo archivo</p>
           </div>
           <div className="logo-caja">
