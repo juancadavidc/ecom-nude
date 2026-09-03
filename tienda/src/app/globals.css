@@ -1,0 +1,1667 @@
+@import "tailwindcss";
+
+/* ============================================================
+   NUDE SPORTSWEAR — Design system
+   Fuente de verdad: ../../SPEC.md §2, §5, §11
+   Ningun hex suelto en componentes. Todo pasa por token.
+   ============================================================ */
+
+/* ---------- 1. Tokens crudos (SPEC §2.1) ---------- */
+
+:root {
+  /* Paleta Desert Dune — cerrada, no se amplia */
+  --cream: #f6ebde;
+  --white: #fdfaf6; /* nunca #FFF: rompe la calidez */
+  --sahara: #edd5b8;
+  --dune: #deb68e;
+  --ochre: #c4956a;
+  --umber: #5c3d28;
+
+  /* Roles semanticos — el rol del color no es el rol del texto */
+  --text: var(--umber); /* 8.29:1 sobre Cream */
+  --text-muted: #7b604c; /* 4.93:1 sobre Cream — Umber al 80%, minimo que pasa AA */
+  --text-invert: var(--cream); /* 8.29:1 sobre Umber */
+  --text-invert-muted: var(--dune); /* 5.20:1 sobre Umber */
+
+  --bg: var(--cream);
+  --bg-alt: var(--sahara);
+  --bg-raised: var(--white);
+  --bg-dark: var(--umber);
+
+  --line: var(--ochre); /* borde, regla, icono, hover, foco — NUNCA texto sobre claro */
+  --line-soft: rgba(196, 149, 106, 0.25);
+  --line-invert: rgba(222, 182, 142, 0.35);
+
+  /* DESVIACION DEL SPEC §5, deliberada.
+     El SPEC pide "Placeholder en Dune". Dune sobre White da 1.87:1 — ilegible,
+     y §12 marca el contraste como critico. Se usa --text-muted: 5.58:1 sobre
+     White. El placeholder nunca hace de etiqueta (la etiqueta siempre esta
+     visible), asi que se distingue del valor real por peso, no por color. */
+  --placeholder: var(--text-muted);
+
+  /* Forma y movimiento (SPEC §2.4, §11.3) */
+  --radius: 2px;
+  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* power1.out */
+  --dur-fast: 200ms;
+  --dur: 300ms;
+  --dur-reveal: 350ms;
+  --dur-trazo: 1200ms;
+
+  /* Layout */
+  --w-content: 1280px;
+  --w-measure: 640px;
+  --header-h: 64px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-h: 76px;
+  }
+}
+
+/* ---------- 2. Puente con Tailwind ---------- */
+
+@theme {
+  /* Se borran las paletas por defecto: obliga a usar solo tokens NUDE.
+     Si `bg-slate-500` no compila, el sistema esta funcionando. */
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial; /* SPEC §2.4: sin sombras — `shadow-md` no compila */
+  --default-transition-duration: 300ms;
+  --default-transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@theme inline {
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-inherit: inherit;
+
+  --color-cream: var(--cream);
+  --color-white: var(--white);
+  --color-sahara: var(--sahara);
+  --color-dune: var(--dune);
+  --color-ochre: var(--ochre);
+  --color-umber: var(--umber);
+
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-invert: var(--text-invert);
+  --color-invert-muted: var(--text-invert-muted);
+  --color-bg: var(--bg);
+  --color-bg-alt: var(--bg-alt);
+  --color-bg-raised: var(--bg-raised);
+  --color-bg-dark: var(--bg-dark);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-line-invert: var(--line-invert);
+
+  --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), ui-serif, Georgia, serif;
+
+  --radius-nude: var(--radius);
+  --radius-full: 9999px; /* unico redondeo permitido: swatch de color */
+
+  --ease-nude: var(--ease);
+}
+
+/* ---------- 3. Base ---------- */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden; /* SPEC §12: sin scroll horizontal */
+  }
+
+  ::selection {
+    background-color: var(--sahara);
+    color: var(--umber);
+  }
+
+  /* Foco visible en Ochre. No se elimina nunca (SPEC §12). */
+  :focus-visible {
+    outline: 2px solid var(--line);
+    outline-offset: 3px;
+    border-radius: var(--radius);
+  }
+
+  .on-dark :focus-visible {
+    outline-color: var(--dune);
+  }
+
+  button,
+  [role="button"],
+  a,
+  label,
+  summary {
+    cursor: pointer; /* SPEC §12 */
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  img,
+  svg,
+  video {
+    max-width: 100%;
+  }
+
+  :is(h1, h2, h3, h4) {
+    font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+    font-weight: 300;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ---------- 4. Tipografia (SPEC §2.2) ----------
+   Cormorant es la voz emocional. Jost es la voz funcional.
+   Un precio nunca va en serif. Un manifiesto nunca va en sans. */
+
+@layer components {
+  .display-xl {
+    font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+    font-weight: 300;
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .display-l {
+    font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+    font-weight: 300;
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.2;
+  }
+
+  .title {
+    font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+    font-weight: 300;
+    font-size: clamp(24px, 3vw, 36px);
+    line-height: 1.3;
+  }
+
+  .product-name {
+    font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.25;
+  }
+
+  .quote {
+    font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(22px, 3.2vw, 34px);
+    line-height: 1.45;
+  }
+
+  .body {
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .body-s {
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .price {
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .price-sm {
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .label {
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.4em;
+    /* compensa el tracking final para que el centrado sea real */
+    margin-inline-end: -0.4em;
+  }
+
+  .card-name {
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* ---------- 5. Layout ---------- */
+
+  .container-nude {
+    width: 100%;
+    max-width: var(--w-content);
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+
+  .measure {
+    max-width: var(--w-measure);
+  }
+
+  .section {
+    padding-block: 64px;
+  }
+
+  /* Separacion por color de fondo y linea Ochre 25% — nunca por sombra */
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--line-soft);
+    margin: 0;
+  }
+
+  /* ---------- 6. Botones (SPEC §5) ---------- */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px; /* area tactil minima */
+    padding: 15px 32px;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    text-indent: 0.3em; /* centra el texto pese al tracking */
+    text-align: center;
+    text-decoration: none;
+    transition:
+      background-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease),
+      transform var(--dur-fast) var(--ease),
+      opacity var(--dur-fast) var(--ease);
+  }
+
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .btn-primary {
+    background-color: var(--umber);
+    color: var(--cream);
+  }
+
+  @media (hover: hover) {
+    .btn-primary:hover {
+      background-color: var(--ochre);
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-secondary {
+    background-color: transparent;
+    border-color: var(--umber);
+    color: var(--umber);
+  }
+
+  @media (hover: hover) {
+    .btn-secondary:hover {
+      background-color: var(--umber);
+      color: var(--cream);
+      transform: translateY(-1px);
+    }
+  }
+
+  /* Sobre fondo Umber */
+  .btn-invert {
+    background-color: var(--cream);
+    color: var(--umber);
+  }
+
+  @media (hover: hover) {
+    .btn-invert:hover {
+      background-color: var(--dune);
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn-outline-invert {
+    background-color: transparent;
+    border-color: var(--line-invert);
+    color: var(--cream);
+  }
+
+  @media (hover: hover) {
+    .btn-outline-invert:hover {
+      background-color: var(--cream);
+      color: var(--umber);
+      border-color: var(--cream);
+    }
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  /* Estado de carga: tres puntos en secuencia. Nada gira (SPEC §11.3).
+     El texto se esconde pero sigue ocupando su ancho, y los puntos se
+     superponen encima: el boton no cambia de tamano al cargar. */
+  .btn {
+    position: relative;
+  }
+
+  /* opacidad, no `visibility: hidden`: mantiene el texto en el arbol de
+     accesibilidad, asi que el boton conserva su nombre mientras carga */
+  .btn-oculto {
+    opacity: 0;
+  }
+
+  .btn-dots {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .btn-dots > span {
+    width: 4px;
+    height: 4px;
+    border-radius: 9999px;
+    background-color: currentColor;
+    opacity: 0.3;
+    animation: btn-dot 1.2s var(--ease) infinite;
+  }
+
+  .btn-dots > span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  .btn-dots > span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  /* Link con subrayado fino que engorda — no cambia de color */
+  .link {
+    display: inline-block;
+    color: inherit;
+    text-decoration: none;
+    padding-bottom: 2px;
+    background-image: linear-gradient(var(--line), var(--line));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 1px;
+    transition: background-size var(--dur) var(--ease);
+  }
+
+  @media (hover: hover) {
+    .link:hover {
+      background-size: 100% 2px;
+    }
+  }
+
+  /* Link de navegacion: la linea entra desde la izquierda */
+  .link-nav {
+    color: inherit;
+    text-decoration: none;
+    background-image: linear-gradient(var(--line), var(--line));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0 1px;
+    transition: background-size var(--dur) var(--ease);
+  }
+
+  @media (hover: hover) {
+    .link-nav:hover {
+      background-size: 100% 1px;
+    }
+  }
+
+  .link-nav[aria-current="page"] {
+    background-size: 100% 1px;
+  }
+
+  /* Boton de solo icono — 44x44 real */
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: var(--radius);
+    color: var(--text);
+    background-color: transparent;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  @media (hover: hover) {
+    .icon-btn:hover {
+      color: var(--ochre);
+    }
+  }
+
+  /* ---------- 7. Formularios (SPEC §5, §12) ---------- */
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Etiqueta siempre visible. Nunca placeholder como etiqueta. */
+  .field-label {
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+  }
+
+  .field-optional {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 300;
+  }
+
+  .input,
+  .textarea,
+  .select {
+    width: 100%;
+    min-height: 52px;
+    padding: 16px 20px;
+    background-color: var(--bg-raised);
+    border: 1px solid var(--sahara);
+    border-radius: var(--radius);
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--text);
+    transition:
+      border-color var(--dur-fast) var(--ease),
+      background-color var(--dur-fast) var(--ease);
+  }
+
+  .input::placeholder,
+  .textarea::placeholder {
+    color: var(--placeholder);
+    font-weight: 200;
+  }
+
+  @media (hover: hover) {
+    .input:hover,
+    .textarea:hover,
+    .select:hover {
+      border-color: var(--dune);
+    }
+  }
+
+  .input:focus,
+  .textarea:focus,
+  .select:focus {
+    border-color: var(--line);
+    outline: none;
+  }
+
+  .input:focus-visible,
+  .textarea:focus-visible,
+  .select:focus-visible {
+    outline: 2px solid var(--line);
+    outline-offset: 2px;
+  }
+
+  .textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .select {
+    appearance: none;
+    padding-right: 48px;
+    /* chevron Ochre como data-uri: no depende de cargar un icono */
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23C4956A' stroke-width='1.25' stroke-linecap='round'%3E%3Cpath d='M4 6.5 8 10.5l4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 16px;
+  }
+
+  /* Error: borde Ochre solido + mensaje. Nunca rojo — rompe la paleta. */
+  .input[aria-invalid="true"],
+  .textarea[aria-invalid="true"],
+  .select[aria-invalid="true"] {
+    border-color: var(--ochre);
+    background-color: color-mix(in srgb, var(--sahara) 35%, var(--white));
+  }
+
+  .field-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .field-error svg {
+    flex: none;
+    margin-top: 3px;
+    color: var(--line);
+  }
+
+  .field-hint {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  /* ---------- 8. Selectores de producto (SPEC §5) ---------- */
+
+  /* Envoltura de 44x44 para cumplir area tactil sin agrandar el circulo */
+  .swatch-hit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+
+  .swatch {
+    display: block;
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px;
+    border: 1px solid var(--line);
+    transition: box-shadow var(--dur-fast) var(--ease);
+  }
+
+  /* Seleccionado: anillo Umber 2px con 3px de separacion */
+  .swatch-hit[aria-pressed="true"] .swatch {
+    box-shadow:
+      0 0 0 3px var(--bg),
+      0 0 0 5px var(--umber);
+  }
+
+  .size-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 44px;
+    padding-inline: 12px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    background-color: transparent;
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    transition:
+      background-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease);
+  }
+
+  @media (hover: hover) {
+    .size-btn:not(:disabled):hover {
+      border-color: var(--ochre);
+    }
+  }
+
+  .size-btn[aria-pressed="true"] {
+    background-color: var(--umber);
+    border-color: var(--umber);
+    color: var(--cream);
+  }
+
+  .size-btn:disabled {
+    opacity: 0.4;
+    text-decoration: line-through;
+  }
+
+  /* ---------- 9. Acordeon (SPEC §5) ---------- */
+
+  .accordion {
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .accordion-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    min-height: 56px;
+    padding-block: 18px;
+    background: none;
+    border: 0;
+    text-align: left;
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text);
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  @media (hover: hover) {
+    .accordion-trigger:hover {
+      color: var(--ochre);
+    }
+  }
+
+  .accordion-icon {
+    flex: none;
+    color: var(--line);
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .accordion-trigger[aria-expanded="true"] .accordion-icon {
+    transform: rotate(180deg);
+  }
+
+  /* grid-template-rows 0fr→1fr: se anima a altura automatica sin medir con JS */
+  .accordion-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--dur) var(--ease);
+  }
+
+  .accordion-panel[data-open="true"] {
+    grid-template-rows: 1fr;
+  }
+
+  .accordion-panel > div {
+    overflow: hidden;
+  }
+
+  .accordion-body {
+    padding-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    max-width: var(--w-measure);
+  }
+
+  /* ---------- 9b. Panel lateral (SPEC §4.4, §5) ---------- */
+
+  .drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 100dvh;
+    max-height: none;
+    width: min(420px, 100vw);
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    transition:
+      translate var(--dur) var(--ease),
+      overlay var(--dur) allow-discrete,
+      display var(--dur) allow-discrete;
+  }
+
+  .drawer-derecha {
+    right: 0;
+    left: auto;
+    border-left: 1px solid var(--line-soft);
+    translate: 100% 0;
+  }
+
+  .drawer-izquierda {
+    left: 0;
+    right: auto;
+    border-right: 1px solid var(--line-soft);
+    translate: -100% 0;
+  }
+
+  .drawer[open] {
+    translate: 0 0;
+  }
+
+  /* estado inicial de la entrada: sin esto el panel aparece de golpe */
+  @starting-style {
+    .drawer-derecha[open] {
+      translate: 100% 0;
+    }
+    .drawer-izquierda[open] {
+      translate: -100% 0;
+    }
+  }
+
+  .drawer.on-dark {
+    border-color: var(--line-invert);
+  }
+
+  .drawer::backdrop {
+    background-color: rgba(92, 61, 40, 0.4);
+    opacity: 0;
+    transition:
+      opacity var(--dur) var(--ease),
+      overlay var(--dur) allow-discrete,
+      display var(--dur) allow-discrete;
+  }
+
+  .drawer[open]::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .drawer[open]::backdrop {
+      opacity: 0;
+    }
+  }
+
+  .drawer-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex: none;
+    padding: 16px 16px 16px 24px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .on-dark .drawer-head,
+  .on-dark .drawer-foot {
+    border-color: var(--line-invert);
+  }
+
+  .drawer-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 24px;
+  }
+
+  .drawer-foot {
+    flex: none;
+    padding: 20px 24px;
+    border-top: 1px solid var(--line-soft);
+    background-color: var(--bg);
+  }
+
+  .on-dark .drawer-foot {
+    background-color: var(--bg-dark);
+  }
+
+  /* ---------- 10. Badge ---------- */
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: var(--cream);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text);
+  }
+
+  .badge-solid {
+    background-color: var(--umber);
+    border-color: var(--umber);
+    color: var(--cream);
+  }
+}
+
+@media (min-width: 768px) {
+  .container-nude {
+    padding-inline: 48px;
+  }
+
+  .section {
+    padding-block: 96px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .section {
+    padding-block: 140px;
+  }
+}
+
+/* ---------- 10b. Header (SPEC §4.1 bloque 1) ---------- */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: var(--bg);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.header-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: var(--header-h);
+  gap: 16px;
+}
+
+.header-inner-checkout {
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
+.header-izq {
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  /* la hamburguesa mide 44px: se saca del padding para alinear el icono al borde */
+  margin-left: -10px;
+}
+
+.header-logo {
+  display: block;
+  grid-column: 2;
+  color: var(--text);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .header-logo:hover {
+    color: var(--ochre);
+  }
+}
+
+/* Nav centrada en desktop. Ocupa la misma celda que el logo y este se corre
+   a la izquierda: asi el logo no baila cuando cambia el ancho de la nav. */
+.header-nav {
+  display: none;
+}
+
+.header-der {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  grid-column: 3;
+  justify-self: end;
+  margin-right: -10px;
+}
+
+@media (min-width: 768px) {
+  .header-izq {
+    display: none;
+  }
+
+  .header-logo {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .header-nav {
+    display: block;
+    grid-column: 2;
+  }
+
+  .header-nav ul {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .header-nav a {
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding-block: 6px;
+  }
+}
+
+/* Contador del carrito. Solo se pinta cuando hay algo. */
+.cart-btn {
+  position: relative;
+}
+
+.cart-count {
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  min-width: 17px;
+  height: 17px;
+  padding-inline: 4px;
+  display: grid;
+  place-items: center;
+  background-color: var(--umber);
+  color: var(--cream);
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* El contenido nunca queda debajo del header fijo (SPEC §12) */
+.con-header {
+  padding-top: var(--header-h);
+}
+
+/* ---------- 10c. Nav movil (SPEC §5) ---------- */
+
+.nav-movil {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-movil a {
+  display: block;
+  padding-block: 12px;
+  font-size: 18px;
+  font-weight: 300;
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .nav-movil a:hover {
+    color: var(--dune);
+  }
+}
+
+.nav-movil-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-movil-links a {
+  display: block;
+  padding-block: 10px;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  color: var(--text-invert-muted);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .nav-movil-links a:hover {
+    color: var(--cream);
+  }
+}
+
+/* ---------- 10d. Carrito vacio (SPEC §4.4, §7) ---------- */
+
+.carrito-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding-block: 15vh 0;
+  text-align: center;
+}
+
+/* ---------- 10e. Footer (SPEC §4.1 bloque 9) ---------- */
+
+.footer {
+  padding-top: 56px;
+  padding-bottom: 40px;
+}
+
+/* El trazo cierra el recorrido de la pagina bajo el isotipo (SPEC §11.1) */
+.footer-trazo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 48px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+}
+
+@media (min-width: 768px) {
+  .footer {
+    padding-top: 80px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+.footer-marca {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.footer-tagline {
+  color: var(--text-invert-muted);
+  font-size: 22px;
+}
+
+.footer-social {
+  display: flex;
+  gap: 4px;
+  margin: 4px 0 0 -10px;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-col-titulo {
+  margin-bottom: 20px;
+  color: var(--text-invert-muted);
+}
+
+.footer-col ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-col a {
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.footer-rule {
+  margin-block: 48px 24px;
+}
+
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-invert-muted);
+}
+
+/* ---------- 10f. Bloques de la home (SPEC §4.1) ---------- */
+
+/* Eje izquierdo constante con margen derecho generoso (SPEC §11.2).
+   Lee como editorial de moda impresa, no como plantilla centrada. */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 72vh;
+  padding-block: 80px 120px;
+}
+
+.hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.hero-titulo {
+  max-width: 12ch;
+}
+
+.hero-texto {
+  color: var(--text-muted);
+  max-width: 46ch;
+}
+
+.hero-trazo {
+  position: absolute;
+  bottom: 0;
+  left: 24px;
+}
+
+@media (min-width: 768px) {
+  .hero-trazo {
+    left: 48px;
+  }
+}
+
+.manifiesto-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.manifiesto-label {
+  color: var(--text-invert-muted);
+}
+
+.manifiesto-texto {
+  max-width: var(--w-measure);
+}
+
+.pilares-titulo {
+  margin-top: 8px;
+  margin-bottom: 56px;
+}
+
+.pilares {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+@media (min-width: 768px) {
+  .pilares {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+  }
+}
+
+.pilar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 38ch;
+}
+
+.pilar-trazo {
+  margin-bottom: 12px;
+}
+
+.promesas-franja {
+  padding-block: 48px;
+}
+
+.promesas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+@media (min-width: 640px) {
+  .promesas {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.promesa {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ---------- 10g. 404 (SPEC §4.6) ---------- */
+
+.no-encontrada {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  min-height: 100dvh;
+  padding: 24px;
+  text-align: center;
+}
+
+/* ---------- 10h. Pagina de sistema (solo herramienta interna) ---------- */
+
+.sistema-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-block: 64px 40px;
+}
+
+.sistema-bloque {
+  padding-block: 48px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.sistema-bloque-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.sistema-sub {
+  font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  margin-top: 16px;
+}
+
+.paleta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 24px;
+}
+
+.paleta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.paleta-muestra {
+  height: 88px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+}
+
+.tabla-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.tabla {
+  width: 100%;
+  min-width: 420px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tabla th,
+.tabla td {
+  text-align: left;
+  padding: 12px 16px 12px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.tabla th {
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+}
+
+.escala {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.muestra {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.muestra-nota {
+  order: -1;
+}
+
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.logo-caja {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 140px;
+  padding: 24px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+
+.demo-fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.demo-oscura {
+  padding: 24px;
+  border-radius: var(--radius);
+}
+
+.dos-columnas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+@media (min-width: 900px) {
+  .dos-columnas {
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+  }
+}
+
+.placeholder-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 240px;
+}
+
+.trazo-demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 48px;
+}
+
+.trazo-demo > div {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.superficies {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .superficies {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.superficie {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+
+.sistema code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  padding: 1px 5px;
+  background-color: var(--bg-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+
+/* ---------- 11. Superficies ---------- */
+
+/**
+ * Fondo Sahara. Corrige un hueco del SPEC §2.1: la tabla de contraste verifica
+ * --text-muted contra Cream (4.93:1) pero no contra Sahara, donde da 4.10:1 y
+ * NO pasa AA. En esta superficie el texto secundario vuelve a Umber pleno
+ * (6.88:1). Cualquier bloque con fondo Sahara usa esta clase, no `bg-sahara`.
+ */
+.on-sahara {
+  background-color: var(--bg-alt);
+  --text-muted: var(--text);
+}
+
+.on-sahara .input,
+.on-sahara .textarea,
+.on-sahara .select {
+  border-color: var(--dune);
+}
+
+.on-dark {
+  background-color: var(--bg-dark);
+  color: var(--text-invert);
+}
+
+.on-dark .rule,
+.on-dark .accordion {
+  border-color: var(--line-invert);
+}
+
+.on-dark .field-label,
+.on-dark .accordion-body {
+  color: var(--text-invert-muted);
+}
+
+.on-dark .link,
+.on-dark .link-nav {
+  background-image: linear-gradient(var(--dune), var(--dune));
+}
+
+.on-dark .icon-btn {
+  color: var(--text-invert);
+}
+
+@media (hover: hover) {
+  .on-dark .icon-btn:hover {
+    color: var(--dune);
+  }
+}
+
+/* ---------- 12. Movimiento (SPEC §11.3) ----------
+   Trampa evitada (SPEC §9.5): TODO lo que esconde algo vive dentro de
+   `@media (scripting: enabled)`. Sin JavaScript la condicion no se cumple, no
+   hay estado oculto, y Google indexa contenido en vez de una pagina vacia.
+   Se puede verificar desactivando JS en el navegador: nada desaparece. */
+
+.reveal {
+  opacity: 1;
+}
+
+/* El trazo continuo (SPEC §11.1).
+   pathLength="1" evita medir la longitud del path con JS. */
+.trazo path {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.trazo circle {
+  fill: var(--line);
+  stroke: none;
+}
+
+@media (scripting: enabled) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity var(--dur-reveal) var(--ease),
+      transform var(--dur-reveal) var(--ease);
+  }
+
+  .reveal[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .trazo path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .trazo circle {
+    opacity: 0;
+  }
+
+  .trazo[data-drawn="true"] path {
+    animation: trazo-draw var(--dur-trazo) var(--ease) forwards;
+  }
+
+  .trazo[data-drawn="true"] circle {
+    animation: trazo-dot 400ms var(--ease) forwards;
+    animation-delay: var(--dur-trazo);
+  }
+}
+
+@keyframes trazo-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes trazo-dot {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes btn-dot {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* La linea aparece dibujada, sin animacion (SPEC §11.1) */
+  .trazo path {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+
+  .trazo circle {
+    opacity: 1;
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- 13. Utilidades ---------- */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  transform: translateY(-250%);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* Reserva de espacio para imagen — CLS bajo 0.1 (SPEC §12) */
+.ratio-3-4 {
+  aspect-ratio: 3 / 4;
+}
+
+.ratio-4-5 {
+  aspect-ratio: 4 / 5;
+}
+
+/* Marca de posicion mientras no hay fotografia de producto */
+.img-placeholder {
+  background-color: var(--sahara);
+  color: color-mix(in srgb, var(--umber) 40%, var(--sahara));
+  display: grid;
+  place-items: center;
+}

@@ -1,0 +1,40 @@
+# ============================================================
+# NUDE SPORTSWEAR — E-commerce
+# ============================================================
+# El .gitignore de tienda/ cubre node_modules, .next y out de la app Next.
+# Este cubre lo del repo completo.
+
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+Icon
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node (por si aparecen dependencias fuera de tienda/)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Entorno — nunca commitear credenciales
+.env
+.env.*
+!.env.example
+
+# Firebase
+.firebase/
+firebase-debug.log*
+*-debug.log
+
+# Playwright (scripts de captura de referencias)
+playwright-report/
+test-results/
