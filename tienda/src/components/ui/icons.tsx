@@ -26,6 +26,7 @@ export {
   ShoppingBag,
   Trash,
   Truck,
+  User,
   Wallet,
   Warning,
   WhatsappLogo,

@@ -1,0 +1,18 @@
+{
+  "activo": true,
+  "tono": "oscuro",
+  "mensajes": [
+    {
+      "id": "envio-gratis",
+      "activo": true,
+      "texto": "Envio gratis en compras desde $250.000",
+      "href": "/envios"
+    },
+    {
+      "id": "cambios",
+      "activo": false,
+      "texto": "Cambios sin costo durante 30 dias",
+      "href": "/cambios"
+    }
+  ]
+}

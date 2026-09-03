@@ -50,12 +50,17 @@
   /* Layout */
   --w-content: 1280px;
   --w-measure: 640px;
-  --header-h: 64px;
+  /* El header crece con el logo. El limite lo pone SPORTSWEAR: su trazo es la
+     mitad del de NUDE (4 vs 8 unidades del original), asi que a 46px de logo
+     cae en 0.92px CSS y se lava en pantallas 1x. A 62px queda en 1.25px. */
+  --header-h: 76px;
+  --anuncio-h: 36px;
 }
 
 @media (min-width: 768px) {
   :root {
-    --header-h: 76px;
+    --header-h: 100px;
+    --anuncio-h: 40px;
   }
 }
 
@@ -897,6 +902,56 @@
   border-bottom: 1px solid var(--line-soft);
 }
 
+/* Franja de anuncio. Data en src/content/anuncios.json.
+   Solo dos tonos y los dos pasan AA (SPEC §12): Ochre de fondo daria 3.65:1
+   con Umber, asi que no es una opcion por bonita que se vea. */
+.anuncio {
+  height: var(--anuncio-h);
+  display: flex;
+  align-items: center;
+}
+
+.anuncio[data-tono="oscuro"] {
+  background-color: var(--umber);
+  color: var(--text-invert); /* 8.29:1 */
+}
+
+.anuncio[data-tono="suave"] {
+  background-color: var(--dune);
+  color: var(--text); /* 5.20:1 */
+}
+
+/* La caja alta con tracking era el tratamiento de la nav. La nav pasa a peso
+   normal (referencia RPO) y ese registro se muda aqui: un solo elemento en
+   versalitas en todo el header. */
+.anuncio-texto {
+  margin: 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  line-height: 1.2;
+  /* En pantallas estrechas el mensaje no parte en dos lineas: la franja tiene
+     alto fijo y la segunda linea quedaria cortada. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.anuncio-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .anuncio-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
 .header-inner {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -913,16 +968,26 @@
 .header-izq {
   display: flex;
   align-items: center;
+  gap: 2px;
   justify-self: start;
-  /* la hamburguesa mide 44px: se saca del padding para alinear el icono al borde */
+  /* los botones miden 44px: se sacan del padding para alinear el icono al borde */
   margin-left: -10px;
 }
 
 .header-logo {
   display: block;
   grid-column: 2;
-  color: var(--text);
+  color: var(--text); /* Guia de marca: sobre claros el logotipo va en Umber */
   transition: color var(--dur-fast) var(--ease);
+}
+
+/* El alto real del wordmark se fija aqui: el `alto` del componente reserva el
+   espacio (evita CLS) y CSS lo ajusta por breakpoint. En movil se contiene para
+   no apretar los cuatro botones de los lados. */
+.header-logo > svg {
+  display: block;
+  height: 44px;
+  width: auto;
 }
 
 @media (hover: hover) {
@@ -931,8 +996,8 @@
   }
 }
 
-/* Nav centrada en desktop. Ocupa la misma celda que el logo y este se corre
-   a la izquierda: asi el logo no baila cuando cambia el ancho de la nav. */
+/* Nav centrada en desktop. Ocupa la celda del medio y el logo se corre a la
+   izquierda: asi el logo no baila cuando cambia el ancho de la nav. */
 .header-nav {
   display: none;
 }
@@ -941,7 +1006,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 4px;
+  gap: 2px;
   grid-column: 3;
   justify-self: end;
   margin-right: -10px;
@@ -957,6 +1022,10 @@
     justify-self: start;
   }
 
+  .header-logo > svg {
+    height: 62px;
+  }
+
   .header-nav {
     display: block;
     grid-column: 2;
@@ -965,18 +1034,25 @@
   .header-nav ul {
     display: flex;
     align-items: center;
-    gap: 36px;
+    gap: 32px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
+  /* Referencia RPO: peso alto y capitalizacion normal en vez de versalitas.
+     Jost llega hasta 500 (ver lib/fonts.ts); ese es el "bold" del sistema. */
   .header-nav a {
-    font-size: 11px;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    padding-block: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    padding-block: 8px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .header-nav ul {
+    gap: 40px;
   }
 }
 
@@ -1003,9 +1079,22 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* El contenido nunca queda debajo del header fijo (SPEC §12) */
+/* El contenido nunca queda debajo del header fijo (SPEC §12).
+   `con-anuncio` lo pone el layout solo cuando hay franja activa: si el JSON la
+   apaga, la barra no existe y ese hueco no debe reservarse. */
 .con-header {
   padding-top: var(--header-h);
+}
+
+.con-anuncio {
+  padding-top: calc(var(--header-h) + var(--anuncio-h));
+}
+
+/* Buscador del header: campo + boton, apilados en el panel lateral. */
+.buscador-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* ---------- 10c. Nav movil (SPEC §5) ---------- */

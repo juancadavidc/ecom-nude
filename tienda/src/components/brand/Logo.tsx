@@ -1,4 +1,5 @@
 import { Isotipo, ISOTIPO_RATIO } from './Isotipo'
+import { Principal, PRINCIPAL_RATIO } from './Principal'
 import { Wordmark, WORDMARK_RATIO } from './Wordmark'
 
 /**
@@ -11,13 +12,33 @@ import { Wordmark, WORDMARK_RATIO } from './Wordmark'
  */
 
 type LogoProps = {
-  /** Alto del trazo en px. Header 22, footer 32. */
+  /** Alto del trazo en px. El ancho sale del ratio real de cada version. */
   alto?: number
   /** Nombre accesible. Sin el, el logo es decorativo (aria-hidden). */
   title?: string
   className?: string
 }
 
+/**
+ * Lockup Principal: isotipo sobre wordmark. Es el logo del header.
+ * Es casi cuadrado (ratio 1.06), no apaisado como el wordmark suelto: ocupa
+ * poco ancho y mucho alto, y por eso el header es mas alto que un header tipico.
+ *
+ * Lleva dos tonos. El acento se enciende desde CSS con `--logo-acento`; sin esa
+ * variable sale monocromo y sirve sobre cualquier fondo (SPEC §2.3).
+ */
+export function LogoPrincipal({ alto = 70, title, className }: LogoProps) {
+  return (
+    <Principal
+      title={title}
+      className={className}
+      height={alto}
+      width={Math.round(alto * PRINCIPAL_RATIO)}
+    />
+  )
+}
+
+/** Logo Principal 2: solo el wordmark, apaisado. Footer y checkout. */
 export function LogoNude({ alto = 22, title, className }: LogoProps) {
   return (
     <Wordmark
@@ -40,4 +61,4 @@ export function MarcaNude({ alto = 32, title, className }: LogoProps) {
   )
 }
 
-export { Isotipo, Wordmark, ISOTIPO_RATIO, WORDMARK_RATIO }
+export { Isotipo, Principal, Wordmark, ISOTIPO_RATIO, PRINCIPAL_RATIO, WORDMARK_RATIO }

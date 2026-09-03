@@ -18,13 +18,12 @@ export const site = {
   email: 'somosnudesw@gmail.com',
 } as const
 
-/** SPEC §3 — tres categorias de producto, dos de contenido. Sin ramas vacias. */
+/** SPEC §3 — dos entradas de catalogo, dos de contenido. Sin ramas vacias. */
 export const navPrincipal = [
-  { label: 'Leggings', href: '/leggings' },
-  { label: 'Tops', href: '/tops' },
-  { label: 'Sets', href: '/sets' },
-  { label: 'Coleccion', href: '/coleccion' },
-  { label: 'Nosotras', href: '/nosotras' },
+  { label: 'Colecciones', href: '/colecciones' },
+  { label: 'Ropa Deportiva', href: '/ropa-deportiva' },
+  { label: 'Nosotros', href: '/nosotros' },
+  { label: 'Contacto', href: '/contacto' },
 ] as const
 
 export const navPie = [
@@ -34,7 +33,7 @@ export const navPie = [
       { label: 'Leggings', href: '/leggings' },
       { label: 'Tops', href: '/tops' },
       { label: 'Sets', href: '/sets' },
-      { label: 'Coleccion', href: '/coleccion' },
+      { label: 'Colecciones', href: '/colecciones' },
     ],
   },
   {
@@ -49,7 +48,7 @@ export const navPie = [
   {
     titulo: 'NUDE',
     links: [
-      { label: 'Nosotras', href: '/nosotras' },
+      { label: 'Nosotros', href: '/nosotros' },
       { label: 'Terminos y condiciones', href: '/legales' },
       { label: 'Tratamiento de datos', href: '/legales#datos' },
     ],

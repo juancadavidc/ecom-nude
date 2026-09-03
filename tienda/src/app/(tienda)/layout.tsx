@@ -1,5 +1,7 @@
 import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
+import { anuncioVigente } from '@/lib/anuncios'
+import { cx } from '@/lib/format'
 
 /**
  * Layout de la tienda: header fijo con navegacion + footer.
@@ -15,7 +17,9 @@ export default function TiendaLayout({ children }: { children: React.ReactNode }
         Ir al contenido
       </a>
       <Header />
-      <main id="contenido" className="con-header">
+      {/* El header es fijo: el hueco que reserva el contenido depende de si la
+          franja de anuncio esta encendida (src/content/anuncios.json). */}
+      <main id="contenido" className={cx('con-header', anuncioVigente && 'con-anuncio')}>
         {children}
       </main>
       <Footer />

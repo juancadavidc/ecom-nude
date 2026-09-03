@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { LogoNude, MarcaNude } from '@/components/brand/Logo'
+import { LogoNude, LogoPrincipal, MarcaNude } from '@/components/brand/Logo'
 import { TrazoCierre, TrazoColumna, TrazoPaso } from '@/components/motion/Trazo'
 import { Acordeon, ItemAcordeon } from '@/components/ui/Acordeon'
 import { Boton, BotonLink } from '@/components/ui/Button'
@@ -146,12 +146,22 @@ export default function SistemaPage() {
       <Bloque numero="03" titulo="Logo">
         <p className="field-hint measure">
           Los SVG viven en <code>currentColor</code>: un solo archivo sirve para cualquier color de
-          la paleta y se controla desde CSS. No hay version positiva y negativa por separado.
+          la paleta y se controla desde CSS. No hay version positiva y negativa por separado. El
+          lockup Principal anade un segundo tono opcional en <code>--logo-acento</code>: sin esa
+          variable sale monocromo y sigue sirviendo sobre cualquier fondo.
         </p>
         <div className="logo-grid">
           <div className="logo-caja">
+            <LogoPrincipal alto={70} title="NUDE SPORTSWEAR" />
+            <p className="field-hint">Principal 70px — header</p>
+          </div>
+          <div className="logo-caja on-dark">
+            <LogoPrincipal alto={70} title="NUDE SPORTSWEAR" />
+            <p className="field-hint">Principal sobre Umber — monocromo sin --logo-acento</p>
+          </div>
+          <div className="logo-caja">
             <LogoNude alto={22} title="NUDE SPORTSWEAR" />
-            <p className="field-hint">Wordmark 22px — header</p>
+            <p className="field-hint">Wordmark 22px</p>
           </div>
           <div className="logo-caja">
             <LogoNude alto={32} title="NUDE SPORTSWEAR" />
