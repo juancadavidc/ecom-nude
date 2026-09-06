@@ -1795,6 +1795,64 @@
   border: 1px solid var(--line);
 }
 
+/* ---------- 10k. Catalogo (SPEC §4.2) ---------- */
+
+.catalogo-head {
+  padding-block: 40px 32px;
+}
+
+/**
+ * El SPEC §11.1 promete que la linea acompana la columna de producto. Aqui baja
+ * por el margen izquierdo de la grilla. Solo desde tablet: en movil ese carril
+ * le quitaria ancho a la card, que es lo unico que importa en esa pantalla.
+ */
+.catalogo-cuerpo {
+  position: relative;
+  padding-bottom: 64px;
+}
+
+.catalogo-trazo {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .catalogo-cuerpo {
+    padding-left: 32px;
+  }
+
+  .catalogo-trazo {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 64px;
+  }
+}
+
+/**
+ * "Cargar mas" sobre el eje izquierdo, no centrado (spec de diseno §4).
+ * Arranca oculto: sin JavaScript la grilla ya esta entera en el HTML y el boton
+ * no tendria nada que cargar (SPEC §9.5).
+ */
+.cargar-mas {
+  display: none;
+  padding-top: 40px;
+}
+
+@media (scripting: enabled) {
+  .cargar-mas {
+    display: block;
+  }
+}
+
+.catalogo-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding-block: 64px;
+}
+
 /* ---------- 11. Superficies ---------- */
 
 /**
