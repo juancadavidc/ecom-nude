@@ -14,6 +14,26 @@ import { estadoVisible } from './producto-modelo'
  * El tipo `Producto` es el contrato que debe devolver ese documento.
  */
 
+/**
+ * `resolveJsonModule` infiere la forma literal del JSON: `categoria`, `talla` y
+ * `estado` vuelven como `string`, no como las uniones cerradas que declara el
+ * modelo, y por eso un `as Producto[]` directo no compila (TS2352: el literal
+ * no tiene solapamiento suficiente con el tipo). El `unknown` de en medio es lo
+ * que le dice al compilador que el ensanchamiento es intencional.
+ *
+ * A diferencia de `anuncios.ts`, aqui no hay validador en runtime. La
+ * integridad del archivo la afirma `describe('integridad del archivo de
+ * productos')` en `productos.test.ts`: slugs unicos, categorias y tallas del
+ * vocabulario, el grafo de `combina_con` y la correspondencia
+ * `imagenes`/`variantes`. El catalogo se empaqueta en build time, asi que una
+ * edicion mala rompe `npm test` antes de llegar a un navegador. `anuncios.json`
+ * si lleva validador porque un tono invalido rompe el contraste del header en
+ * silencio; un producto invalido aqui rompe una prueba con nombre y linea.
+ *
+ * TODO(fase-2): cuando el catalogo venga de Firestore, los datos llegan en
+ * runtime y estas pruebas dejan de vigilarlos — esa migracion tiene que traer
+ * un validador real, no solo cambiar el `fetch`.
+ */
 const catalogo = archivo.productos as unknown as Producto[]
 
 export type OpcionesListado = {
