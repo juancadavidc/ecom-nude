@@ -3,7 +3,16 @@ import { notFound } from 'next/navigation'
 import { TrazoColumna } from '@/components/motion/Trazo'
 import { Galeria } from '@/components/producto/Galeria'
 import { MigaDePan } from '@/components/producto/MigaDePan'
+import {
+  AvisoInventario,
+  BotonAgregar,
+  PanelConfirmacion,
+  SelectorColor,
+  SelectorTalla,
+  SkuActivo,
+} from '@/components/producto/SelectorVariante'
 import { VarianteProvider } from '@/components/producto/Variante'
+import { Truck, Wallet } from '@/components/ui/icons'
 import { formatCOP } from '@/lib/format'
 import { esCategoria } from '@/lib/producto-modelo'
 import { listarProductos, obtenerProducto } from '@/lib/productos'
@@ -60,10 +69,32 @@ export default async function FichaPage({ params }: Props) {
 
             <div className="ficha-bloque">
               <h1 className="ficha-nombre">{producto.nombre}</h1>
-              <p className="price">{formatCOP(producto.precio)}</p>
+              <SkuActivo />
             </div>
+
+            <div className="ficha-bloque">
+              <p className="price">{formatCOP(producto.precio)}</p>
+              {/* Aporte de la referencia: el pago, a la altura del precio */}
+              <div className="ficha-pagos body-s">
+                <span className="ficha-pago">
+                  <Truck size={16} weight="light" aria-hidden="true" />
+                  Pago contra entrega
+                </span>
+                <span className="ficha-pago">
+                  <Wallet size={16} weight="light" aria-hidden="true" />
+                  Nequi o Bancolombia
+                </span>
+              </div>
+            </div>
+
+            <SelectorColor />
+            <SelectorTalla />
+            <AvisoInventario />
+            <BotonAgregar />
           </div>
         </div>
+
+        <PanelConfirmacion />
       </VarianteProvider>
     </article>
   )

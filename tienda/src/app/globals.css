@@ -1544,11 +1544,6 @@
   margin-bottom: 8px;
 }
 
-.tabla-scroll {
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-}
-
 .tabla {
   width: 100%;
   min-width: 420px;
@@ -2078,6 +2073,60 @@
   color: var(--text-muted);
 }
 
+/**
+ * Medios de pago justo bajo el precio. El gesto viene de la referencia, no el
+ * contenido: alla hay un widget de credito y aqui el checkout es contra entrega
+ * y transferencia (SPEC §4.5). Lo que se copia es subir la informacion de pago a
+ * la altura del precio en vez de enterrarla al final de la pagina.
+ */
+.ficha-pagos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.ficha-pago {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+.ficha-pago svg {
+  flex: none;
+  color: var(--line);
+}
+
+.ficha-talla-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tabla-tallas {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tabla-tallas th,
+.tabla-tallas td {
+  text-align: left;
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.tabla-tallas th {
+  font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+}
+
 .ficha-detalles {
   display: flex;
   flex-direction: column;
@@ -2376,6 +2425,12 @@
 }
 
 /* ---------- 13. Utilidades ---------- */
+
+/* Compartida por /sistema y la guia de tallas de la ficha: mismo envoltorio de scroll horizontal */
+.tabla-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
 
 .visually-hidden {
   position: absolute;

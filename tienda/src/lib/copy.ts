@@ -53,5 +53,6 @@ export const microcopy = {
   seguirViendo: 'Seguir viendo',
   finalizar: 'Finalizar compra',
   guiaTallas: 'Guia de tallas',
+  elegirTalla: 'Elige una talla',
   error404: 'Esta pagina se movio.',
 } as const
