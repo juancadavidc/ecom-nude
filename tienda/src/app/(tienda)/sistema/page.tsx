@@ -4,7 +4,9 @@ import { TrazoCierre, TrazoColumna, TrazoPaso } from '@/components/motion/Trazo'
 import { Acordeon, ItemAcordeon } from '@/components/ui/Acordeon'
 import { Boton, BotonLink } from '@/components/ui/Button'
 import { Truck, Wallet, ArrowsClockwise, Ruler, ImageSquare } from '@/components/ui/icons'
+import { GridProducto } from '@/components/producto/GridProducto'
 import { formatCOP } from '@/lib/format'
+import { destacados } from '@/lib/productos'
 import { DemoFormulario, DemoSelectores } from './Demos'
 
 /**
@@ -41,7 +43,8 @@ const CONTRASTES = [
   { par: 'Ochre sobre White', ratio: '2.57:1', pasa: false },
 ]
 
-export default function SistemaPage() {
+export default async function SistemaPage() {
+  const muestraProductos = await destacados(3)
   return (
     <div className="sistema">
       <header className="container-nude sistema-hero">
@@ -343,6 +346,13 @@ export default function SistemaPage() {
           <code>--shadow-*</code> esta borrado del tema, asi que <code>shadow-md</code> no compila.
           Radio 2px en todo, salvo el swatch de color.
         </p>
+      </Bloque>
+
+      {/* ---------------- Card de producto ---------------- */}
+      <Bloque numero="11" titulo="Card de producto">
+        <Muestra nota="Imagen 3:4, cruce a la segunda foto en 300ms al pasar el mouse o al enfocar con teclado. Sin zoom, sin sombra, sin levantar. El badge sale del stock, no de un campo del archivo.">
+          <GridProducto productos={muestraProductos} />
+        </Muestra>
       </Bloque>
     </div>
   )

@@ -1661,6 +1661,140 @@
   border-radius: var(--radius);
 }
 
+/* ---------- 10i. Composicion (spec de diseno 2026-09-06, §2.3) ---------- */
+
+/**
+ * A sangre: escapa del contenedor de 1280px y llega a los bordes de la pantalla.
+ * `100vw` cuenta la barra de scroll; `overflow-x: hidden` en el body absorbe esa
+ * diferencia, que es de donde saldria una barra horizontal (SPEC §12).
+ *
+ * El contraste entre margen amplio y foto a borde es de donde sale la fuerza de
+ * la composicion. Se consigue sin centrar nada y sin tocar la identidad.
+ */
+.a-sangre {
+  width: 100vw;
+  max-width: 100vw;
+  margin-inline: calc(50% - 50vw);
+}
+
+/**
+ * El eje izquierdo del SPEC §11.2 como grid: columna de texto de maximo 640px y
+ * margen derecho generoso. Nada se centra. `.eje-fin` es la excepcion: lo que
+ * tiene que caer al otro extremo de la misma linea, como el "Ver todo" de una
+ * seccion. En movil todo vuelve a una sola columna sobre el mismo eje.
+ */
+.eje {
+  display: grid;
+  grid-template-columns: minmax(0, var(--w-measure)) 1fr;
+  gap: 16px 24px;
+  align-items: end;
+}
+
+.eje > * {
+  grid-column: 1;
+}
+
+.eje-fin {
+  grid-column: 2;
+  justify-self: end;
+  align-self: end;
+}
+
+@media (max-width: 767px) {
+  .eje {
+    grid-template-columns: 1fr;
+  }
+
+  .eje-fin {
+    grid-column: 1;
+    justify-self: start;
+  }
+}
+
+/* Gutter corto a proposito: mas producto arriba del pliegue (SPEC §4.2) */
+.grid-producto {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .grid-producto {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+/* ---------- 10j. Card de producto (SPEC §4.2) ---------- */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-foto {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 3 / 4; /* espacio reservado: CLS bajo 0.1 (SPEC §12) */
+  background-color: var(--sahara);
+}
+
+/**
+ * Cruce a la segunda foto en 300ms. Sin zoom, sin sombra, sin levantar
+ * (SPEC §11.3). La segunda foto siempre esta en el DOM y siempre esta cargada:
+ * si se montara al pasar el mouse habria un salto en blanco de medio segundo.
+ */
+.card-foto-2 {
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+
+@media (hover: hover) {
+  .card:hover .card-foto-2 {
+    opacity: 1;
+  }
+}
+
+/* En movil no hay hover: el teclado es la unica forma de ver la segunda foto */
+.card:focus-visible .card-foto-2 {
+  opacity: 1;
+}
+
+.card-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-swatches {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* 12px, borde Ochre (SPEC §4.2). No son botones: la card entera es el enlace. */
+.card-swatch {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+}
+
 /* ---------- 11. Superficies ---------- */
 
 /**
