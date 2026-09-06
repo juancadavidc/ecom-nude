@@ -16,9 +16,10 @@ import type { Orden, Talla } from '@/lib/producto-modelo'
  * header. En movil abre panel inferior.
  *
  * Todo el estado vive en la URL, no en `useState`: asi un filtro se comparte por
- * WhatsApp y el boton atras del navegador funciona. `router.replace` en vez de
- * `push` para que atras salga del catalogo en un toque en vez de deshacer filtro
- * a filtro.
+ * WhatsApp y el boton atras del navegador funciona (SPEC §7, §4 bloque 2).
+ * `router.push`, no `replace`: cada filtro aplicado apila su propia entrada de
+ * historial, para que atras deshaga un filtro a la vez — que es justo lo que
+ * pide el SPEC, no un atajo para salir del catalogo de un tiro.
  *
  * Desde 1024px las cuatro dimensiones se ven enteras en la barra: con cuatro
  * colores y cinco tallas, un desplegable esconde mas de lo que ordena. Debajo de
@@ -35,14 +36,75 @@ export function Filtros({ opciones }: { opciones: OpcionesFiltro }) {
 
   function aplicar(cambio: Partial<FiltrosActivos>) {
     const query = escribirFiltros({ ...filtros, ...cambio })
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
+    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false })
   }
 
-  function alternar<T extends string>(lista: T[], valor: T): T[] {
-    return lista.includes(valor) ? lista.filter((v) => v !== valor) : [...lista, valor]
-  }
+  return (
+    <div className="barra-filtros">
+      <div className="container-nude barra-filtros-inner">
+        <div className="filtros-desktop">
+          <ControlesFiltro prefijo="desktop" opciones={opciones} filtros={filtros} aplicar={aplicar} />
+        </div>
 
-  const controles = (
+        <div className="filtros-movil">
+          <Boton variante="secundario" onClick={() => setPanelAbierto(true)}>
+            {activos ? `${microcopy.filtrar} (${activos})` : microcopy.filtrar}
+          </Boton>
+        </div>
+
+        {activos > 0 && (
+          <Boton variante="secundario" onClick={() => router.push(pathname, { scroll: false })}>
+            {microcopy.quitarFiltros}
+          </Boton>
+        )}
+      </div>
+
+      <Panel
+        abierto={panelAbierto}
+        onCerrar={() => setPanelAbierto(false)}
+        titulo="Filtrar y ordenar"
+        lado="abajo"
+        pie={
+          <Boton ancho onClick={() => setPanelAbierto(false)}>
+            Ver productos
+          </Boton>
+        }
+      >
+        <div className="filtro-panel">
+          <ControlesFiltro prefijo="movil" opciones={opciones} filtros={filtros} aplicar={aplicar} />
+        </div>
+      </Panel>
+    </div>
+  )
+}
+
+function alternar<T extends string>(lista: T[], valor: T): T[] {
+  return lista.includes(valor) ? lista.filter((v) => v !== valor) : [...lista, valor]
+}
+
+/**
+ * Las cuatro dimensiones, una vez por instancia (barra de escritorio y panel
+ * de movil). Un componente con nombre propio en vez de una variable JSX: asi
+ * React conserva su identidad entre renders y el estado local de
+ * `CamposPrecio` (mas abajo) no se resetea cada vez que cambia un filtro.
+ *
+ * `prefijo` distingue los `id` de cada instancia (`filtro-desktop-*` /
+ * `filtro-movil-*`): las dos instancias existen a la vez en el DOM — una
+ * oculta por CSS segun el ancho — y un `id` repetido rompe la asociacion de
+ * `<label>` con su campo (puede apuntar a la instancia equivocada).
+ */
+function ControlesFiltro({
+  prefijo,
+  opciones,
+  filtros,
+  aplicar,
+}: {
+  prefijo: string
+  opciones: OpcionesFiltro
+  filtros: FiltrosActivos
+  aplicar: (cambio: Partial<FiltrosActivos>) => void
+}) {
+  return (
     <>
       <div className="filtro-grupo">
         <span className="label filtro-grupo-titulo">Color</span>
@@ -75,43 +137,18 @@ export function Filtros({ opciones }: { opciones: OpcionesFiltro }) {
 
       <div className="filtro-grupo">
         <span className="label filtro-grupo-titulo">Precio</span>
-        <div className="filtro-precio">
-          <CampoTexto
-            id="filtro-min"
-            label="Desde"
-            type="number"
-            inputMode="numeric"
-            min={opciones.precio.min}
-            max={opciones.precio.max}
-            step={1000}
-            value={filtros.precio.min ?? ''}
-            onChange={(e) =>
-              aplicar({
-                precio: { ...filtros.precio, min: e.target.value ? Number(e.target.value) : undefined },
-              })
-            }
-          />
-          <CampoTexto
-            id="filtro-max"
-            label="Hasta"
-            type="number"
-            inputMode="numeric"
-            min={opciones.precio.min}
-            max={opciones.precio.max}
-            step={1000}
-            value={filtros.precio.max ?? ''}
-            onChange={(e) =>
-              aplicar({
-                precio: { ...filtros.precio, max: e.target.value ? Number(e.target.value) : undefined },
-              })
-            }
-          />
-        </div>
+        <CamposPrecio
+          prefijo={prefijo}
+          precio={filtros.precio}
+          limiteMin={opciones.precio.min}
+          limiteMax={opciones.precio.max}
+          onConfirmar={(precio) => aplicar({ precio })}
+        />
       </div>
 
       <div className="filtro-grupo">
         <CampoLista
-          id="filtro-orden"
+          id={`filtro-${prefijo}-orden`}
           label={microcopy.ordenar}
           value={filtros.orden}
           onChange={(e) => aplicar({ orden: e.target.value as Orden })}
@@ -123,41 +160,78 @@ export function Filtros({ opciones }: { opciones: OpcionesFiltro }) {
       </div>
     </>
   )
+}
+
+const aTexto = (n?: number) => (n != null ? String(n) : '')
+
+/**
+ * Desde/Hasta no escriben en la URL en cada tecla. Con `push` eso apilaria una
+ * entrada de historial por digito escrito, y atras dejaria de servir para
+ * deshacer un filtro de un tiro — justo lo que el SPEC pide. El valor se
+ * guarda en estado local mientras se escribe y se confirma con blur o Enter.
+ *
+ * El estado local se resincroniza cuando el precio de la URL cambia por otra
+ * via — atras, adelante, un enlace pegado — comparando en el render en vez de
+ * en un efecto: `react-hooks/set-state-in-effect` lo rechaza, y es el mismo
+ * patron que ya usa `GridFiltrado.tsx` para resetear su pagina.
+ */
+function CamposPrecio({
+  prefijo,
+  precio,
+  limiteMin,
+  limiteMax,
+  onConfirmar,
+}: {
+  prefijo: string
+  precio: FiltrosActivos['precio']
+  limiteMin: number
+  limiteMax: number
+  onConfirmar: (precio: FiltrosActivos['precio']) => void
+}) {
+  const [valores, setValores] = useState({ min: aTexto(precio.min), max: aTexto(precio.max) })
+
+  const clave = `${precio.min ?? ''}|${precio.max ?? ''}`
+  const [claveVista, setClaveVista] = useState(clave)
+  if (clave !== claveVista) {
+    setClaveVista(clave)
+    setValores({ min: aTexto(precio.min), max: aTexto(precio.max) })
+  }
+
+  function confirmar() {
+    onConfirmar({
+      ...(valores.min && { min: Number(valores.min) }),
+      ...(valores.max && { max: Number(valores.max) }),
+    })
+  }
 
   return (
-    <div className="barra-filtros">
-      <div className="container-nude barra-filtros-inner">
-        <div className="filtros-desktop">{controles}</div>
-
-        <div className="filtros-movil">
-          <Boton variante="secundario" onClick={() => setPanelAbierto(true)}>
-            {activos ? `${microcopy.filtrar} (${activos})` : microcopy.filtrar}
-          </Boton>
-        </div>
-
-        {activos > 0 && (
-          <Boton
-            variante="secundario"
-            onClick={() => router.replace(pathname, { scroll: false })}
-          >
-            {microcopy.quitarFiltros}
-          </Boton>
-        )}
-      </div>
-
-      <Panel
-        abierto={panelAbierto}
-        onCerrar={() => setPanelAbierto(false)}
-        titulo="Filtrar y ordenar"
-        lado="abajo"
-        pie={
-          <Boton ancho onClick={() => setPanelAbierto(false)}>
-            Ver productos
-          </Boton>
-        }
-      >
-        <div className="filtro-panel">{controles}</div>
-      </Panel>
+    <div className="filtro-precio">
+      <CampoTexto
+        id={`filtro-${prefijo}-min`}
+        label="Desde"
+        type="number"
+        inputMode="numeric"
+        min={limiteMin}
+        max={limiteMax}
+        step={1000}
+        value={valores.min}
+        onChange={(e) => setValores((v) => ({ ...v, min: e.target.value }))}
+        onBlur={confirmar}
+        onKeyDown={(e) => e.key === 'Enter' && confirmar()}
+      />
+      <CampoTexto
+        id={`filtro-${prefijo}-max`}
+        label="Hasta"
+        type="number"
+        inputMode="numeric"
+        min={limiteMin}
+        max={limiteMax}
+        step={1000}
+        value={valores.max}
+        onChange={(e) => setValores((v) => ({ ...v, max: e.target.value }))}
+        onBlur={confirmar}
+        onKeyDown={(e) => e.key === 'Enter' && confirmar()}
+      />
     </div>
   )
 }
