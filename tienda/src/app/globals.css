@@ -804,6 +804,23 @@
     translate: -100% 0;
   }
 
+  /**
+   * Panel inferior: la variante de movil para los filtros del catalogo. El
+   * pulgar llega antes al borde de abajo que al lateral, y el catalogo se sigue
+   * viendo detras mientras se filtra.
+   */
+  .drawer-abajo {
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: auto;
+    max-height: 85dvh;
+    border-top: 1px solid var(--line-soft);
+    translate: 0 100%;
+  }
+
   .drawer[open] {
     translate: 0 0;
   }
@@ -815,6 +832,9 @@
     }
     .drawer-izquierda[open] {
       translate: -100% 0;
+    }
+    .drawer-abajo[open] {
+      translate: 0 100%;
     }
   }
 
@@ -1851,6 +1871,99 @@
   align-items: flex-start;
   gap: 16px;
   padding-block: 64px;
+}
+
+/* ---------- 10l. Barra de filtros (SPEC §4.2) ---------- */
+
+/**
+ * Pegajosa bajo el header fijo. El offset depende de si la franja de anuncio
+ * esta encendida, igual que `.con-header` / `.con-anuncio` en el layout.
+ */
+.barra-filtros {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 40;
+  background-color: var(--bg);
+  border-block: 1px solid var(--line-soft);
+  padding-block: 10px;
+}
+
+.con-anuncio .barra-filtros {
+  top: calc(var(--header-h) + var(--anuncio-h));
+}
+
+.barra-filtros-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Grupo de una dimension: etiqueta arriba, controles debajo */
+.filtro-grupo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filtro-grupo-titulo {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.filtro-controles {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.filtro-precio {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.filtro-precio .input {
+  width: 110px;
+}
+
+/* En el panel de movil cada dimension va apilada y con aire */
+.filtro-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.filtro-panel .filtro-grupo {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* Debajo de 1024px las cuatro dimensiones no caben en una fila legible:
+   el detalle se va al panel inferior y en la barra queda el disparador. */
+.filtros-desktop {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .filtros-desktop {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .filtros-movil {
+    display: none;
+  }
+}
+
+.filtros-conteo {
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 /* ---------- 11. Superficies ---------- */

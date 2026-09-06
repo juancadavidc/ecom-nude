@@ -1,7 +1,9 @@
 import { Suspense } from 'react'
 import { TrazoColumna } from '@/components/motion/Trazo'
 import { Reveal } from '@/components/motion/Reveal'
+import { opcionesDe } from '@/lib/filtros'
 import type { Producto } from '@/lib/producto-modelo'
+import { Filtros } from './Filtros'
 import { GridFiltrado } from './GridFiltrado'
 import { GridProducto } from './GridProducto'
 
@@ -22,31 +24,41 @@ export function Catalogo({
   intro: string
   productos: Producto[]
 }) {
+  const opciones = opcionesDe(productos)
+
   return (
-    <div className="container-nude">
-      <header className="catalogo-head eje">
-        <Reveal>
-          <h1 className="display-l">{titulo}</h1>
-        </Reveal>
-        <Reveal delay={80}>
-          <p className="body measure text-muted">{intro}</p>
-        </Reveal>
-      </header>
-
-      <div className="catalogo-cuerpo">
-        <div className="catalogo-trazo" aria-hidden="true">
-          <TrazoColumna alto="100%" />
-        </div>
-
-        {/*
-          El fallback NO es un esqueleto: es la grilla entera renderizada en
-          servidor. Con export estatico es lo que queda en el HTML, asi que sin
-          JavaScript la clienta ve el catalogo completo en vez de un hueco.
-        */}
-        <Suspense fallback={<GridProducto productos={productos} />}>
-          <GridFiltrado productos={productos} />
-        </Suspense>
+    <>
+      <div className="container-nude">
+        <header className="catalogo-head eje">
+          <Reveal>
+            <h1 className="display-l">{titulo}</h1>
+          </Reveal>
+          <Reveal delay={80}>
+            <p className="body measure text-muted">{intro}</p>
+          </Reveal>
+        </header>
       </div>
-    </div>
+
+      {/*
+        Fallback `null` a proposito: sin JavaScript un filtro no puede hacer
+        nada, asi que la barra no debe ocupar sitio. Lo que si tiene que quedar
+        en el HTML es la grilla, y esa tiene su propio fallback mas abajo.
+      */}
+      <Suspense fallback={null}>
+        <Filtros opciones={opciones} />
+      </Suspense>
+
+      <div className="container-nude">
+        <div className="catalogo-cuerpo">
+          <div className="catalogo-trazo" aria-hidden="true">
+            <TrazoColumna alto="100%" />
+          </div>
+
+          <Suspense fallback={<GridProducto productos={productos} />}>
+            <GridFiltrado productos={productos} />
+          </Suspense>
+        </div>
+      </div>
+    </>
   )
 }

@@ -22,7 +22,7 @@ type PanelProps = {
   titulo: string
   /** Si es false, el titulo existe solo para el lector de pantalla. */
   mostrarTitulo?: boolean
-  lado?: 'izquierda' | 'derecha'
+  lado?: 'izquierda' | 'derecha' | 'abajo'
   tono?: 'claro' | 'oscuro'
   children: ReactNode
   /** Bloque fijo al fondo: subtotal + boton de checkout, por ejemplo. */
