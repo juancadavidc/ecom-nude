@@ -52,7 +52,7 @@ export function GridFiltrado({
     return (
       <div className="catalogo-vacio">
         <p className="quote">{microcopy.sinResultados}</p>
-        <Boton variante="secundario" onClick={() => router.replace(pathname, { scroll: false })}>
+        <Boton variante="secundario" onClick={() => router.push(pathname, { scroll: false })}>
           {microcopy.quitarFiltros}
         </Boton>
       </div>
