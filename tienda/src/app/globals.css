@@ -2266,6 +2266,79 @@
   }
 }
 
+/* ---------- 10o. Cierre de la ficha ---------- */
+
+.ficha-detalle {
+  padding-block: 56px 16px;
+}
+
+.ficha-detalle-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.completa {
+  padding-top: 48px;
+}
+
+.completa-titulo {
+  margin-bottom: 24px;
+}
+
+/**
+ * Cuatro columnas en escritorio. La usan "Completa el look" y los destacados de
+ * la home: con cuatro productos, tres columnas dejan uno solo en la segunda fila.
+ */
+@media (min-width: 768px) {
+  .grid-cuatro {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/**
+ * SPEC §4.3 — barra de compra de movil: precio y "Agregar" desde que entras.
+ *
+ * Es `sticky`, no `fixed`. `fixed` la deja flotando tambien sobre el footer y
+ * obliga a reservar relleno inferior en toda la pagina; `sticky` como ultimo
+ * hijo del articulo se mantiene pegada abajo mientras la ficha esta en pantalla
+ * y se suelta sola al terminarla. Menos CSS y ningun solape.
+ *
+ * Lleva `.a-sangre` (10i): es el segundo consumidor de esa utilidad y el que
+ * el spec de diseno §2.3 tenia en mente — una barra que llega a los bordes de
+ * la pantalla. `.barra-compra` ya trae su propio `padding-inline` para no
+ * perder el respiro interno al ir a sangre.
+ */
+.barra-compra {
+  position: sticky;
+  bottom: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding: 12px 24px calc(12px + env(safe-area-inset-bottom));
+  background-color: var(--bg);
+  border-top: 1px solid var(--line-soft);
+}
+
+.barra-compra .btn {
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .barra-compra {
+    padding-inline: 48px;
+  }
+}
+
+/* Desde 1024px hay dos columnas y el boton ya vive pegajoso en la derecha */
+@media (min-width: 1024px) {
+  .barra-compra {
+    display: none;
+  }
+}
+
 /* ---------- 11. Superficies ---------- */
 
 /**
