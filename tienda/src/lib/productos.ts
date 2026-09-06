@@ -33,6 +33,13 @@ import { estadoVisible } from './producto-modelo'
  * TODO(fase-2): cuando el catalogo venga de Firestore, los datos llegan en
  * runtime y estas pruebas dejan de vigilarlos — esa migracion tiene que traer
  * un validador real, no solo cambiar el `fetch`.
+ *
+ * TODO(decision-abierta-4): nombres de producto y de coleccion en el JSON son
+ * provisionales. SPEC §13 deja abierta la nomenclatura; la confirma la marca.
+ *
+ * TODO(decision-abierta-5): todas las rutas de `imagenes` en el JSON apuntan a
+ * marcas de posicion planas, no a fotografia. Es el cuello de botella real del
+ * SPEC §13 y este trabajo no lo resuelve.
  */
 const catalogo = archivo.productos as unknown as Producto[]
 
