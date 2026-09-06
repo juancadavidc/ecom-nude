@@ -198,10 +198,19 @@ function CamposPrecio({
   }
 
   function confirmar() {
-    onConfirmar({
+    const siguiente = {
       ...(valores.min && { min: Number(valores.min) }),
       ...(valores.max && { max: Number(valores.max) }),
-    })
+    }
+    // Tabular por la barra sin escribir nada tambien pasa por aqui en cada
+    // blur. Sin este chequeo cada tabulacion apilaria una entrada de historial
+    // identica a la actual, y atras necesitaria varios toques para deshacer un
+    // solo filtro real — rompiendo el "un filtro, una entrada" que pide el
+    // SPEC (§7, §4 bloque 2). No hace falta normalizar con `?? undefined`:
+    // `siguiente.min`/`max` ya salen `undefined` cuando el campo esta vacio,
+    // igual que `precio.min`/`max` cuando el filtro esta ausente.
+    if (siguiente.min === precio.min && siguiente.max === precio.max) return
+    onConfirmar(siguiente)
   }
 
   return (
