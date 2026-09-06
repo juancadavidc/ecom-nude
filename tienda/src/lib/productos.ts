@@ -1,4 +1,5 @@
 import archivo from '@/content/productos.json'
+import { aplicarFiltros } from './filtros'
 import type { Categoria, Orden, Producto, Talla } from './producto-modelo'
 import { estadoVisible } from './producto-modelo'
 
@@ -56,48 +57,22 @@ export type OpcionesListado = {
   limite?: number
 }
 
-/** Un producto pasa el filtro de color/talla solo si esa variante tiene stock. */
-function pasaVariantes(p: Producto, colores?: string[], tallas?: Talla[]): boolean {
-  if (!colores?.length && !tallas?.length) return true
-  return p.variantes.some(
-    (v) =>
-      v.stock > 0 &&
-      (!colores?.length || colores.includes(v.color)) &&
-      (!tallas?.length || tallas.includes(v.talla)),
-  )
-}
-
-function pasaPrecio(p: Producto, precio?: { min?: number; max?: number }): boolean {
-  if (precio?.min != null && p.precio < precio.min) return false
-  if (precio?.max != null && p.precio > precio.max) return false
-  return true
-}
-
-/**
- * `novedad` es el orden del archivo: mas nuevo primero. No hay campo de fecha
- * porque no hay nada que lo alimente todavia — anadirlo ahora seria un dato que
- * alguien tendria que mantener a mano sin usarlo.
- * TODO(fase-2): ordenar por `creado` cuando Firestore lo tenga.
- */
-function ordenar(lista: Producto[], orden: Orden = 'novedad'): Producto[] {
-  if (orden === 'novedad') return lista
-  const signo = orden === 'precio-asc' ? 1 : -1
-  return [...lista].sort((a, b) => signo * (a.precio - b.precio))
-}
-
 export async function listarProductos(
   opts: OpcionesListado = {},
 ): Promise<{ productos: Producto[]; siguiente: string | null }> {
   const { categoria, colores, tallas, precio, orden, cursor, limite } = opts
 
-  const filtrados = ordenar(
-    catalogo.filter(
-      (p) =>
-        (!categoria || p.categoria === categoria) &&
-        pasaVariantes(p, colores, tallas) &&
-        pasaPrecio(p, precio),
-    ),
-    orden,
+  // Categoria no es parte de `FiltrosActivos` — es una dimension de navegacion,
+  // no de la barra de filtros — asi que se filtra aqui y el resto se delega a
+  // `aplicarFiltros`, que ya sabe cruzar color/talla/precio y ordenar.
+  const filtrados = aplicarFiltros(
+    catalogo.filter((p) => !categoria || p.categoria === categoria),
+    {
+      colores: colores ?? [],
+      tallas: tallas ?? [],
+      precio: precio ?? {},
+      orden: orden ?? 'novedad',
+    },
   )
 
   // Un cursor que no se entiende es un cursor de otra version del sitio. Se
