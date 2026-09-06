@@ -32,11 +32,19 @@ const alto = (w) => Math.round((w * 4) / 3)
 
 /**
  * `y` se elige por lo que tiene que quedar dentro, no por centrar:
- * el tile de leggings baja al maximo para que entre la cinturilla, el de tops
- * sube al torso y el de sets busca el cuerpo entero.
+ * el de tops sube al torso y el de sets busca el cuerpo entero.
+ *
+ * El de leggings no cabe a 441x588: el panel mide 768 de alto, asi que la
+ * `y` maxima para un recorte de 588 es 180, y a esa altura el borde superior
+ * todavia corta la cara a la altura de la boca mientras el legging queda
+ * reducido a una franja de cinturilla. Ninguna `y` a ese tamano resuelve las
+ * dos cosas a la vez, asi que el recorte usa una ventana mas corta y angosta
+ * (mismo mecanismo `w`/`dx` que ya usan comunidad-4/5/6), pegada al borde
+ * inferior del panel para que la pierna con el corte de malla domine el
+ * encuadre.
  */
 const RECORTES = [
-  { nombre: 'categoria-leggings', panel: 0, y: 180 },
+  { nombre: 'categoria-leggings', panel: 0, y: 395, w: 280, dx: 50 },
   { nombre: 'categoria-tops', panel: 1, y: 90 },
   { nombre: 'categoria-sets', panel: 2, y: 150 },
   { nombre: 'comunidad-1', panel: 0, y: 0 },
