@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Panel } from '@/components/ui/Panel'
 import { List } from '@/components/ui/icons'
-import { site } from '@/lib/site'
+import { prefetchable, site } from '@/lib/site'
 
 /**
  * SPEC §5 — Nav movil: panel desde la izquierda, fondo Umber, texto Cream,
@@ -45,7 +45,11 @@ export function NavMovil({ items }: { items: readonly Item[] }) {
           <ul className="nav-movil">
             {items.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} onClick={() => setAbierto(false)}>
+                <Link
+                  href={item.href}
+                  onClick={() => setAbierto(false)}
+                  prefetch={prefetchable(item.href) ? undefined : false}
+                >
                   {item.label}
                 </Link>
               </li>
@@ -59,12 +63,12 @@ export function NavMovil({ items }: { items: readonly Item[] }) {
             Mientras no haya producto que buscar, no se pinta un boton muerto. */}
         <ul className="nav-movil-links">
           <li>
-            <Link href="/guia-de-tallas" onClick={() => setAbierto(false)}>
+            <Link href="/guia-de-tallas" onClick={() => setAbierto(false)} prefetch={false}>
               Guia de tallas
             </Link>
           </li>
           <li>
-            <Link href="/envios" onClick={() => setAbierto(false)}>
+            <Link href="/envios" onClick={() => setAbierto(false)} prefetch={false}>
               Envios y entregas
             </Link>
           </li>

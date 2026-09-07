@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { LogoNude } from '@/components/brand/Logo'
 import { User } from '@/components/ui/icons'
-import { navPrincipal, site } from '@/lib/site'
+import { navPrincipal, prefetchable, site } from '@/lib/site'
 import { BarraAnuncio } from './BarraAnuncio'
 import { BotonCarrito } from './BotonCarrito'
 import { BotonBuscar, BuscadorProvider } from './Buscador'
@@ -56,7 +56,11 @@ export function Header({ variante = 'tienda' }: { variante?: 'tienda' | 'checkou
             <ul>
               {navPrincipal.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="link-nav">
+                  <Link
+                    href={item.href}
+                    className="link-nav"
+                    prefetch={prefetchable(item.href) ? undefined : false}
+                  >
                     {item.label}
                   </Link>
                 </li>
@@ -68,7 +72,7 @@ export function Header({ variante = 'tienda' }: { variante?: 'tienda' | 'checkou
             <BotonBuscar className="hidden md:inline-flex" />
             {/* TODO(fase-5): /cuenta llega con autenticacion. Hoy el icono ya
                 ocupa su sitio para que el header no se reordene despues. */}
-            <Link href="/cuenta" className="icon-btn" aria-label="Tu cuenta">
+            <Link href="/cuenta" className="icon-btn" aria-label="Tu cuenta" prefetch={false}>
               <User size={22} weight="light" />
             </Link>
             <BotonCarrito />

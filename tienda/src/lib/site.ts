@@ -26,6 +26,28 @@ export const navPrincipal = [
   { label: 'Contacto', href: '/contacto' },
 ] as const
 
+/**
+ * Rutas del menu que hoy caen en el 404 a proposito (fuera de alcance de esta
+ * fase, spec de diseno §8). Next.js precarga cualquier `<Link>` que entre en
+ * el viewport; precargar una ruta que ya sabemos que no existe solo llena la
+ * consola de errores 404 en cada visita, sin ningun beneficio. `prefetchable`
+ * apaga esa precarga solo para estas.
+ */
+const SIN_CONSTRUIR = new Set([
+  '/ropa-deportiva',
+  '/nosotros',
+  '/contacto',
+  '/guia-de-tallas',
+  '/envios',
+  '/cambios',
+  '/legales',
+  '/cuenta',
+])
+
+export function prefetchable(href: string) {
+  return !SIN_CONSTRUIR.has(href.split('#')[0])
+}
+
 export const navPie = [
   {
     titulo: 'Tienda',

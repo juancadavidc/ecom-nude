@@ -2641,21 +2641,30 @@
     transition: none;
   }
 
-  /* La linea aparece dibujada, sin animacion (SPEC §11.1) */
+  /* La linea aparece dibujada, sin animacion (SPEC §11.1).
+     `!important` porque `.trazo[data-drawn="true"]:not(.trazo-columna) path` y
+     `.trazo-columna[data-drawn="true"]` (dentro de `@media (scripting: enabled)`)
+     tienen mas especificidad que estos selectores planos: sin `!important`, un
+     trazo que ya cargo visible (`data-drawn="true"` de una) le gana la cascada
+     a este reset, y uno que todavia no entro en vista se queda con el
+     `stroke-dashoffset: 1` de la regla que lo esconde antes de dibujarse. En
+     los dos casos el resultado visual es casi el mismo (nada se mueve, el
+     0.01ms de mas abajo lo asegura), pero el valor computado no era el que
+     promete "sin animacion", asi que `npm run verificar` lo marcaba en rojo. */
   .trazo path {
-    stroke-dasharray: none;
-    stroke-dashoffset: 0;
-    animation: none;
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
   }
 
   .trazo circle {
-    opacity: 1;
-    animation: none;
+    opacity: 1 !important;
+    animation: none !important;
   }
 
   .trazo-columna {
-    clip-path: none;
-    animation: none;
+    clip-path: none !important;
+    animation: none !important;
   }
 
   *,
