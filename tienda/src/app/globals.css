@@ -1326,10 +1326,11 @@
   overflow: hidden;
   display: flex;
   align-items: center;
-  min-height: 72vh;
-  /* svh, no vh: en movil `vh` cuenta la barra del navegador que aun no se ha
-     retraido, y el hero arranca mas alto de lo que se ve. */
-  min-height: 72svh;
+  /* SPEC §4.1 bloque 2: ~85vh. `svh` y no `vh` porque en movil `vh` cuenta la
+     barra del navegador que aun no se ha retraido y el hero arranca mas alto
+     de lo que se ve. */
+  min-height: 85vh;
+  min-height: 85svh;
   padding-block: 80px 120px;
   /* Sobre foto el texto invierte. Se cambia el token, no cada clase: `label
      text-muted`, `.hero-texto` y el trazo siguen pidiendo el mismo rol. */
@@ -1339,8 +1340,8 @@
 
 @media (min-width: 768px) {
   .hero {
-    min-height: 78vh;
-    min-height: min(78svh, 820px);
+    min-height: 85vh;
+    min-height: min(85svh, 900px);
   }
 }
 
@@ -1411,6 +1412,71 @@
   .hero-trazo {
     left: 48px;
   }
+}
+
+/* ---------- Bloque 4: tiles de categoria (SPEC §4.1) ---------- */
+
+/**
+ * A sangre y pegados: el corte entre dos fotos es la unica linea que hace falta.
+ * 2px de separacion, no 24: un gutter ancho los convierte en tres tarjetas y el
+ * bloque pierde la fuerza de banda continua.
+ */
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+}
+
+@media (min-width: 768px) {
+  .tiles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.tile {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  aspect-ratio: 3 / 4;
+  color: var(--text-invert);
+  text-decoration: none;
+}
+
+.tile img {
+  z-index: -2;
+}
+
+/* Mismo velo calibrado del hero: el nombre va sobre `fuerte`, que es el unico
+   nivel que aguanta texto sobre la pared clara del estudio (ver §1 de este css) */
+.tile-velo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    0deg,
+    var(--velo-fuerte) 0%,
+    var(--velo-medio) 40%,
+    transparent 72%
+  );
+}
+
+.tile-nombre {
+  padding: 24px;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .tile:hover .tile-nombre {
+    color: var(--dune);
+  }
+}
+
+/* ---------- Bloque 5: destacados ---------- */
+
+.destacados-head {
+  margin-bottom: 32px;
 }
 
 .manifiesto-inner {
