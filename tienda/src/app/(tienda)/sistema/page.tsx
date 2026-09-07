@@ -301,7 +301,10 @@ export default async function SistemaPage() {
           mano. Ese principio se vuelve el sistema estructural del sitio — una sola linea Ochre de
           1px que desciende, se desplaza en cada cambio de seccion y vuelve a bajar. Se dibuja con{' '}
           <code>pathLength=&quot;1&quot;</code> y <code>stroke-dashoffset</code>, sin medir nada con
-          JavaScript. Con <code>prefers-reduced-motion</code> aparece dibujada, sin animacion.
+          JavaScript — salvo la Columna: en catalogo y ficha se estira tanto (
+          <code>alto=&quot;100%&quot;</code>) que Chrome pinta mal ese guion, asi que dibuja con{' '}
+          <code>clip-path</code> en su lugar (detalle en globals.css). Con{' '}
+          <code>prefers-reduced-motion</code> aparece dibujada, sin animacion.
         </p>
         <div className="trazo-demo">
           <div>
