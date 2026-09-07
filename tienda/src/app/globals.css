@@ -2398,13 +2398,30 @@
   opacity: 1;
 }
 
-/* El trazo continuo (SPEC §11.1).
-   pathLength="1" evita medir la longitud del path con JS. */
+/**
+ * El trazo continuo (SPEC §11.1).
+ * pathLength="1" evita medir la longitud del path con JS.
+ *
+ * Sin `vector-effect: non-scaling-stroke` a proposito. Se probo y causaba el
+ * bug real: en `TrazoColumna` con `alto="100%"` (catalogo, ficha) el viewBox
+ * "0 0 1 100" se estira varias veces en vertical con `preserveAspectRatio:
+ * none`; combinado con `non-scaling-stroke` y el dasharray de longitud 1
+ * normalizado por `pathLength`, Chrome pintaba el trazo partido en dos o tres
+ * segmentos con huecos en vez de una linea continua — confirmado quitando
+ * `vector-effect` a mano en devtools: el trazo vuelve a ser solido.
+ *
+ * No hace falta para el grosor: el ancho del SVG de `TrazoColumna` siempre
+ * queda fijo en 1 (igual al viewBox), asi que el estiramiento es solo
+ * vertical y nunca afecta el grosor de una linea vertical. `TrazoCierre` y
+ * `TrazoPaso` tampoco lo necesitan: su viewBox coincide exacto con su tamano
+ * renderizado, sin ningun escalado. Si algun dia una de las tres variantes
+ * se usa con escalado horizontal real, hay que resolver el grosor sin volver
+ * a esta propiedad.
+ */
 .trazo path {
   fill: none;
   stroke: var(--line);
   stroke-width: 1;
-  vector-effect: non-scaling-stroke;
 }
 
 .trazo circle {

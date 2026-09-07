@@ -14,8 +14,17 @@ import { useEnVista } from './useEnVista'
  *
  * Tecnica: `pathLength="1"` normaliza la longitud del path, asi que
  * `stroke-dasharray: 1; stroke-dashoffset: 1 → 0` lo dibuja sin medir nada
- * con JS. `vector-effect="non-scaling-stroke"` lo mantiene en 1px real
- * aunque el SVG se estire.
+ * con JS.
+ *
+ * A proposito SIN `vector-effect="non-scaling-stroke"`: con `alto="100%"`
+ * (columna del catalogo y de la ficha) el SVG se estira varias veces en
+ * vertical, y esa combinacion — non-scaling-stroke + dasharray normalizado
+ * por pathLength + estiramiento fuerte — hacia que Chrome pintara el trazo
+ * partido en pedazos con huecos en vez de una sola linea (bug real, visto y
+ * confirmado quitando la propiedad). No hace falta para el grosor: el ancho
+ * del SVG queda siempre fijo en 1 (igual al viewBox), asi que el estiramiento
+ * es solo vertical y nunca afecta el grosor de una linea vertical. El detalle
+ * completo esta en el comentario de `.trazo path` en globals.css.
  *
  * `prefers-reduced-motion`: la linea aparece dibujada, sin animacion
  * (regla en globals.css).
