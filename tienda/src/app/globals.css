@@ -1525,26 +1525,88 @@
   margin-bottom: 12px;
 }
 
-.promesas-franja {
+/* ---------- Bloque 7: franja de confianza (SPEC §4.1) ---------- */
+
+.franja-confianza {
   padding-block: 48px;
 }
 
-.promesas {
+.franja-iconos {
   display: grid;
   grid-template-columns: 1fr;
   gap: 32px;
 }
 
 @media (min-width: 640px) {
-  .promesas {
+  .franja-iconos {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.promesa {
+.franja-icono {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.franja-icono > svg {
+  color: var(--line);
+}
+
+/* ---------- Bloque 8: como la llevan (aporte de la referencia) ---------- */
+
+.comunidad {
+  padding-block: 64px 0;
+}
+
+.comunidad-head {
+  margin-bottom: 24px;
+}
+
+.comunidad-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+}
+
+@media (min-width: 768px) {
+  .comunidad-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.comunidad-foto {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background-color: var(--sahara);
+}
+
+/* ---------- Bloque 9: captura de correo (SPEC §4.1) ---------- */
+
+.newsletter {
+  padding-block: 56px;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  max-width: 460px;
+  margin-top: 20px;
+}
+
+@media (min-width: 560px) {
+  .newsletter-form {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .newsletter-form .field {
+    flex: 1;
+  }
 }
 
 /* ---------- 10g. 404 (SPEC §4.6) ---------- */

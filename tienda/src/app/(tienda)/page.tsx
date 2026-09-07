@@ -1,17 +1,29 @@
 import type { Metadata } from 'next'
+import { Comunidad } from '@/components/home/Comunidad'
+import { Newsletter } from '@/components/home/Newsletter'
 import { TileCategoria } from '@/components/home/TileCategoria'
 import { FotoFondo } from '@/components/media/FotoFondo'
 import { Reveal } from '@/components/motion/Reveal'
 import { TrazoColumna } from '@/components/motion/Trazo'
 import { GridProducto } from '@/components/producto/GridProducto'
 import { BotonLink } from '@/components/ui/Button'
+import { ArrowsClockwise, Truck, Wallet } from '@/components/ui/icons'
 import { manifiesto, microcopy, pilares } from '@/lib/copy'
 import { destacados } from '@/lib/productos'
 import { promesas, site } from '@/lib/site'
 
+/* `site.ts` nombra el icono; la pagina lo resuelve. Asi la configuracion no
+   arrastra componentes de React. */
+const ICONO_PROMESA = {
+  envio: Truck,
+  pago: Wallet,
+  cambio: ArrowsClockwise,
+} as const
+
 /**
- * Home. Las categorias y los destacados llevan al catalogo (tarea 10); la
- * captura de correo sigue pendiente de fase 6.
+ * Home. Las categorias y los destacados llevan al catalogo (tarea 10). El
+ * formulario de correo (`Newsletter`) ya esta montado, pero todavia no guarda
+ * nada — ver el TODO(fase-6) en ese componente.
  *
  * Los bloques que ya estaban usan copy aprobado — manifiesto de la tarjeta de
  * agradecimiento y los tres pilares de la landing. No se invento nada.
@@ -158,17 +170,26 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Franja de confianza — SPEC §4.1 bloque 7 */}
-      <section className="on-sahara promesas-franja">
-        <div className="container-nude promesas">
-          {promesas.map((promesa) => (
-            <div key={promesa.titulo} className="promesa">
-              <h3 className="card-name">{promesa.titulo}</h3>
-              <p className="body-s text-muted">{promesa.detalle}</p>
-            </div>
-          ))}
+      {/* Franja de confianza — SPEC §4.1 bloque 7. El tratamiento con icono
+          viene de la referencia; el contenido, del SPEC. */}
+      <section className="on-sahara franja-confianza">
+        <div className="container-nude franja-iconos">
+          {promesas.map((promesa) => {
+            const Icono = ICONO_PROMESA[promesa.icono]
+            return (
+              <div key={promesa.titulo} className="franja-icono">
+                <Icono size={24} weight="light" aria-hidden="true" />
+                <h3 className="card-name">{promesa.titulo}</h3>
+                <p className="body-s text-muted">{promesa.detalle}</p>
+              </div>
+            )
+          })}
         </div>
       </section>
+
+      <Comunidad />
+
+      <Newsletter />
     </>
   )
 }

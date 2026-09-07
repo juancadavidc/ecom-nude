@@ -55,9 +55,28 @@ export const navPie = [
   },
 ] as const
 
-/** SPEC §4.1 bloque 7 — franja de confianza */
+/**
+ * SPEC §4.1 bloque 7 — franja de confianza.
+ * El tratamiento con icono viene de la referencia (femaleforce.com.co): icono de
+ * linea + titulo + una linea. El contenido es el del SPEC, no el de alla.
+ *
+ * El icono se nombra, no se importa: `site.ts` no debe arrastrar componentes de
+ * React a cualquiera que lea configuracion.
+ */
 export const promesas = [
-  { titulo: 'Envio a todo Colombia', detalle: 'Llega en 2 a 4 dias habiles.' },
-  { titulo: 'Pago contra entrega', detalle: 'Pagas en efectivo cuando recibas.' },
-  { titulo: 'Cambios en 15 dias', detalle: 'Si no es tu talla, la cambiamos.' },
+  {
+    icono: 'envio',
+    titulo: 'Envio a todo Colombia',
+    detalle: 'Llega en 2 a 4 dias habiles.',
+  },
+  {
+    icono: 'pago',
+    titulo: 'Pago contra entrega',
+    detalle: 'Pagas en efectivo cuando recibas.',
+  },
+  {
+    icono: 'cambio',
+    titulo: 'Cambios en 15 dias',
+    detalle: 'Si no es tu talla, la cambiamos.',
+  },
 ] as const
