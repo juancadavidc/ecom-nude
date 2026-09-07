@@ -2400,28 +2400,33 @@
 
 /**
  * El trazo continuo (SPEC §11.1).
- * pathLength="1" evita medir la longitud del path con JS.
  *
- * Sin `vector-effect: non-scaling-stroke` a proposito. Se probo y causaba el
- * bug real: en `TrazoColumna` con `alto="100%"` (catalogo, ficha) el viewBox
- * "0 0 1 100" se estira varias veces en vertical con `preserveAspectRatio:
- * none`; combinado con `non-scaling-stroke` y el dasharray de longitud 1
- * normalizado por `pathLength`, Chrome pintaba el trazo partido en dos o tres
- * segmentos con huecos en vez de una linea continua — confirmado quitando
- * `vector-effect` a mano en devtools: el trazo vuelve a ser solido.
+ * `TrazoCierre` y `TrazoPaso` se dibujan con `pathLength="1"` +
+ * `stroke-dasharray` (evita medir la longitud del path con JS): su viewBox
+ * coincide exacto con su tamano renderizado, sin ningun escalado, y ahi la
+ * tecnica funciona bien.
  *
- * No hace falta para el grosor: el ancho del SVG de `TrazoColumna` siempre
- * queda fijo en 1 (igual al viewBox), asi que el estiramiento es solo
- * vertical y nunca afecta el grosor de una linea vertical. `TrazoCierre` y
- * `TrazoPaso` tampoco lo necesitan: su viewBox coincide exacto con su tamano
- * renderizado, sin ningun escalado. Si algun dia una de las tres variantes
- * se usa con escalado horizontal real, hay que resolver el grosor sin volver
- * a esta propiedad.
+ * `TrazoColumna` (la columna vertical, clase `.trazo-columna`) NO usa esa
+ * tecnica — se investigo a fondo y es un bug real de Chrome, no un error de
+ * este CSS. Con `alto="100%"` (catalogo, ficha) el viewBox "0 0 1 100" se
+ * estira varias veces en vertical (`preserveAspectRatio: none`); en ese caso
+ * `path.isPointInStroke()` confirma que Chrome calcula BIEN el guion — la
+ * geometria del trazo es continua de punta a punta — pero lo PINTA partido en
+ * pedazos con huecos. Es un bug de rasterizado ante un trazo punteado sobre
+ * un SVG estirado de forma no uniforme, no de calculo, y no tiene un fix de
+ * una linea: probamos `vector-effect: non-scaling-stroke` puesto y quitado, y
+ * los dos estados pintan mal, solo que distinto (con la propiedad, dos
+ * segmentos; sin ella, un solo tramo corto). Por eso `TrazoColumna` se dibuja
+ * con `clip-path` en vez de `stroke-dasharray`: nunca hay un guion que Chrome
+ * pueda pintar mal, y el resultado es identico se estire lo que se estire el
+ * SVG (verificado en un arnes aislado a 5.5x de estiramiento, la proporcion
+ * real de la columna de la ficha).
  */
 .trazo path {
   fill: none;
   stroke: var(--line);
   stroke-width: 1;
+  vector-effect: non-scaling-stroke;
 }
 
 .trazo circle {
@@ -2443,7 +2448,8 @@
     transform: none;
   }
 
-  .trazo path {
+  /* TrazoCierre / TrazoPaso: dasharray de longitud 1 normalizada por pathLength="1" */
+  .trazo:not(.trazo-columna) path {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
   }
@@ -2452,13 +2458,22 @@
     opacity: 0;
   }
 
-  .trazo[data-drawn="true"] path {
+  .trazo[data-drawn="true"]:not(.trazo-columna) path {
     animation: trazo-draw var(--dur-trazo) var(--ease) forwards;
   }
 
   .trazo[data-drawn="true"] circle {
     animation: trazo-dot 400ms var(--ease) forwards;
     animation-delay: var(--dur-trazo);
+  }
+
+  /* TrazoColumna: revela con clip-path de arriba a abajo, sin dasharray (ver comentario arriba) */
+  .trazo-columna {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  .trazo-columna[data-drawn="true"] {
+    animation: trazo-clip var(--dur-trazo) var(--ease) forwards;
   }
 }
 
@@ -2471,6 +2486,12 @@
 @keyframes trazo-dot {
   to {
     opacity: 1;
+  }
+}
+
+@keyframes trazo-clip {
+  to {
+    clip-path: inset(0 0 0% 0);
   }
 }
 
@@ -2501,6 +2522,11 @@
 
   .trazo circle {
     opacity: 1;
+    animation: none;
+  }
+
+  .trazo-columna {
+    clip-path: none;
     animation: none;
   }
 
