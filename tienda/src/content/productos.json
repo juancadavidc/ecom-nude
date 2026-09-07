@@ -16,8 +16,8 @@
       "estado": "activo",
       "combina_con": ["top-brisa", "top-ocre", "set-duna", "legging-cauce"],
       "imagenes": {
-        "Duna": ["placeholder/producto-sahara", "placeholder/producto-cream", "placeholder/producto-dune", "placeholder/producto-white"],
-        "Negro Humo": ["placeholder/producto-cream", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-dune"]
+        "Duna": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Negro Humo": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
       },
       "variantes": [
         { "color": "Duna", "hex": "#C8A583", "talla": "XS", "sku": "LEG-DUN-XS", "stock": 6 },
@@ -53,8 +53,8 @@
       "estado": "activo",
       "combina_con": ["legging-duna", "legging-cauce", "legging-medano", "set-duna"],
       "imagenes": {
-        "Duna": ["placeholder/producto-sahara", "placeholder/producto-cream", "placeholder/producto-dune", "placeholder/producto-white"],
-        "Negro Humo": ["placeholder/producto-cream", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-dune"]
+        "Duna": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Negro Humo": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
       },
       "variantes": [
         { "color": "Duna", "hex": "#C8A583", "talla": "XS", "sku": "TOP-DUN-XS", "stock": 7 },
@@ -90,7 +90,7 @@
       "estado": "activo",
       "combina_con": ["legging-duna", "top-brisa", "set-arena", "top-ocre"],
       "imagenes": {
-        "Duna": ["placeholder/producto-sahara", "placeholder/producto-cream", "placeholder/producto-dune", "placeholder/producto-white"]
+        "Duna": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"]
       },
       "variantes": [
         { "color": "Duna", "hex": "#C8A583", "talla": "XS", "sku": "SET-DUN-XS", "stock": 4 },
@@ -121,8 +121,8 @@
       "estado": "activo",
       "combina_con": ["top-brisa", "top-umbra", "legging-duna", "set-arena"],
       "imagenes": {
-        "Negro Humo": ["placeholder/producto-cream", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-dune"],
-        "Umbra": ["placeholder/producto-sahara", "placeholder/producto-cream", "placeholder/producto-dune", "placeholder/producto-white"]
+        "Negro Humo": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Umbra": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
       },
       "variantes": [
         { "color": "Negro Humo", "hex": "#211D1B", "talla": "XS", "sku": "LEG-CAU-NEG-XS", "stock": 5 },
@@ -158,8 +158,8 @@
       "estado": "activo",
       "combina_con": ["legging-duna", "legging-medano", "set-arena", "legging-cauce"],
       "imagenes": {
-        "Umbra": ["placeholder/producto-sahara", "placeholder/producto-cream", "placeholder/producto-dune", "placeholder/producto-white"],
-        "Arena": ["placeholder/producto-cream", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-dune"]
+        "Umbra": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Arena": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
       },
       "variantes": [
         { "color": "Umbra", "hex": "#5C4232", "talla": "XS", "sku": "TOP-OCR-UMB-XS", "stock": 6 },
@@ -195,7 +195,7 @@
       "estado": "activo",
       "combina_con": ["set-duna", "top-ocre", "legging-medano", "legging-cauce"],
       "imagenes": {
-        "Arena": ["placeholder/producto-cream", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-dune"]
+        "Arena": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"]
       },
       "variantes": [
         { "color": "Arena", "hex": "#E2CBAE", "talla": "XS", "sku": "SET-ARE-XS", "stock": 3 },
@@ -226,8 +226,8 @@
       "estado": "activo",
       "combina_con": ["top-brisa", "top-ocre", "legging-duna", "set-arena"],
       "imagenes": {
-        "Arena": ["placeholder/producto-cream", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-dune"],
-        "Duna": ["placeholder/producto-sahara", "placeholder/producto-cream", "placeholder/producto-dune", "placeholder/producto-white"]
+        "Arena": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Duna": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
       },
       "variantes": [
         { "color": "Arena", "hex": "#E2CBAE", "talla": "XS", "sku": "LEG-MED-ARE-XS", "stock": 0 },
@@ -263,8 +263,8 @@
       "estado": "agotado",
       "combina_con": ["legging-cauce", "legging-duna", "set-duna", "top-brisa"],
       "imagenes": {
-        "Negro Humo": ["placeholder/producto-cream", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-dune"],
-        "Umbra": ["placeholder/producto-sahara", "placeholder/producto-cream", "placeholder/producto-dune", "placeholder/producto-white"]
+        "Negro Humo": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Umbra": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
       },
       "variantes": [
         { "color": "Negro Humo", "hex": "#211D1B", "talla": "XS", "sku": "TOP-UMB-NEG-XS", "stock": 0 },
