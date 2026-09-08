@@ -1,6 +1,6 @@
 # Tienda NUDE SPORTSWEAR
 
-Next.js 16 (App Router) + TypeScript + Tailwind 4 + Firestore.
+Next.js 16 (App Router) + TypeScript + Tailwind 4 + Postgres (Drizzle) + Better Auth.
 Especificación: [`../SPEC.md`](../SPEC.md). Este README documenta el estado real del código.
 
 ```bash
@@ -133,6 +133,12 @@ npm test          # vitest: adaptador de producto y filtros
 npm run verificar # build + Playwright sobre out/ en Chrome real
 ```
 
+**`npm run verificar` queda temporalmente sin vigencia.** Corría Playwright contra
+`out/`, el export estático que este trabajo elimina. Adaptarlo para correr contra
+`next start` (o borrarlo) es un pendiente aparte — no está en el alcance de este
+plan. Mientras tanto, la verificación visual pasa por `run-tienda`
+(`.claude/skills/run-tienda/`) contra el dev server.
+
 `npm run verificar` corre contra `out/`, no contra el dev server, porque `out/` es
 lo que Firebase publica. Comprueba, en `/`, los cuatro catálogos, tres fichas y
 `/sistema`, a 375, 768, 1024 y 1440px:
@@ -167,44 +173,24 @@ ver `prefetchable()` en `src/lib/site.ts`.
 
 ## Despliegue
 
-**En vivo en https://nudesportswear.co** desde el 2 de septiembre de 2026, por decisión
-explícita de Daniela — sabiendo que la tienda está en fase 1 y no puede vender.
+**Ya no es export estático.** La app corre en modo servidor (Server Actions,
+cookies de sesión, `POST` en `/api/auth/*`) — ver
+`docs/superpowers/specs/2026-09-07-postgres-better-auth-docker.md` §2.
 
 ```bash
-npm run build                    # escribe out/ (export estatico)
-firebase deploy --only hosting   # publica out/ en el dominio
-
-# revisar antes de publicar, sin tocar el dominio:
-firebase hosting:channel:deploy pre-ecom --expires 2d
+docker compose -f docker-compose-local.yaml up -d   # Postgres local, puerto 5434
+npm run dev                                          # migra solo, sirve en :3000
 ```
 
-**⚠️ Este sitio y la landing comparten el mismo sitio de Firebase (`nudesportswear-landing`).**
-La landing vive en **otro repo** — el de marca, en
-`~/Documents/Claude/Projects/NUDE SPORTWEAR/landing/landing-page/` — y apunta al mismo
-proyecto de Firebase. Un `firebase deploy` corrido desde allá **reemplaza el ecom por la
-landing sin avisar**, y al revés. El último que despliega gana. Como ahora son dos repos
-distintos, git no te va a avisar de nada: antes de desplegar cualquiera de los dos, confirmá
-desde qué carpeta estás corriendo el comando.
+**Producción:** GitHub Actions construye la imagen en cada push a `main` y la
+publica en `ghcr.io/juancadavidc/ecom-nude/tienda`. Coolify hace `pull` de esa
+imagen — no construye nada. El corte de DNS de `nudesportswear.co` hacia Coolify es
+una tarea aparte, todavía no hecha: el sitio en vivo sigue siendo el último build
+estático publicado en Firebase hasta que ese corte ocurra.
 
-**Rollback a la landing:**
-
-```bash
-cd ~/Documents/Claude/Projects/NUDE\ SPORTWEAR/landing/landing-page
-firebase deploy --only hosting
-```
-
-También sirve revertir el release desde la consola de Firebase (Hosting → historial de versiones),
-que no depende de tener el otro repo a mano.
-
-**El export estático sigue en pie, y no por casualidad.** Catálogo y ficha son
-rutas dinámicas prerenderizadas con `generateStaticParams` sobre el mock: las
-cuatro páginas de catálogo y las ocho fichas salen en HTML. Lo que sí lo va a
-tumbar es la fase 2 (Firestore en tiempo de petición) y la fase 4 (checkout con
-Server Actions). Antes de esas hay que migrar a **Firebase App Hosting**.
-
-Consecuencia hoy: **los filtros del catálogo se aplican en cliente**, no en
-servidor, porque `searchParams` no existe en una página exportada. El HTML trae el
-catálogo completo y el cliente lo filtra encima.
+**Migraciones:** automáticas en `npm run dev` (`src/instrumentation.ts`) y como
+paso explícito del `entrypoint.sh` del contenedor, antes de `next start`. Nunca a
+mano.
 
 **`robots: { index: false }`** está en el layout raíz. Como el dominio ahora sirve esta app,
 **todo `nudesportswear.co` está en `noindex, nofollow`** — la landing anterior sí era
