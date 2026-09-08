@@ -30,10 +30,10 @@ bloquea los recursos de desarrollo, la página carga pero nada responde.
 | `/sistema` | Verificación del design system. `noindex`, no enlazada |
 | 404 | Isotipo + "Esta página se movió." |
 
-**El catálogo es un mock.** `src/content/productos.json` tiene ocho referencias
-inventadas y todas las fotos de producto son placeholders planos. Nada de eso pasa
-por Firestore todavía: la fase 2 cambia el cuerpo de las cuatro funciones de
-`src/lib/productos.ts` y ningún componente se toca.
+**El catálogo vive en Postgres.** `src/lib/productos.ts` consulta la base de datos
+vía Drizzle; `src/content/productos.json` ya no se lee en runtime, solo se usa como
+fuente del seed. Las ocho referencias siguen siendo inventadas y todas las fotos de
+producto siguen siendo placeholders planos.
 
 **Pendiente:** modelo de datos y panel (2) · carrito y checkout (4) · panel de
 pedidos y correos (5) · Nosotras y páginas de contenido (6).
