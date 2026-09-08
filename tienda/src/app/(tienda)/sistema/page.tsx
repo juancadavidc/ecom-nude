@@ -9,6 +9,8 @@ import { formatCOP } from '@/lib/format'
 import { destacados } from '@/lib/productos'
 import { DemoFormulario, DemoSelectores } from './Demos'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Pagina de verificacion del design system. Es la herramienta de trabajo de la
  * fase 1: todo token y todo componente en un solo scroll, para revisar contraste,

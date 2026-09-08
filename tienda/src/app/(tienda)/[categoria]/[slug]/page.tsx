@@ -20,21 +20,14 @@ import { Truck, Wallet } from '@/components/ui/icons'
 import { politicas } from '@/lib/copy'
 import { formatCOP } from '@/lib/format'
 import { esCategoria } from '@/lib/producto-modelo'
-import { combinaCon, listarProductos, obtenerProducto } from '@/lib/productos'
+import { combinaCon, obtenerProducto } from '@/lib/productos'
 
 /**
  * Ficha de producto. La pagina mas importante del sitio: aqui se decide la
- * compra (SPEC §4.3).
- *
- * `generateStaticParams` devuelve los dos segmentos desde la hoja, que es lo que
- * permite prerenderizar las ocho fichas con `output: 'export'`.
+ * compra (SPEC §4.3). Renderizada en servidor en cada peticion — ver la nota de
+ * `[categoria]/page.tsx` sobre por que no hay `generateStaticParams`.
  */
-export const dynamicParams = false
-
-export async function generateStaticParams() {
-  const { productos } = await listarProductos()
-  return productos.map((p) => ({ categoria: p.categoria, slug: p.slug }))
-}
+export const dynamic = 'force-dynamic'
 
 type Props = { params: Promise<{ categoria: string; slug: string }> }
 
