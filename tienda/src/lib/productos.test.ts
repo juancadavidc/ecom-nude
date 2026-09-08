@@ -1,33 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { CATEGORIAS, TALLAS, estadoVisible, stockTotal } from './producto-modelo'
+import { estadoVisible, stockTotal } from './producto-modelo'
 import { combinaCon, destacados, listarProductos, obtenerProducto } from './productos'
 
-describe('integridad del archivo de productos', () => {
-  it('no repite slugs', async () => {
-    const { productos } = await listarProductos()
-    const slugs = productos.map((p) => p.slug)
-    expect(new Set(slugs).size).toBe(slugs.length)
-  })
-
-  it('solo usa categorias y tallas del vocabulario', async () => {
-    const { productos } = await listarProductos()
-    for (const p of productos) {
-      expect(CATEGORIAS).toContain(p.categoria)
-      for (const v of p.variantes) expect(TALLAS).toContain(v.talla)
-    }
-  })
-
-  it('todo combina_con apunta a un producto que existe y nunca a si mismo', async () => {
-    const { productos } = await listarProductos()
-    const slugs = new Set(productos.map((p) => p.slug))
-    for (const p of productos) {
-      for (const otro of p.combina_con) {
-        expect(slugs.has(otro)).toBe(true)
-        expect(otro).not.toBe(p.slug)
-      }
-    }
-  })
-
+describe('validacion al leer (segunda capa, sobre la base ya sembrada)', () => {
   it('todo color con imagenes tiene variantes y al reves', async () => {
     const { productos } = await listarProductos()
     for (const p of productos) {
@@ -64,7 +39,9 @@ describe('listarProductos', () => {
   it('pagina con limite y cursor', async () => {
     const p1 = await listarProductos({ limite: 6 })
     expect(p1.productos.length).toBe(6)
-    expect(p1.siguiente).toBe('6')
+    // El cursor es opaco (hoy es base64url de {precio, creadoEn}, antes un indice):
+    // no se le asume forma, solo que existe cuando hay mas paginas.
+    expect(p1.siguiente).not.toBeNull()
 
     const p2 = await listarProductos({ limite: 6, cursor: p1.siguiente! })
     expect(p2.productos.length).toBe(2)
