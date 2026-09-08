@@ -19,7 +19,7 @@ type ProductoJson = {
   seo: { titulo: string; descripcion: string; alt: string }
 }
 
-const catalogo = archivo.productos as ProductoJson[]
+const catalogo = archivo.productos as unknown as ProductoJson[]
 
 /**
  * Vacia y vuelve a llenar las cuatro tablas de negocio desde
