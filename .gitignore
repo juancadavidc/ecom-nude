@@ -39,3 +39,4 @@ firebase-debug.log*
 playwright-report/
 test-results/
 .superpowers/
+.worktrees/
