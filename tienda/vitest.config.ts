@@ -15,6 +15,7 @@ export default defineConfig({
     environment: 'node',
     include: ['src/lib/**/*.test.ts', 'src/db/**/*.test.ts'],
     globalSetup: './vitest.global-setup.ts',
+    fileParallelism: false,
   },
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
