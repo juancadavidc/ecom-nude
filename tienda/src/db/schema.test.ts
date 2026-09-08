@@ -28,6 +28,29 @@ describe('constraints de la base', () => {
     await db.delete(productos).where(eq(productos.slug, 'constraint-test-2'))
   })
 
+  it('rechaza un slug de producto duplicado', async () => {
+    await crearProductoDePrueba('constraint-test')
+    await expect(crearProductoDePrueba('constraint-test')).rejects.toThrow()
+  })
+
+  it('rechaza una categoria fuera del vocabulario', async () => {
+    await expect(
+      db.insert(productos).values({
+        slug: 'constraint-test-2',
+        nombre: 'Producto de prueba',
+        // @ts-expect-error — 'invalida' no existe en el enum, es justo lo que se prueba
+        categoria: 'invalida',
+        coleccion: 'Prueba',
+        precio: 100000,
+        descripcion: 'x',
+        detalles: [],
+        seoTitulo: 'x',
+        seoDescripcion: 'x',
+        seoAlt: 'x',
+      }),
+    ).rejects.toThrow()
+  })
+
   it('rechaza un SKU de variante duplicado', async () => {
     const id = await crearProductoDePrueba('constraint-test')
     await db.insert(variantes).values({ productoId: id, color: 'X', hex: '#000', talla: 'S', sku: 'DUP-SKU', stock: 1 })

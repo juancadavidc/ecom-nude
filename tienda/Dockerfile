@@ -17,6 +17,7 @@ COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
 COPY --from=build /app/next.config.ts ./next.config.ts
 COPY drizzle ./drizzle
+COPY --from=build /app/src/content ./src/content
 COPY src/db ./src/db
 COPY entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh

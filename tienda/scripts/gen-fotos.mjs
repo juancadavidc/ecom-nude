@@ -6,11 +6,10 @@
  * Fuente:  ../assets/fotos/*.png|jpg   (original de camara, sin tocar)
  * Salida:  public/fotos/<nombre>-<ancho>.<avif|webp|jpg>
  *
- * Por que un script y no `next/image`: `next.config.ts` exporta estatico
- * (`output: 'export'`) y Firebase Hosting no corre el optimizador de Next, asi
- * que `<Image>` serviria el PNG crudo — 1,2 MB en el primer pantallazo. Aqui el
- * trabajo se hace una vez, en build local, y el resultado se versiona: el
- * navegador recibe AVIF/WebP con srcset y el JPG queda de red de seguridad.
+ * Por que un script y no `next/image`: el trabajo se hace una vez, en build
+ * local, y el resultado se versiona, en vez de depender del optimizador de
+ * Next en cada request. El navegador recibe AVIF/WebP con srcset y el JPG
+ * queda de red de seguridad.
  *
  * El ancho maximo no sube de la resolucion del original: reescalar hacia arriba
  * pesa mas y no anade un solo detalle. Si llega una foto mas grande, ANCHOS se

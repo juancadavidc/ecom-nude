@@ -26,7 +26,7 @@ bloquea los recursos de desarrollo, la página carga pero nada responde.
 | `/` | Home completa, diez bloques del SPEC §4.1 |
 | `/leggings` · `/tops` · `/sets` | Catálogo por categoría con filtros en la URL |
 | `/colecciones` | Todo el catálogo. Destino de "Ver todo" |
-| `/[categoria]/[slug]` | Ficha de producto. Ocho fichas prerenderizadas |
+| `/[categoria]/[slug]` | Ficha de producto, renderizada en servidor |
 | `/sistema` | Verificación del design system. `noindex`, no enlazada |
 | 404 | Isotipo + "Esta página se movió." |
 
@@ -139,9 +139,9 @@ npm run verificar # build + Playwright sobre out/ en Chrome real
 plan. Mientras tanto, la verificación visual pasa por `run-tienda`
 (`.claude/skills/run-tienda/`) contra el dev server.
 
-`npm run verificar` corre contra `out/`, no contra el dev server, porque `out/` es
-lo que Firebase publica. Comprueba, en `/`, los cuatro catálogos, tres fichas y
-`/sistema`, a 375, 768, 1024 y 1440px:
+**Cómo funcionaba antes de quedar sin vigencia:** el script corría contra `out/`,
+no contra el dev server, porque `out/` era lo que Firebase publicaba. Comprobaba,
+en `/`, los cuatro catálogos, tres fichas y `/sistema`, a 375, 768, 1024 y 1440px:
 
 - Sin desborde horizontal, sin errores de consola, `alt` en toda imagen, nombre
   accesible en todo control y área táctil de 44px
@@ -152,16 +152,16 @@ lo que Firebase publica. Comprueba, en `/`, los cuatro catálogos, tres fichas y
   aplicados en carga fría
 
 Antes de creer cualquiera de esos resultados de "sin JavaScript", el script se
-autoprueba: comprueba que `javaScriptEnabled: false` de Playwright de verdad
-apaga `@media (scripting: enabled)` en Chromium, usando un `.reveal` fuera de
-vista como sonda. Si esa autoprueba fallara, el script aborta con un mensaje
-explicando que la sección "sin JavaScript" no es confiable y cómo comprobarlo a
+autoprobaba: comprobaba que `javaScriptEnabled: false` de Playwright de verdad
+apagara `@media (scripting: enabled)` en Chromium, usando un `.reveal` fuera de
+vista como sonda. Si esa autoprueba fallaba, el script abortaba con un mensaje
+explicando que la sección "sin JavaScript" no era confiable y cómo comprobarlo a
 mano (DevTools → Settings → Debugger → Disable JavaScript).
 
-Fuera del script y a mano: contraste del texto sobre fotografía, encuadre de los
-recortes y tono del copy.
+Fuera del script y a mano (esto sigue vigente): contraste del texto sobre
+fotografía, encuadre de los recortes y tono del copy.
 
-Escribir el script encontró dos fallas reales, ya corregidas: `@media (prefers-reduced-motion: reduce)`
+Escribir el script encontró en su momento dos fallas reales, ya corregidas: `@media (prefers-reduced-motion: reduce)`
 perdía la guerra de especificidad CSS contra `.trazo[data-drawn="true"]` (visualmente
 casi idéntico, pero no era el "sin animación" que promete el SPEC — se corrigió con
 `!important`, ver el comentario junto a esa regla en `globals.css`); y el header, el
@@ -191,6 +191,17 @@ estático publicado en Firebase hasta que ese corte ocurra.
 **Migraciones:** automáticas en `npm run dev` (`src/instrumentation.ts`) y como
 paso explícito del `entrypoint.sh` del contenedor, antes de `next start`. Nunca a
 mano.
+
+**Variables de entorno que Coolify tiene que tener configuradas** en el recurso
+"Docker Image" para que el contenedor funcione en producción:
+
+| Variable | Obligatoria | Nota |
+|---|---|---|
+| `DATABASE_URL` | Sí | Postgres accesible desde el contenedor — nunca `localhost:5434` en producción |
+| `BETTER_AUTH_SECRET` | Sí | 32+ caracteres, alta entropía — sin esto el contenedor arranca pero la autenticación queda rota (ver más abajo) |
+| `BETTER_AUTH_URL` | Sí | El origen público https del sitio (no localhost) |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Sí, para que el login funcione | Sin esto el proveedor Google queda deshabilitado |
+| `ADMIN_ALLOWLIST` | Sí | Correos separados por coma; cualquiera fuera de la lista no puede crear sesión |
 
 **`robots: { index: false }`** está en el layout raíz. Como el dominio ahora sirve esta app,
 **todo `nudesportswear.co` está en `noindex, nofollow`** — la landing anterior sí era

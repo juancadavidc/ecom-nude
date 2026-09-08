@@ -5,6 +5,14 @@ import { admin } from 'better-auth/plugins'
 import { db } from '@/db'
 import { correoPermitido, leerAllowlist } from './allowlist'
 
+if (
+  process.env.NODE_ENV === 'production' &&
+  process.env.NEXT_PHASE !== 'phase-production-build' &&
+  !process.env.BETTER_AUTH_SECRET
+) {
+  throw new Error('BETTER_AUTH_SECRET es obligatorio en produccion — el contenedor no debe arrancar sin el.')
+}
+
 const allowlist = leerAllowlist()
 
 /**
