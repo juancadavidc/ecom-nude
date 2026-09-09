@@ -1,0 +1,22 @@
+services:
+  db:
+    # Pineado a proposito: el tag flotante 'postgres:alpine' ya apunta a PG18, que
+    # espera el mount en /var/lib/postgresql (no en /var/lib/postgresql/data) y no
+    # arranca con el volumen de abajo. Ver docker-library/postgres#1259.
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: nude
+      POSTGRES_PASSWORD: nude
+      POSTGRES_DB: nude_db
+    ports:
+      - '5434:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U nude -d nude_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

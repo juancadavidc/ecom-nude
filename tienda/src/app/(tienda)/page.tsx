@@ -12,6 +12,8 @@ import { manifiesto, microcopy, pilares } from '@/lib/copy'
 import { destacados } from '@/lib/productos'
 import { promesas, site } from '@/lib/site'
 
+export const dynamic = 'force-dynamic'
+
 /* `site.ts` nombra el icono; la pagina lo resuelve. Asi la configuracion no
    arrastra componentes de React. */
 const ICONO_PROMESA = {

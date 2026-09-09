@@ -1,108 +1,221 @@
-import archivo from '@/content/productos.json'
-import { aplicarFiltros } from './filtros'
-import type { Categoria, Orden, Producto, Talla } from './producto-modelo'
-import { estadoVisible } from './producto-modelo'
+import { and, asc, desc, eq, exists, gt, gte, inArray, lt, lte, or, sql, type SQL } from 'drizzle-orm'
+import { db } from '@/db'
+import { combinaCon as combinaConTabla, imagenes as imagenesTabla, productos as productosTabla, variantes as variantesTabla } from '@/db/schema'
+import type { Categoria, Orden, Producto, Talla, Variante } from './producto-modelo'
+import { TALLAS, esCategoria } from './producto-modelo'
 
 /**
- * EL ADAPTADOR. Unico modulo del sitio que importa `productos.json`.
+ * EL ADAPTADOR. Unico modulo del sitio que importa `@/db`.
  *
- * Las cuatro funciones son `async` aunque hoy lean un archivo sincrono. Es la
- * decision que hace que la fase 2 no duela: cuando el catalogo pase a Firestore
- * (SPEC §9.2) cambia el cuerpo de estas cuatro funciones y ningun componente se
- * toca. Si alguna fuera sincrona, cada pagina que la llama tendria que cambiar.
+ * Las cuatro funciones conservan la firma de la fase 1: es literalmente lo que su
+ * propio comentario anticipaba — "cambia el cuerpo de estas cuatro funciones y
+ * ningun componente se toca". El cuerpo ahora consulta Postgres via Drizzle.
  *
- * TODO(fase-2): reemplazar el import por consultas a la coleccion `productos`.
- * El tipo `Producto` es el contrato que debe devolver ese documento.
+ * Dos capas de integridad, como pedia el comentario original: los constraints de
+ * la base (FK, unique, enums — ver src/db/schema.test.ts) y `validarProducto`, que
+ * corre sobre cada fila antes de devolverla.
  */
 
+type FilaProducto = typeof productosTabla.$inferSelect
+
+type Cursor = { precio?: number; creadoEn: string }
+
+function decodificarCursor(valor: string | undefined): Cursor | null {
+  if (!valor) return null
+  try {
+    const datos = JSON.parse(Buffer.from(valor, 'base64url').toString('utf8'))
+    if (typeof datos?.creadoEn !== 'string') return null
+    return datos as Cursor
+  } catch {
+    // Un cursor que no se entiende es un cursor de otra version del sitio. Se
+    // empieza por el principio en vez de devolver vacio.
+    return null
+  }
+}
+
+function codificarCursor(fila: FilaProducto): string {
+  const cursor: Cursor = { precio: fila.precio, creadoEn: fila.creadoEn.toISOString() }
+  return Buffer.from(JSON.stringify(cursor)).toString('base64url')
+}
+
 /**
- * `resolveJsonModule` infiere la forma literal del JSON: `categoria`, `talla` y
- * `estado` vuelven como `string`, no como las uniones cerradas que declara el
- * modelo, y por eso un `as Producto[]` directo no compila (TS2352: el literal
- * no tiene solapamiento suficiente con el tipo). El `unknown` de en medio es lo
- * que le dice al compilador que el ensanchamiento es intencional.
- *
- * A diferencia de `anuncios.ts`, aqui no hay validador en runtime. La
- * integridad del archivo la afirma `describe('integridad del archivo de
- * productos')` en `productos.test.ts`: slugs unicos, categorias y tallas del
- * vocabulario, el grafo de `combina_con` y la correspondencia
- * `imagenes`/`variantes`. El catalogo se empaqueta en build time, asi que una
- * edicion mala rompe `npm test` antes de llegar a un navegador. `anuncios.json`
- * si lleva validador porque un tono invalido rompe el contraste del header en
- * silencio; un producto invalido aqui rompe una prueba con nombre y linea.
- *
- * TODO(fase-2): cuando el catalogo venga de Firestore, los datos llegan en
- * runtime y estas pruebas dejan de vigilarlos — esa migracion tiene que traer
- * un validador real, no solo cambiar el `fetch`.
- *
- * TODO(decision-abierta-4): nombres de producto y de coleccion en el JSON son
- * provisionales. SPEC §13 deja abierta la nomenclatura; la confirma la marca.
- *
- * TODO(decision-abierta-5): todas las rutas de `imagenes` en el JSON apuntan a
- * marcas de posicion planas, no a fotografia. Es el cuello de botella real del
- * SPEC §13 y este trabajo no lo resuelve.
+ * `creadoEn` es siempre el desempate, sin importar el orden pedido: preserva el
+ * orden del seed (= el orden del archivo) para dos productos del mismo precio,
+ * igual que el `Array.sort` estable que usaba el mock.
  */
-const catalogo = archivo.productos as unknown as Producto[]
+function condicionCursor(orden: Orden, cursor: Cursor | null): SQL | undefined {
+  if (!cursor) return undefined
+  const creadoEn = new Date(cursor.creadoEn)
+  if (orden === 'precio-asc') {
+    return or(
+      gt(productosTabla.precio, cursor.precio!),
+      and(eq(productosTabla.precio, cursor.precio!), gt(productosTabla.creadoEn, creadoEn)),
+    )
+  }
+  if (orden === 'precio-desc') {
+    return or(
+      lt(productosTabla.precio, cursor.precio!),
+      and(eq(productosTabla.precio, cursor.precio!), gt(productosTabla.creadoEn, creadoEn)),
+    )
+  }
+  return gt(productosTabla.creadoEn, creadoEn)
+}
+
+/**
+ * Color y talla se cruzan sobre la MISMA variante y solo cuentan si tiene stock —
+ * igual regla que `pasaVariantes` en filtros.ts, aqui como EXISTS correlacionado.
+ */
+function condicionVariantes(colores: string[], tallas: Talla[]): SQL | undefined {
+  if (!colores.length && !tallas.length) return undefined
+  const condiciones = [
+    eq(variantesTabla.productoId, productosTabla.id),
+    sql`${variantesTabla.stock} > 0`,
+    colores.length ? inArray(variantesTabla.color, colores) : undefined,
+    tallas.length ? inArray(variantesTabla.talla, tallas) : undefined,
+  ].filter((c): c is SQL => c != null)
+  return exists(db.select().from(variantesTabla).where(and(...condiciones)))
+}
+
+function validarProducto(p: Producto): Producto {
+  if (!esCategoria(p.categoria)) {
+    throw new Error(`Producto ${p.slug}: categoria invalida "${p.categoria}"`)
+  }
+  for (const v of p.variantes) {
+    if (!(TALLAS as readonly string[]).includes(v.talla)) {
+      throw new Error(`Producto ${p.slug}: talla invalida "${v.talla}" en SKU ${v.sku}`)
+    }
+  }
+  for (const color of Object.keys(p.imagenes)) {
+    if (!p.variantes.some((v) => v.color === color)) {
+      throw new Error(`Producto ${p.slug}: imagenes del color "${color}" sin variante correspondiente`)
+    }
+  }
+  return p
+}
+
+async function combinaConDe(ids: string[]): Promise<Map<string, string[]>> {
+  if (!ids.length) return new Map()
+  const filas = await db
+    .select({ productoId: combinaConTabla.productoId, slug: productosTabla.slug })
+    .from(combinaConTabla)
+    .innerJoin(productosTabla, eq(productosTabla.id, combinaConTabla.combinaConId))
+    .where(inArray(combinaConTabla.productoId, ids))
+    .orderBy(asc(combinaConTabla.orden))
+
+  const mapa = new Map<string, string[]>()
+  for (const fila of filas) {
+    const lista = mapa.get(fila.productoId) ?? []
+    lista.push(fila.slug)
+    mapa.set(fila.productoId, lista)
+  }
+  return mapa
+}
+
+async function armarProductos(filas: FilaProducto[]): Promise<Producto[]> {
+  if (!filas.length) return []
+  const ids = filas.map((f) => f.id)
+
+  const [variantesFilas, imagenesFilas, combinaConPorId] = await Promise.all([
+    db.select().from(variantesTabla).where(inArray(variantesTabla.productoId, ids)),
+    db
+      .select()
+      .from(imagenesTabla)
+      .where(inArray(imagenesTabla.productoId, ids))
+      .orderBy(asc(imagenesTabla.orden)),
+    combinaConDe(ids),
+  ])
+
+  return filas.map((fila) => {
+    const variantes: Variante[] = variantesFilas
+      .filter((v) => v.productoId === fila.id)
+      .map((v) => ({ color: v.color, hex: v.hex, talla: v.talla, sku: v.sku, stock: v.stock }))
+
+    const imagenes: Record<string, string[]> = {}
+    for (const img of imagenesFilas.filter((i) => i.productoId === fila.id)) {
+      ;(imagenes[img.color] ??= []).push(img.ruta)
+    }
+
+    return validarProducto({
+      nombre: fila.nombre,
+      slug: fila.slug,
+      categoria: fila.categoria,
+      coleccion: fila.coleccion,
+      precio: fila.precio,
+      descripcion: fila.descripcion,
+      detalles: fila.detalles,
+      variantes,
+      imagenes,
+      combina_con: combinaConPorId.get(fila.id) ?? [],
+      estado: fila.estado,
+      seo: { titulo: fila.seoTitulo, descripcion: fila.seoDescripcion, alt: fila.seoAlt },
+    })
+  })
+}
 
 export type OpcionesListado = {
   categoria?: Categoria
-  /** Nombres de color, tal como los ve la clienta. */
   colores?: string[]
   tallas?: Talla[]
   precio?: { min?: number; max?: number }
   orden?: Orden
-  /** Opaco. Hoy es el indice del siguiente elemento; en Firestore sera otro. */
   cursor?: string
-  /** Sin limite, devuelve todo lo que queda desde el cursor. */
   limite?: number
 }
 
 export async function listarProductos(
   opts: OpcionesListado = {},
 ): Promise<{ productos: Producto[]; siguiente: string | null }> {
-  const { categoria, colores, tallas, precio, orden, cursor, limite } = opts
+  const { categoria, colores = [], tallas = [], precio = {}, orden = 'novedad', cursor, limite } = opts
 
-  // Categoria no es parte de `FiltrosActivos` — es una dimension de navegacion,
-  // no de la barra de filtros — asi que se filtra aqui y el resto se delega a
-  // `aplicarFiltros`, que ya sabe cruzar color/talla/precio y ordenar.
-  const filtrados = aplicarFiltros(
-    catalogo.filter((p) => !categoria || p.categoria === categoria),
-    {
-      colores: colores ?? [],
-      tallas: tallas ?? [],
-      precio: precio ?? {},
-      orden: orden ?? 'novedad',
-    },
-  )
+  const condiciones = [
+    categoria ? eq(productosTabla.categoria, categoria) : undefined,
+    precio.min != null ? gte(productosTabla.precio, precio.min) : undefined,
+    precio.max != null ? lte(productosTabla.precio, precio.max) : undefined,
+    condicionVariantes(colores, tallas),
+    condicionCursor(orden, decodificarCursor(cursor)),
+  ].filter((c): c is SQL => c != null)
 
-  // Un cursor que no se entiende es un cursor de otra version del sitio. Se
-  // empieza por el principio en vez de devolver vacio: un catalogo en blanco es
-  // peor que un catalogo repetido.
-  const desde = Number.parseInt(cursor ?? '', 10)
-  const inicio = Number.isInteger(desde) && desde > 0 ? desde : 0
-  const hasta = limite == null ? filtrados.length : inicio + limite
-  const pagina = filtrados.slice(inicio, hasta)
+  const ordenColumnas =
+    orden === 'precio-asc'
+      ? [asc(productosTabla.precio), asc(productosTabla.creadoEn)]
+      : orden === 'precio-desc'
+        ? [desc(productosTabla.precio), asc(productosTabla.creadoEn)]
+        : [asc(productosTabla.creadoEn)]
+
+  const consulta = db
+    .select()
+    .from(productosTabla)
+    .where(condiciones.length ? and(...condiciones) : undefined)
+    .orderBy(...ordenColumnas)
+
+  const filas = limite != null ? await consulta.limit(limite + 1) : await consulta
+  const hayMas = limite != null && filas.length > limite
+  const pagina = hayMas ? filas.slice(0, limite) : filas
 
   return {
-    productos: pagina,
-    siguiente: hasta < filtrados.length ? String(hasta) : null,
+    productos: await armarProductos(pagina),
+    siguiente: hayMas ? codificarCursor(pagina[pagina.length - 1]) : null,
   }
 }
 
 export async function obtenerProducto(slug: string): Promise<Producto | null> {
-  return catalogo.find((p) => p.slug === slug) ?? null
+  const [fila] = await db.select().from(productosTabla).where(eq(productosTabla.slug, slug)).limit(1)
+  if (!fila) return null
+  const [producto] = await armarProductos([fila])
+  return producto
 }
 
 /** SPEC §4.1 bloque 5 — cuatro en grilla. Nada agotado: no se destaca lo que no se puede vender. */
 export async function destacados(limite = 4): Promise<Producto[]> {
-  return catalogo.filter((p) => estadoVisible(p) !== 'agotado').slice(0, limite)
+  const { productos } = await listarProductos()
+  const { estadoVisible } = await import('./producto-modelo')
+  return productos.filter((p) => estadoVisible(p) !== 'agotado').slice(0, limite)
 }
 
 /** SPEC §4.3 — "Completa el look". Respeta el orden de `combina_con`. */
 export async function combinaCon(slug: string): Promise<Producto[]> {
-  const producto = catalogo.find((p) => p.slug === slug)
+  const producto = await obtenerProducto(slug)
   if (!producto) return []
-  return producto.combina_con
-    .map((otro) => catalogo.find((p) => p.slug === otro))
-    .filter((p): p is Producto => Boolean(p))
+  const resultados = await Promise.all(producto.combina_con.map((otro) => obtenerProducto(otro)))
+  return resultados.filter((p): p is Producto => Boolean(p))
 }

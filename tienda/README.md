@@ -1,6 +1,6 @@
 # Tienda NUDE SPORTSWEAR
 
-Next.js 16 (App Router) + TypeScript + Tailwind 4 + Firestore.
+Next.js 16 (App Router) + TypeScript + Tailwind 4 + Postgres (Drizzle) + Better Auth.
 Especificación: [`../SPEC.md`](../SPEC.md). Este README documenta el estado real del código.
 
 ```bash
@@ -26,14 +26,14 @@ bloquea los recursos de desarrollo, la página carga pero nada responde.
 | `/` | Home completa, diez bloques del SPEC §4.1 |
 | `/leggings` · `/tops` · `/sets` | Catálogo por categoría con filtros en la URL |
 | `/colecciones` | Todo el catálogo. Destino de "Ver todo" |
-| `/[categoria]/[slug]` | Ficha de producto. Ocho fichas prerenderizadas |
+| `/[categoria]/[slug]` | Ficha de producto, renderizada en servidor |
 | `/sistema` | Verificación del design system. `noindex`, no enlazada |
 | 404 | Isotipo + "Esta página se movió." |
 
-**El catálogo es un mock.** `src/content/productos.json` tiene ocho referencias
-inventadas y todas las fotos de producto son placeholders planos. Nada de eso pasa
-por Firestore todavía: la fase 2 cambia el cuerpo de las cuatro funciones de
-`src/lib/productos.ts` y ningún componente se toca.
+**El catálogo vive en Postgres.** `src/lib/productos.ts` consulta la base de datos
+vía Drizzle; `src/content/productos.json` ya no se lee en runtime, solo se usa como
+fuente del seed. Las ocho referencias siguen siendo inventadas y todas las fotos de
+producto siguen siendo placeholders planos.
 
 **Pendiente:** modelo de datos y panel (2) · carrito y checkout (4) · panel de
 pedidos y correos (5) · Nosotras y páginas de contenido (6).
@@ -133,9 +133,15 @@ npm test          # vitest: adaptador de producto y filtros
 npm run verificar # build + Playwright sobre out/ en Chrome real
 ```
 
-`npm run verificar` corre contra `out/`, no contra el dev server, porque `out/` es
-lo que Firebase publica. Comprueba, en `/`, los cuatro catálogos, tres fichas y
-`/sistema`, a 375, 768, 1024 y 1440px:
+**`npm run verificar` queda temporalmente sin vigencia.** Corría Playwright contra
+`out/`, el export estático que este trabajo elimina. Adaptarlo para correr contra
+`next start` (o borrarlo) es un pendiente aparte — no está en el alcance de este
+plan. Mientras tanto, la verificación visual pasa por `run-tienda`
+(`.claude/skills/run-tienda/`) contra el dev server.
+
+**Cómo funcionaba antes de quedar sin vigencia:** el script corría contra `out/`,
+no contra el dev server, porque `out/` era lo que Firebase publicaba. Comprobaba,
+en `/`, los cuatro catálogos, tres fichas y `/sistema`, a 375, 768, 1024 y 1440px:
 
 - Sin desborde horizontal, sin errores de consola, `alt` en toda imagen, nombre
   accesible en todo control y área táctil de 44px
@@ -146,16 +152,16 @@ lo que Firebase publica. Comprueba, en `/`, los cuatro catálogos, tres fichas y
   aplicados en carga fría
 
 Antes de creer cualquiera de esos resultados de "sin JavaScript", el script se
-autoprueba: comprueba que `javaScriptEnabled: false` de Playwright de verdad
-apaga `@media (scripting: enabled)` en Chromium, usando un `.reveal` fuera de
-vista como sonda. Si esa autoprueba fallara, el script aborta con un mensaje
-explicando que la sección "sin JavaScript" no es confiable y cómo comprobarlo a
+autoprobaba: comprobaba que `javaScriptEnabled: false` de Playwright de verdad
+apagara `@media (scripting: enabled)` en Chromium, usando un `.reveal` fuera de
+vista como sonda. Si esa autoprueba fallaba, el script abortaba con un mensaje
+explicando que la sección "sin JavaScript" no era confiable y cómo comprobarlo a
 mano (DevTools → Settings → Debugger → Disable JavaScript).
 
-Fuera del script y a mano: contraste del texto sobre fotografía, encuadre de los
-recortes y tono del copy.
+Fuera del script y a mano (esto sigue vigente): contraste del texto sobre
+fotografía, encuadre de los recortes y tono del copy.
 
-Escribir el script encontró dos fallas reales, ya corregidas: `@media (prefers-reduced-motion: reduce)`
+Escribir el script encontró en su momento dos fallas reales, ya corregidas: `@media (prefers-reduced-motion: reduce)`
 perdía la guerra de especificidad CSS contra `.trazo[data-drawn="true"]` (visualmente
 casi idéntico, pero no era el "sin animación" que promete el SPEC — se corrigió con
 `!important`, ver el comentario junto a esa regla en `globals.css`); y el header, el
@@ -167,44 +173,35 @@ ver `prefetchable()` en `src/lib/site.ts`.
 
 ## Despliegue
 
-**En vivo en https://nudesportswear.co** desde el 2 de septiembre de 2026, por decisión
-explícita de Daniela — sabiendo que la tienda está en fase 1 y no puede vender.
+**Ya no es export estático.** La app corre en modo servidor (Server Actions,
+cookies de sesión, `POST` en `/api/auth/*`) — ver
+`docs/superpowers/specs/2026-09-07-postgres-better-auth-docker.md` §2.
 
 ```bash
-npm run build                    # escribe out/ (export estatico)
-firebase deploy --only hosting   # publica out/ en el dominio
-
-# revisar antes de publicar, sin tocar el dominio:
-firebase hosting:channel:deploy pre-ecom --expires 2d
+docker compose -f docker-compose-local.yaml up -d   # Postgres local, puerto 5434
+npm run dev                                          # migra solo, sirve en :3000
 ```
 
-**⚠️ Este sitio y la landing comparten el mismo sitio de Firebase (`nudesportswear-landing`).**
-La landing vive en **otro repo** — el de marca, en
-`~/Documents/Claude/Projects/NUDE SPORTWEAR/landing/landing-page/` — y apunta al mismo
-proyecto de Firebase. Un `firebase deploy` corrido desde allá **reemplaza el ecom por la
-landing sin avisar**, y al revés. El último que despliega gana. Como ahora son dos repos
-distintos, git no te va a avisar de nada: antes de desplegar cualquiera de los dos, confirmá
-desde qué carpeta estás corriendo el comando.
+**Producción:** GitHub Actions construye la imagen en cada push a `main` y la
+publica en `ghcr.io/juancadavidc/ecom-nude/tienda`. Coolify hace `pull` de esa
+imagen — no construye nada. El corte de DNS de `nudesportswear.co` hacia Coolify es
+una tarea aparte, todavía no hecha: el sitio en vivo sigue siendo el último build
+estático publicado en Firebase hasta que ese corte ocurra.
 
-**Rollback a la landing:**
+**Migraciones:** automáticas en `npm run dev` (`src/instrumentation.ts`) y como
+paso explícito del `entrypoint.sh` del contenedor, antes de `next start`. Nunca a
+mano.
 
-```bash
-cd ~/Documents/Claude/Projects/NUDE\ SPORTWEAR/landing/landing-page
-firebase deploy --only hosting
-```
+**Variables de entorno que Coolify tiene que tener configuradas** en el recurso
+"Docker Image" para que el contenedor funcione en producción:
 
-También sirve revertir el release desde la consola de Firebase (Hosting → historial de versiones),
-que no depende de tener el otro repo a mano.
-
-**El export estático sigue en pie, y no por casualidad.** Catálogo y ficha son
-rutas dinámicas prerenderizadas con `generateStaticParams` sobre el mock: las
-cuatro páginas de catálogo y las ocho fichas salen en HTML. Lo que sí lo va a
-tumbar es la fase 2 (Firestore en tiempo de petición) y la fase 4 (checkout con
-Server Actions). Antes de esas hay que migrar a **Firebase App Hosting**.
-
-Consecuencia hoy: **los filtros del catálogo se aplican en cliente**, no en
-servidor, porque `searchParams` no existe en una página exportada. El HTML trae el
-catálogo completo y el cliente lo filtra encima.
+| Variable | Obligatoria | Nota |
+|---|---|---|
+| `DATABASE_URL` | Sí | Postgres accesible desde el contenedor — nunca `localhost:5434` en producción |
+| `BETTER_AUTH_SECRET` | Sí | 32+ caracteres, alta entropía — sin esto el contenedor arranca pero la autenticación queda rota (ver más abajo) |
+| `BETTER_AUTH_URL` | Sí | El origen público https del sitio (no localhost) |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Sí, para que el login funcione | Sin esto el proveedor Google queda deshabilitado |
+| `ADMIN_ALLOWLIST` | Sí | Correos separados por coma; cualquiera fuera de la lista no puede crear sesión |
 
 **`robots: { index: false }`** está en el layout raíz. Como el dominio ahora sirve esta app,
 **todo `nudesportswear.co` está en `noindex, nofollow`** — la landing anterior sí era

@@ -11,11 +11,11 @@ import { GridProducto } from './GridProducto'
 /**
  * Aplica a la grilla los filtros que vienen en la URL y pagina con "Cargar mas".
  *
- * Es cliente porque tiene que serlo: el sitio se exporta estatico
- * (`next.config.ts`, `output: 'export'`), asi que no hay `searchParams` en
- * servidor. La pagina lo envuelve en un <Suspense> cuyo fallback es la grilla
- * completa renderizada en servidor; sin JavaScript ese fallback se queda, y con
- * el las ocho referencias en el HTML (SPEC §9.5, §12).
+ * Es cliente por mejora progresiva: filtrar en el cliente evita el round-trip
+ * al servidor en cada cambio de filtro, asi el resultado se ve al instante. La
+ * pagina lo envuelve en un <Suspense> cuyo fallback es la grilla completa
+ * renderizada en servidor; sin JavaScript ese fallback se queda, y con el las
+ * ocho referencias en el HTML (SPEC §9.5, §12).
  *
  * Sin scroll infinito, a proposito: impide llegar al footer (SPEC §4.2).
  */

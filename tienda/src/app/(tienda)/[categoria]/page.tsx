@@ -1,25 +1,16 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Catalogo } from '@/components/producto/Catalogo'
-import { CATEGORIAS, INTRO_CATEGORIA, NOMBRE_CATEGORIA, esCategoria } from '@/lib/producto-modelo'
+import { INTRO_CATEGORIA, NOMBRE_CATEGORIA, esCategoria } from '@/lib/producto-modelo'
 import { listarProductos } from '@/lib/productos'
 
 /**
- * Catalogo por categoria: /leggings, /tops, /sets.
- *
- * `dynamicParams = false` mas `generateStaticParams` es lo que hace posible la
- * ruta dinamica con `output: 'export'`: se prerenderizan exactamente tres
- * paginas y cualquier otro segmento cae en el 404, en vez de intentar
- * renderizarse en un servidor que no existe.
- *
- * Los segmentos estaticos hermanos (/sistema, /colecciones) ganan sobre este:
- * Next resuelve primero la ruta literal.
+ * Catalogo por categoria: /leggings, /tops, /sets. Se renderiza en servidor en
+ * cada peticion porque lee de Postgres — no hay `generateStaticParams` que
+ * prerenderice esto en build, ya que el build del contenedor (Dockerfile) no
+ * tiene la base disponible.
  */
-export const dynamicParams = false
-
-export function generateStaticParams() {
-  return CATEGORIAS.map((categoria) => ({ categoria }))
-}
+export const dynamic = 'force-dynamic'
 
 type Props = { params: Promise<{ categoria: string }> }
 

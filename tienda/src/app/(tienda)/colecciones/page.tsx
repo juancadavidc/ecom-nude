@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Catalogo } from '@/components/producto/Catalogo'
 import { listarProductos } from '@/lib/productos'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Todo el catalogo en una pagina. Es el destino de "Ver todo" en los destacados
  * de la home y de la entrada "Colecciones" del menu, que hasta ahora caia en el
