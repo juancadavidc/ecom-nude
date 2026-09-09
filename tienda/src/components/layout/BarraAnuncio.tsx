@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { anuncioVigente, tonoAnuncio } from '@/lib/anuncios'
+import { prefetchable } from '@/lib/site'
 
 /**
  * Franja sobre el header con la promesa vigente (envio gratis, cambios, etc.).
@@ -20,7 +21,11 @@ export function BarraAnuncio() {
     <div className="anuncio" data-tono={tonoAnuncio}>
       <div className="container-nude">
         {href ? (
-          <Link href={href} className="anuncio-texto anuncio-link">
+          <Link
+            href={href}
+            className="anuncio-texto anuncio-link"
+            prefetch={prefetchable(href) ? undefined : false}
+          >
             {texto}
           </Link>
         ) : (

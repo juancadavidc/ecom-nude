@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { LogoNude, MarcaNude } from '@/components/brand/Logo'
 import { TrazoCierre } from '@/components/motion/Trazo'
 import { Envelope, InstagramLogo, WhatsappLogo } from '@/components/ui/icons'
-import { navPie, site } from '@/lib/site'
+import { navPie, prefetchable, site } from '@/lib/site'
 
 /**
  * SPEC §4.1 bloque 9 — Footer: fondo Umber, logo en negativo, 3 columnas de
@@ -67,7 +67,11 @@ export function Footer() {
               <ul>
                 {columna.links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="link-nav">
+                    <Link
+                      href={link.href}
+                      className="link-nav"
+                      prefetch={prefetchable(link.href) ? undefined : false}
+                    >
                       {link.label}
                     </Link>
                   </li>

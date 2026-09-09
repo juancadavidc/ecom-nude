@@ -404,42 +404,33 @@ Sin emojis en la interfaz. Sin signos de exclamación. Sin contadores regresivos
 
 | Capa | Elección | Por qué |
 |------|----------|---------|
-| Framework | **Next.js (App Router) + TypeScript** | Renderizado en servidor para SEO real en catálogo y fichas. Un SPA de Vite no se indexa bien y aquí Google importa |
+| Framework | **Next.js (App Router) + TypeScript** | Renderizado en servidor para SEO real en catálogo y fichas |
 | Estilos | **Tailwind** con los tokens de §2 como variables CSS | Mismo stack que la app de finanzas |
-| Datos | **Firestore** | Ya lo manejan. Tiempo real gratis para inventario |
-| Imágenes | **Firebase Storage** + `next/image` | Conversión a WebP y `srcset` automáticos |
-| Auth | **Firebase Auth**, solo para el panel | La tienda no tiene cuentas de clienta |
-| Lógica de servidor | **Cloud Functions** | Descuento de inventario, correos, numeración de pedidos |
-| Correos | **Resend** o extensión Trigger Email | Confirmación, pago recibido, despachado |
-| Hosting | **Firebase Hosting** | Mismo proyecto y flujo de despliegue que el resto |
+| Datos | **Postgres 17 + Drizzle ORM** | Mismo stack que `ecom-myspace`, el ecommerce hermano ya en producción. Migraciones versionadas en git, constraints reales sobre los datos |
+| Imágenes | Por definir junto a la pantalla que sube fotos (fuera de alcance de la fase de datos) | Ver `docs/superpowers/specs/2026-09-07-postgres-better-auth-docker.md` §10 |
+| Auth | **Better Auth** — Google SSO + allowlist de correos, solo para el panel | La tienda no tiene cuentas de clienta |
+| Lógica de servidor | **Server Actions de Next** | Sin servicio de API aparte: los Server Components ya son el backend |
+| Correos | Por definir (fase 5) | — |
+| Hosting | **Coolify**, imagen Docker publicada a GHCR por GitHub Actions | Mismo flujo que `ecom-myspace` |
 
-> **Advertencia honesta:** este camino cuesta más tiempo antes de la primera venta que Shopify.
-> A cambio se gana control total del diseño y cero mensualidad. Es una decisión legítima —
-> pero implica que el sitio no puede ser lo único en la ruta crítica: la producción, las fotos
-> y el contenido de Instagram tienen que avanzar en paralelo, no esperando al sitio.
+> Detalle de esta decisión y su justificación:
+> `docs/superpowers/specs/2026-09-07-postgres-better-auth-docker.md`.
 
-### 9.2 Colecciones de Firestore
+### 9.2 Esquema de Postgres
 
 ```
-productos/{id}          ver el modelo de §6
-  variantes[]           { color, hex, talla, sku, stock }
-pedidos/{id}
-  numero                NUDE-0001, consecutivo
-  items[]               { productoId, nombre, color, talla, precio, cantidad }
-  cliente               { nombre, celular, email }
-  entrega               { departamento, ciudad, direccion, barrio, indicaciones }
-  envio                 { zona: metro|nacional, valor }
-  pago                  { metodo: transferencia|contraentrega, comprobanteUrl? }
-  estado                nuevo → confirmado → pagado → despachado → entregado | cancelado
-  totales               { subtotal, envio, descuento, total }
-  creado, actualizado
-config/tienda
-  shipping_rates, metro_ciudades, cuenta_bancaria,
-  codigos_descuento, tallas, whatsapp, anuncio_barra
-suscriptores/{email}    captura de correo
+productos            slug, nombre, categoria, coleccion, precio, descripcion,
+                      detalles[], estado, seo, timestamps
+variantes             FK a producto, color, hex, talla, sku (unico), stock
+imagenes              FK a producto, color, ruta, orden
+combina_con           auto-referencia producto→producto, con orden
 ```
 
-**Reglas de seguridad:** `productos` y `config` son de lectura pública y escritura solo para la allowlist. `pedidos` **no se lee ni se escribe desde el cliente** — se crean por Cloud Function, que es también donde se valida el precio. Si el precio se calcula en el navegador, cualquiera lo edita y compra un legging por $1.000.
+Esquema completo, con el porqué de cada columna:
+`docs/superpowers/specs/2026-09-07-postgres-better-auth-docker.md` §4.
+
+`pedidos`, `config` y `suscriptores` (fase 4+) todavía no existen — se diseñan con
+su propio spec cuando llegue esa fase.
 
 ### 9.3 Panel de administración — `/admin`
 
@@ -453,7 +444,10 @@ Es la pieza que Shopify daba gratis y aquí hay que construir. Sin esto Daniela 
 | **Configuración** | Tarifas de envío, ciudades del área metropolitana, datos bancarios, códigos de descuento, barra de anuncio |
 | **Suscriptoras** | Lista de correos, exportar a CSV |
 
-Acceso con Google SSO y allowlist de correos, exactamente el mismo patrón que ya funciona en `finanzas/app`. Se reutiliza el código de autenticación.
+Acceso con Google SSO y allowlist de correos (`ADMIN_ALLOWLIST`), vía Better Auth —
+ver `docs/superpowers/specs/2026-09-07-postgres-better-auth-docker.md` §6. El
+guardia de sesión ya existe en `tienda/src/app/admin/layout.tsx`; las pantallas de
+esta tabla las construye su propio spec sobre esos cimientos.
 
 ### 9.4 Orden de construcción
 

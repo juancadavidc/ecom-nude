@@ -1,0 +1,288 @@
+{
+  "productos": [
+    {
+      "nombre": "Legging Duna",
+      "slug": "legging-duna",
+      "categoria": "leggings",
+      "coleccion": "Primera Piel",
+      "precio": 145000,
+      "descripcion": "Se pone y desaparece. La cintura alta se queda donde la dejaste y la tela cede con la rodilla en vez de frenarla. Sales del entreno y no te la quieres quitar.",
+      "detalles": [
+        "78% poliamida, 22% elastano",
+        "Cintura alta, cinturilla de 8 cm",
+        "Bolsillo lateral para el celular",
+        "Lavar a mano en agua fria, secar a la sombra"
+      ],
+      "estado": "activo",
+      "combina_con": ["top-brisa", "top-ocre", "set-duna", "legging-cauce"],
+      "imagenes": {
+        "Duna": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Negro Humo": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
+      },
+      "variantes": [
+        { "color": "Duna", "hex": "#C8A583", "talla": "XS", "sku": "LEG-DUN-XS", "stock": 6 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "S", "sku": "LEG-DUN-S", "stock": 9 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "M", "sku": "LEG-DUN-M", "stock": 11 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "L", "sku": "LEG-DUN-L", "stock": 7 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "XL", "sku": "LEG-DUN-XL", "stock": 0 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "XS", "sku": "LEG-NEG-XS", "stock": 4 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "S", "sku": "LEG-NEG-S", "stock": 12 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "M", "sku": "LEG-NEG-M", "stock": 14 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "L", "sku": "LEG-NEG-L", "stock": 8 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "XL", "sku": "LEG-NEG-XL", "stock": 3 }
+      ],
+      "seo": {
+        "titulo": "Legging Duna",
+        "descripcion": "Legging de cintura alta en tono Duna. Tela que cede con el movimiento y no se transparenta. Envio a todo Colombia.",
+        "alt": "Legging Duna de cintura alta, vista frontal sobre fondo calido"
+      }
+    },
+    {
+      "nombre": "Top Brisa",
+      "slug": "top-brisa",
+      "categoria": "tops",
+      "coleccion": "Primera Piel",
+      "precio": 98000,
+      "descripcion": "Sujeta sin apretar. La malla en la espalda deja pasar el aire justo donde hace falta y la banda inferior no se sube al levantar los brazos.",
+      "detalles": [
+        "80% poliamida, 20% elastano",
+        "Sujecion media, sin varillas",
+        "Panel de malla en la espalda",
+        "Lavar a mano en agua fria, secar a la sombra"
+      ],
+      "estado": "activo",
+      "combina_con": ["legging-duna", "legging-cauce", "legging-medano", "set-duna"],
+      "imagenes": {
+        "Duna": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Negro Humo": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
+      },
+      "variantes": [
+        { "color": "Duna", "hex": "#C8A583", "talla": "XS", "sku": "TOP-DUN-XS", "stock": 7 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "S", "sku": "TOP-DUN-S", "stock": 10 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "M", "sku": "TOP-DUN-M", "stock": 9 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "L", "sku": "TOP-DUN-L", "stock": 5 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "XL", "sku": "TOP-DUN-XL", "stock": 2 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "XS", "sku": "TOP-NEG-XS", "stock": 8 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "S", "sku": "TOP-NEG-S", "stock": 11 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "M", "sku": "TOP-NEG-M", "stock": 10 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "L", "sku": "TOP-NEG-L", "stock": 6 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "XL", "sku": "TOP-NEG-XL", "stock": 4 }
+      ],
+      "seo": {
+        "titulo": "Top Brisa",
+        "descripcion": "Top deportivo de sujecion media con panel de malla en la espalda. Tonos tierra. Envio a todo Colombia.",
+        "alt": "Top Brisa de sujecion media, vista frontal sobre fondo calido"
+      }
+    },
+    {
+      "nombre": "Set Duna",
+      "slug": "set-duna",
+      "categoria": "sets",
+      "coleccion": "Primera Piel",
+      "precio": 225000,
+      "descripcion": "Legging y top de la misma tela y el mismo tono. Pensados juntos, cortados juntos: la cinturilla y la banda del top caen a la misma altura.",
+      "detalles": [
+        "78% poliamida, 22% elastano",
+        "Incluye legging de cintura alta y top de sujecion media",
+        "Mismo tono y misma caida en las dos prendas",
+        "Lavar a mano en agua fria, secar a la sombra"
+      ],
+      "estado": "activo",
+      "combina_con": ["legging-duna", "top-brisa", "set-arena", "top-ocre"],
+      "imagenes": {
+        "Duna": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"]
+      },
+      "variantes": [
+        { "color": "Duna", "hex": "#C8A583", "talla": "XS", "sku": "SET-DUN-XS", "stock": 4 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "S", "sku": "SET-DUN-S", "stock": 6 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "M", "sku": "SET-DUN-M", "stock": 7 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "L", "sku": "SET-DUN-L", "stock": 3 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "XL", "sku": "SET-DUN-XL", "stock": 1 }
+      ],
+      "seo": {
+        "titulo": "Set Duna",
+        "descripcion": "Conjunto de legging y top en tono Duna, misma tela y misma caida. Envio a todo Colombia.",
+        "alt": "Set Duna: legging de cintura alta y top a juego, vista frontal"
+      }
+    },
+    {
+      "nombre": "Legging Cauce",
+      "slug": "legging-cauce",
+      "categoria": "leggings",
+      "coleccion": "Primera Piel",
+      "precio": 155000,
+      "descripcion": "El panel de malla baja por el gemelo y respira donde mas calienta. La costura corre por fuera de la pierna, asi que no roza al correr.",
+      "detalles": [
+        "76% poliamida, 24% elastano",
+        "Cintura alta con panel interno",
+        "Malla lateral desde la rodilla",
+        "Lavar a mano en agua fria, secar a la sombra"
+      ],
+      "estado": "activo",
+      "combina_con": ["top-brisa", "top-umbra", "legging-duna", "set-arena"],
+      "imagenes": {
+        "Negro Humo": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Umbra": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
+      },
+      "variantes": [
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "XS", "sku": "LEG-CAU-NEG-XS", "stock": 5 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "S", "sku": "LEG-CAU-NEG-S", "stock": 8 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "M", "sku": "LEG-CAU-NEG-M", "stock": 9 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "L", "sku": "LEG-CAU-NEG-L", "stock": 6 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "XL", "sku": "LEG-CAU-NEG-XL", "stock": 2 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "XS", "sku": "LEG-CAU-UMB-XS", "stock": 3 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "S", "sku": "LEG-CAU-UMB-S", "stock": 7 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "M", "sku": "LEG-CAU-UMB-M", "stock": 8 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "L", "sku": "LEG-CAU-UMB-L", "stock": 4 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "XL", "sku": "LEG-CAU-UMB-XL", "stock": 0 }
+      ],
+      "seo": {
+        "titulo": "Legging Cauce",
+        "descripcion": "Legging de cintura alta con malla lateral desde la rodilla. Costura externa que no roza. Envio a todo Colombia.",
+        "alt": "Legging Cauce con panel de malla lateral, vista de perfil"
+      }
+    },
+    {
+      "nombre": "Top Ocre",
+      "slug": "top-ocre",
+      "categoria": "tops",
+      "coleccion": "Primera Piel",
+      "precio": 105000,
+      "descripcion": "Manga corta y cuello alto. La tela es opaca donde tiene que serlo y translucida en el panel del pecho, que es por donde entra el aire.",
+      "detalles": [
+        "80% poliamida, 20% elastano",
+        "Cuello alto, manga corta",
+        "Panel translucido en el pecho",
+        "Lavar a mano en agua fria, secar a la sombra"
+      ],
+      "estado": "activo",
+      "combina_con": ["legging-duna", "legging-medano", "set-arena", "legging-cauce"],
+      "imagenes": {
+        "Umbra": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Arena": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
+      },
+      "variantes": [
+        { "color": "Umbra", "hex": "#5C4232", "talla": "XS", "sku": "TOP-OCR-UMB-XS", "stock": 6 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "S", "sku": "TOP-OCR-UMB-S", "stock": 9 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "M", "sku": "TOP-OCR-UMB-M", "stock": 8 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "L", "sku": "TOP-OCR-UMB-L", "stock": 5 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "XL", "sku": "TOP-OCR-UMB-XL", "stock": 3 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "XS", "sku": "TOP-OCR-ARE-XS", "stock": 4 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "S", "sku": "TOP-OCR-ARE-S", "stock": 7 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "M", "sku": "TOP-OCR-ARE-M", "stock": 6 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "L", "sku": "TOP-OCR-ARE-L", "stock": 2 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "XL", "sku": "TOP-OCR-ARE-XL", "stock": 0 }
+      ],
+      "seo": {
+        "titulo": "Top Ocre",
+        "descripcion": "Top de cuello alto y manga corta con panel translucido en el pecho. Tonos tierra. Envio a todo Colombia.",
+        "alt": "Top Ocre de cuello alto y manga corta, vista frontal"
+      }
+    },
+    {
+      "nombre": "Set Arena",
+      "slug": "set-arena",
+      "categoria": "sets",
+      "coleccion": "Primera Piel",
+      "precio": 239000,
+      "descripcion": "El conjunto mas claro de la coleccion. Tela de doble capa, opaca a contraluz, con la caida de una prenda de vestir y el agarre de una deportiva.",
+      "detalles": [
+        "76% poliamida, 24% elastano, doble capa",
+        "Incluye legging de cintura alta y top de cuello alto",
+        "Opaco a contraluz",
+        "Lavar a mano en agua fria, secar a la sombra"
+      ],
+      "estado": "activo",
+      "combina_con": ["set-duna", "top-ocre", "legging-medano", "legging-cauce"],
+      "imagenes": {
+        "Arena": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"]
+      },
+      "variantes": [
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "XS", "sku": "SET-ARE-XS", "stock": 3 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "S", "sku": "SET-ARE-S", "stock": 5 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "M", "sku": "SET-ARE-M", "stock": 6 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "L", "sku": "SET-ARE-L", "stock": 4 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "XL", "sku": "SET-ARE-XL", "stock": 2 }
+      ],
+      "seo": {
+        "titulo": "Set Arena",
+        "descripcion": "Conjunto de legging y top en tono Arena, tela de doble capa opaca a contraluz. Envio a todo Colombia.",
+        "alt": "Set Arena: legging de cintura alta y top de cuello alto a juego"
+      }
+    },
+    {
+      "nombre": "Legging Medano",
+      "slug": "legging-medano",
+      "categoria": "leggings",
+      "coleccion": "Primera Piel",
+      "precio": 139000,
+      "descripcion": "El mas ligero de los tres. Talle medio, sin costura frontal, pensado para los dias en que la ropa deportiva sale a la calle y no al gimnasio.",
+      "detalles": [
+        "82% poliamida, 18% elastano",
+        "Talle medio, sin costura frontal",
+        "Sin bolsillo",
+        "Lavar a mano en agua fria, secar a la sombra"
+      ],
+      "estado": "activo",
+      "combina_con": ["top-brisa", "top-ocre", "legging-duna", "set-arena"],
+      "imagenes": {
+        "Arena": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Duna": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
+      },
+      "variantes": [
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "XS", "sku": "LEG-MED-ARE-XS", "stock": 0 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "S", "sku": "LEG-MED-ARE-S", "stock": 1 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "M", "sku": "LEG-MED-ARE-M", "stock": 1 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "L", "sku": "LEG-MED-ARE-L", "stock": 0 },
+        { "color": "Arena", "hex": "#E2CBAE", "talla": "XL", "sku": "LEG-MED-ARE-XL", "stock": 0 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "XS", "sku": "LEG-MED-DUN-XS", "stock": 0 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "S", "sku": "LEG-MED-DUN-S", "stock": 2 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "M", "sku": "LEG-MED-DUN-M", "stock": 1 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "L", "sku": "LEG-MED-DUN-L", "stock": 0 },
+        { "color": "Duna", "hex": "#C8A583", "talla": "XL", "sku": "LEG-MED-DUN-XL", "stock": 0 }
+      ],
+      "seo": {
+        "titulo": "Legging Medano",
+        "descripcion": "Legging de talle medio sin costura frontal, el mas ligero de la coleccion. Envio a todo Colombia.",
+        "alt": "Legging Medano de talle medio, vista frontal sobre fondo calido"
+      }
+    },
+    {
+      "nombre": "Top Umbra",
+      "slug": "top-umbra",
+      "categoria": "tops",
+      "coleccion": "Primera Piel",
+      "precio": 110000,
+      "descripcion": "Espalda cruzada y sujecion alta. Es el top de los dias de impacto, y el unico que no se afloja despues de la decima lavada.",
+      "detalles": [
+        "80% poliamida, 20% elastano",
+        "Sujecion alta, espalda cruzada",
+        "Copas removibles",
+        "Lavar a mano en agua fria, secar a la sombra"
+      ],
+      "estado": "agotado",
+      "combina_con": ["legging-cauce", "legging-duna", "set-duna", "top-brisa"],
+      "imagenes": {
+        "Negro Humo": ["placeholder/producto-sahara", "placeholder/producto-dune", "placeholder/producto-cream", "placeholder/producto-white"],
+        "Umbra": ["placeholder/producto-dune", "placeholder/producto-sahara", "placeholder/producto-white", "placeholder/producto-cream"]
+      },
+      "variantes": [
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "XS", "sku": "TOP-UMB-NEG-XS", "stock": 0 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "S", "sku": "TOP-UMB-NEG-S", "stock": 0 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "M", "sku": "TOP-UMB-NEG-M", "stock": 0 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "L", "sku": "TOP-UMB-NEG-L", "stock": 0 },
+        { "color": "Negro Humo", "hex": "#211D1B", "talla": "XL", "sku": "TOP-UMB-NEG-XL", "stock": 0 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "XS", "sku": "TOP-UMB-UMB-XS", "stock": 0 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "S", "sku": "TOP-UMB-UMB-S", "stock": 0 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "M", "sku": "TOP-UMB-UMB-M", "stock": 0 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "L", "sku": "TOP-UMB-UMB-L", "stock": 0 },
+        { "color": "Umbra", "hex": "#5C4232", "talla": "XL", "sku": "TOP-UMB-UMB-XL", "stock": 0 }
+      ],
+      "seo": {
+        "titulo": "Top Umbra",
+        "descripcion": "Top de sujecion alta con espalda cruzada y copas removibles. Tonos tierra. Envio a todo Colombia.",
+        "alt": "Top Umbra de espalda cruzada, vista trasera"
+      }
+    }
+  ]
+}

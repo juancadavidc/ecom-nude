@@ -38,3 +38,5 @@ firebase-debug.log*
 # Playwright (scripts de captura de referencias)
 playwright-report/
 test-results/
+.superpowers/
+.worktrees/

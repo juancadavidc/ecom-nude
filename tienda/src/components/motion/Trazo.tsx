@@ -12,10 +12,19 @@ import { useEnVista } from './useEnVista'
  * secciones, hay UNA sola linea Ochre de 1px que desciende por la pagina,
  * se desplaza lateralmente en cada cambio de seccion y vuelve a bajar.
  *
- * Tecnica: `pathLength="1"` normaliza la longitud del path, asi que
+ * Tecnica general: `pathLength="1"` normaliza la longitud del path, asi que
  * `stroke-dasharray: 1; stroke-dashoffset: 1 → 0` lo dibuja sin medir nada
- * con JS. `vector-effect="non-scaling-stroke"` lo mantiene en 1px real
- * aunque el SVG se estire.
+ * con JS. La usan `TrazoCierre` y `TrazoPaso`.
+ *
+ * `TrazoColumna` es la excepcion: dibuja con `clip-path`, no con dasharray.
+ * Con `alto="100%"` (columna del catalogo y de la ficha) el SVG se estira
+ * varias veces en vertical, y ahi el dasharray normalizado por pathLength
+ * hace que Chrome PINTE el trazo partido en pedazos con huecos — es un bug de
+ * rasterizado confirmado con `path.isPointInStroke()` (la geometria del
+ * guion es continua; lo que se pinta mal es el guion sobre un SVG estirado de
+ * forma no uniforme), no un error de este CSS, y no depende de
+ * `vector-effect`. El detalle completo esta en el comentario de `.trazo path`
+ * en globals.css.
  *
  * `prefers-reduced-motion`: la linea aparece dibujada, sin animacion
  * (regla en globals.css).
@@ -38,7 +47,7 @@ export function TrazoColumna({
   return (
     <svg
       ref={ref}
-      className={cx('trazo', className)}
+      className={cx('trazo trazo-columna', className)}
       data-drawn={!esperarVista || enVista || undefined}
       viewBox="0 0 1 100"
       preserveAspectRatio="none"
@@ -46,7 +55,7 @@ export function TrazoColumna({
       aria-hidden="true"
       focusable="false"
     >
-      <path d="M 0.5 0 L 0.5 100" pathLength={1} />
+      <path d="M 0.5 0 L 0.5 100" />
     </svg>
   )
 }

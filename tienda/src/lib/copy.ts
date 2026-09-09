@@ -44,9 +44,46 @@ export const microcopy = {
   confirmacion: 'Recibimos tu pedido.',
   envio: 'Llega en 2 a 4 dias habiles.',
   newsletter: 'Se la primera en enterarte.',
+  newsletterListo: 'Listo. Te escribimos cuando abramos.',
+  newsletterError: 'Nos falta tu correo para escribirte.',
+  newsletterInvalido: 'Revisa el correo: parece que le falta algo.',
   verTodo: 'Ver todo',
+  cargarMas: 'Cargar mas',
+  sinResultados: 'No hay nada con esos filtros.',
+  quitarFiltros: 'Quitar filtros',
+  filtrar: 'Filtrar',
+  ordenar: 'Ordenar',
   seguirViendo: 'Seguir viendo',
   finalizar: 'Finalizar compra',
   guiaTallas: 'Guia de tallas',
+  elegirTalla: 'Elige una talla',
   error404: 'Esta pagina se movio.',
 } as const
+
+/**
+ * SPEC §4.3 — los tres acordeones de la ficha. Estan aqui y no en la pagina para
+ * que el dia que existan /envios y /cambios como paginas de contenido el texto
+ * salga de un solo sitio.
+ *
+ * TODO(decision-abierta-3): no se nombra tarifa ni umbral de envio gratis. El
+ * SPEC §13 deja abierto cotizar transportadora y confirmar si $14.000 y $20.000
+ * cubren el costo real; poner una cifra que despues cambie es peor que no
+ * ponerla.
+ */
+export const politicas = [
+  {
+    titulo: 'Envios y entregas',
+    texto:
+      'Enviamos a todo Colombia. Llega en 2 a 4 dias habiles. El costo del envio se calcula al finalizar la compra, y puedes pagar contra entrega, en efectivo, cuando recibas.',
+  },
+  {
+    titulo: 'Cambios y devoluciones',
+    texto:
+      'Tienes 15 dias desde que recibes para cambiar la talla o el color. La prenda tiene que volver sin usar y con su etiqueta. Escribinos por WhatsApp y coordinamos la recogida.',
+  },
+  {
+    titulo: 'Como cuidar tu prenda',
+    texto:
+      'Lava a mano en agua fria y con jabon suave. Sin blanqueador y sin secadora. Seca a la sombra y extendida: el sol abre el elastano y la prenda pierde la forma.',
+  },
+] as const

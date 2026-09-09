@@ -804,6 +804,23 @@
     translate: -100% 0;
   }
 
+  /**
+   * Panel inferior: la variante de movil para los filtros del catalogo. El
+   * pulgar llega antes al borde de abajo que al lateral, y el catalogo se sigue
+   * viendo detras mientras se filtra.
+   */
+  .drawer-abajo {
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: auto;
+    max-height: 85dvh;
+    border-top: 1px solid var(--line-soft);
+    translate: 0 100%;
+  }
+
   .drawer[open] {
     translate: 0 0;
   }
@@ -815,6 +832,9 @@
     }
     .drawer-izquierda[open] {
       translate: -100% 0;
+    }
+    .drawer-abajo[open] {
+      translate: 0 100%;
     }
   }
 
@@ -1306,10 +1326,11 @@
   overflow: hidden;
   display: flex;
   align-items: center;
-  min-height: 72vh;
-  /* svh, no vh: en movil `vh` cuenta la barra del navegador que aun no se ha
-     retraido, y el hero arranca mas alto de lo que se ve. */
-  min-height: 72svh;
+  /* SPEC §4.1 bloque 2: ~85vh. `svh` y no `vh` porque en movil `vh` cuenta la
+     barra del navegador que aun no se ha retraido y el hero arranca mas alto
+     de lo que se ve. */
+  min-height: 85vh;
+  min-height: 85svh;
   padding-block: 80px 120px;
   /* Sobre foto el texto invierte. Se cambia el token, no cada clase: `label
      text-muted`, `.hero-texto` y el trazo siguen pidiendo el mismo rol. */
@@ -1319,8 +1340,8 @@
 
 @media (min-width: 768px) {
   .hero {
-    min-height: 78vh;
-    min-height: min(78svh, 820px);
+    min-height: 85vh;
+    min-height: min(85svh, 900px);
   }
 }
 
@@ -1393,6 +1414,71 @@
   }
 }
 
+/* ---------- Bloque 4: tiles de categoria (SPEC §4.1) ---------- */
+
+/**
+ * A sangre y pegados: el corte entre dos fotos es la unica linea que hace falta.
+ * 2px de separacion, no 24: un gutter ancho los convierte en tres tarjetas y el
+ * bloque pierde la fuerza de banda continua.
+ */
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+}
+
+@media (min-width: 768px) {
+  .tiles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.tile {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  aspect-ratio: 3 / 4;
+  color: var(--text-invert);
+  text-decoration: none;
+}
+
+.tile img {
+  z-index: -2;
+}
+
+/* Mismo velo calibrado del hero: el nombre va sobre `fuerte`, que es el unico
+   nivel que aguanta texto sobre la pared clara del estudio (ver §1 de este css) */
+.tile-velo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    0deg,
+    var(--velo-fuerte) 0%,
+    var(--velo-medio) 40%,
+    transparent 72%
+  );
+}
+
+.tile-nombre {
+  padding: 24px;
+  transition: color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .tile:hover .tile-nombre {
+    color: var(--dune);
+  }
+}
+
+/* ---------- Bloque 5: destacados ---------- */
+
+.destacados-head {
+  margin-bottom: 32px;
+}
+
 .manifiesto-inner {
   display: flex;
   flex-direction: column;
@@ -1439,26 +1525,88 @@
   margin-bottom: 12px;
 }
 
-.promesas-franja {
+/* ---------- Bloque 7: franja de confianza (SPEC §4.1) ---------- */
+
+.franja-confianza {
   padding-block: 48px;
 }
 
-.promesas {
+.franja-iconos {
   display: grid;
   grid-template-columns: 1fr;
   gap: 32px;
 }
 
 @media (min-width: 640px) {
-  .promesas {
+  .franja-iconos {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.promesa {
+.franja-icono {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.franja-icono > svg {
+  color: var(--line);
+}
+
+/* ---------- Bloque 8: como la llevan (aporte de la referencia) ---------- */
+
+.comunidad {
+  padding-block: 64px 0;
+}
+
+.comunidad-head {
+  margin-bottom: 24px;
+}
+
+.comunidad-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+}
+
+@media (min-width: 768px) {
+  .comunidad-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.comunidad-foto {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background-color: var(--sahara);
+}
+
+/* ---------- Bloque 9: captura de correo (SPEC §4.1) ---------- */
+
+.newsletter {
+  padding-block: 56px;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  max-width: 460px;
+  margin-top: 20px;
+}
+
+@media (min-width: 560px) {
+  .newsletter-form {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .newsletter-form .field {
+    flex: 1;
+  }
 }
 
 /* ---------- 10g. 404 (SPEC §4.6) ---------- */
@@ -1522,11 +1670,6 @@
   border: 1px solid var(--line-soft);
   border-radius: var(--radius);
   margin-bottom: 8px;
-}
-
-.tabla-scroll {
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
 }
 
 .tabla {
@@ -1661,6 +1804,669 @@
   border-radius: var(--radius);
 }
 
+/* ---------- 10i. Composicion (spec de diseno 2026-09-06, §2.3) ---------- */
+
+/**
+ * A sangre: escapa del contenedor de 1280px y llega a los bordes de la pantalla.
+ * `100vw` cuenta la barra de scroll; `overflow-x: hidden` en el body absorbe esa
+ * diferencia, que es de donde saldria una barra horizontal (SPEC §12).
+ *
+ * El contraste entre margen amplio y foto a borde es de donde sale la fuerza de
+ * la composicion. Se consigue sin centrar nada y sin tocar la identidad.
+ */
+.a-sangre {
+  width: 100vw;
+  max-width: 100vw;
+  margin-inline: calc(50% - 50vw);
+}
+
+/**
+ * El eje izquierdo del SPEC §11.2 como grid: columna de texto de maximo 640px y
+ * margen derecho generoso. Nada se centra. `.eje-fin` es la excepcion: lo que
+ * tiene que caer al otro extremo de la misma linea, como el "Ver todo" de una
+ * seccion. En movil todo vuelve a una sola columna sobre el mismo eje.
+ */
+.eje {
+  display: grid;
+  grid-template-columns: minmax(0, var(--w-measure)) 1fr;
+  gap: 16px 24px;
+  align-items: end;
+}
+
+.eje > * {
+  grid-column: 1;
+}
+
+.eje-fin {
+  grid-column: 2;
+  justify-self: end;
+  align-self: end;
+}
+
+@media (max-width: 767px) {
+  .eje {
+    grid-template-columns: 1fr;
+  }
+
+  .eje-fin {
+    grid-column: 1;
+    justify-self: start;
+  }
+}
+
+/* Gutter corto a proposito: mas producto arriba del pliegue (SPEC §4.2) */
+.grid-producto {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .grid-producto {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+/* ---------- 10j. Card de producto (SPEC §4.2) ---------- */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-foto {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 3 / 4; /* espacio reservado: CLS bajo 0.1 (SPEC §12) */
+  background-color: var(--sahara);
+}
+
+/**
+ * Cruce a la segunda foto en 300ms. Sin zoom, sin sombra, sin levantar
+ * (SPEC §11.3). La segunda foto siempre esta en el DOM y siempre esta cargada:
+ * si se montara al pasar el mouse habria un salto en blanco de medio segundo.
+ */
+.card-foto-2 {
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+
+@media (hover: hover) {
+  .card:hover .card-foto-2 {
+    opacity: 1;
+  }
+}
+
+/* En movil no hay hover: el teclado es la unica forma de ver la segunda foto */
+.card:focus-visible .card-foto-2 {
+  opacity: 1;
+}
+
+.card-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-swatches {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* 12px, borde Ochre (SPEC §4.2). No son botones: la card entera es el enlace. */
+.card-swatch {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+}
+
+/* ---------- 10k. Catalogo (SPEC §4.2) ---------- */
+
+.catalogo-head {
+  padding-block: 40px 32px;
+}
+
+/**
+ * El SPEC §11.1 promete que la linea acompana la columna de producto. Aqui baja
+ * por el margen izquierdo de la grilla. Solo desde tablet: en movil ese carril
+ * le quitaria ancho a la card, que es lo unico que importa en esa pantalla.
+ */
+.catalogo-cuerpo {
+  position: relative;
+  padding-bottom: 64px;
+}
+
+.catalogo-trazo {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .catalogo-cuerpo {
+    padding-left: 32px;
+  }
+
+  .catalogo-trazo {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 64px;
+  }
+}
+
+/**
+ * "Cargar mas" sobre el eje izquierdo, no centrado (spec de diseno §4).
+ * Arranca oculto: sin JavaScript la grilla ya esta entera en el HTML y el boton
+ * no tendria nada que cargar (SPEC §9.5).
+ */
+.cargar-mas {
+  display: none;
+  padding-top: 40px;
+}
+
+@media (scripting: enabled) {
+  .cargar-mas {
+    display: block;
+  }
+}
+
+.catalogo-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding-block: 64px;
+}
+
+/* ---------- 10l. Barra de filtros (SPEC §4.2) ---------- */
+
+/**
+ * Pegajosa bajo el header fijo. El offset depende de si la franja de anuncio
+ * esta encendida, igual que `.con-header` / `.con-anuncio` en el layout.
+ */
+.barra-filtros {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 40;
+  background-color: var(--bg);
+  border-block: 1px solid var(--line-soft);
+  padding-block: 10px;
+}
+
+.con-anuncio .barra-filtros {
+  top: calc(var(--header-h) + var(--anuncio-h));
+}
+
+.barra-filtros-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Grupo de una dimension: etiqueta arriba, controles debajo */
+.filtro-grupo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filtro-grupo-titulo {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.filtro-controles {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.filtro-precio {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.filtro-precio .input {
+  width: 110px;
+}
+
+/* En el panel de movil cada dimension va apilada y con aire */
+.filtro-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.filtro-panel .filtro-grupo {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* Debajo de 1024px las cuatro dimensiones no caben en una fila legible:
+   el detalle se va al panel inferior y en la barra queda el disparador. */
+.filtros-desktop {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .filtros-desktop {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .filtros-movil {
+    display: none;
+  }
+}
+
+/* ---------- 10m. Ficha de producto (SPEC §4.3) ---------- */
+
+.ficha-pagina {
+  padding-bottom: 64px;
+}
+
+.miga {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  padding-block: 20px 24px;
+}
+
+.miga li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.miga svg {
+  flex: none;
+  color: var(--line);
+}
+
+.ficha {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+.ficha-compra {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .ficha {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 440px);
+    gap: 56px;
+    align-items: start;
+  }
+
+  /* Pegajosa: la foto es larga y el boton no puede irse de pantalla (SPEC §4.3) */
+  .ficha-compra {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    padding-left: 32px;
+  }
+
+  .con-anuncio .ficha-compra {
+    top: calc(var(--header-h) + var(--anuncio-h) + 24px);
+  }
+}
+
+/**
+ * SPEC §11.1 — en la ficha la linea conecta la galeria con el bloque de compra:
+ * la mirada la sigue de la foto al boton. Solo existe cuando hay dos columnas;
+ * en movil no hay nada que conectar porque van una debajo de otra.
+ */
+.ficha-trazo {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .ficha-trazo {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+  }
+}
+
+/* SPEC §4.3 — nombre en Cormorant 400, 28px */
+.ficha-nombre {
+  font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.ficha-sku {
+  font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+}
+
+.ficha-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ficha-opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ficha-color-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.ficha-inventario {
+  color: var(--text-muted);
+}
+
+/**
+ * Medios de pago justo bajo el precio. El gesto viene de la referencia, no el
+ * contenido: alla hay un widget de credito y aqui el checkout es contra entrega
+ * y transferencia (SPEC §4.5). Lo que se copia es subir la informacion de pago a
+ * la altura del precio en vez de enterrarla al final de la pagina.
+ */
+.ficha-pagos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.ficha-pago {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+.ficha-pago svg {
+  flex: none;
+  color: var(--line);
+}
+
+.ficha-talla-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tabla-tallas {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tabla-tallas th,
+.tabla-tallas td {
+  text-align: left;
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.tabla-tallas th {
+  font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+}
+
+.ficha-detalles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+/* ---------- 10n. Galeria (SPEC §4.3) ---------- */
+
+.galeria {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Movil: carrusel a ancho completo con puntos. Desktop: una sola foto grande. */
+.galeria-vista {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.galeria-vista::-webkit-scrollbar {
+  display: none;
+}
+
+.galeria-vista > li {
+  position: relative;
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  aspect-ratio: 3 / 4;
+  background-color: var(--sahara);
+}
+
+.galeria-puntos {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+}
+
+/* 44x44 real alrededor de un punto de 6px (SPEC §12) */
+.punto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.punto span {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: var(--line-soft);
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.punto[aria-current="true"] span {
+  background-color: var(--umber);
+}
+
+.galeria-minis {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  flex: none;
+  width: 76px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mini {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background-color: var(--sahara);
+}
+
+.mini[aria-pressed="true"] {
+  border-color: var(--umber);
+}
+
+@media (min-width: 768px) {
+  .galeria {
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .galeria-principal {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .galeria-vista {
+    flex-direction: column;
+    overflow: visible;
+    gap: 12px;
+  }
+
+  .galeria-puntos {
+    display: none;
+  }
+}
+
+/**
+ * "Una sola foto grande + miniaturas" es estado de interfaz. Sin JavaScript no
+ * hay nada que cambiar, asi que la galeria se queda como una columna con las
+ * cuatro fotos: entera, sin nada escondido (SPEC §9.5).
+ */
+@media (min-width: 768px) and (scripting: enabled) {
+  .galeria-vista {
+    display: block;
+  }
+
+  .galeria-vista > li[data-activa="false"] {
+    display: none;
+  }
+
+  .galeria-minis {
+    display: flex;
+  }
+}
+
+/* ---------- 10o. Cierre de la ficha ---------- */
+
+.ficha-detalle {
+  padding-block: 56px 16px;
+}
+
+.ficha-detalle-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.completa {
+  padding-top: 48px;
+}
+
+.completa-titulo {
+  margin-bottom: 24px;
+}
+
+/**
+ * Cuatro columnas en escritorio. La usan "Completa el look" y los destacados de
+ * la home: con cuatro productos, tres columnas dejan uno solo en la segunda fila.
+ */
+@media (min-width: 768px) {
+  .grid-cuatro {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/**
+ * SPEC §4.3 — barra de compra de movil: precio y "Agregar" desde que entras.
+ *
+ * Es `sticky`, no `fixed`. `fixed` la deja flotando tambien sobre el footer y
+ * obliga a reservar relleno inferior en toda la pagina; `sticky` como ultimo
+ * hijo del articulo se mantiene pegada abajo mientras la ficha esta en pantalla
+ * y se suelta sola al terminarla. Menos CSS y ningun solape.
+ *
+ * Lleva `.a-sangre` (10i): es el segundo consumidor de esa utilidad y el que
+ * el spec de diseno §2.3 tenia en mente — una barra que llega a los bordes de
+ * la pantalla. `.barra-compra` ya trae su propio `padding-inline` para no
+ * perder el respiro interno al ir a sangre.
+ */
+.barra-compra {
+  position: sticky;
+  bottom: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding: 12px 24px calc(12px + env(safe-area-inset-bottom));
+  background-color: var(--bg);
+  border-top: 1px solid var(--line-soft);
+}
+
+.barra-compra .btn {
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .barra-compra {
+    padding-inline: 48px;
+  }
+}
+
+/* Desde 1024px hay dos columnas y el boton ya vive pegajoso en la derecha */
+@media (min-width: 1024px) {
+  .barra-compra {
+    display: none;
+  }
+}
+
 /* ---------- 11. Superficies ---------- */
 
 /**
@@ -1720,8 +2526,30 @@
   opacity: 1;
 }
 
-/* El trazo continuo (SPEC §11.1).
-   pathLength="1" evita medir la longitud del path con JS. */
+/**
+ * El trazo continuo (SPEC §11.1).
+ *
+ * `TrazoCierre` y `TrazoPaso` se dibujan con `pathLength="1"` +
+ * `stroke-dasharray` (evita medir la longitud del path con JS): su viewBox
+ * coincide exacto con su tamano renderizado, sin ningun escalado, y ahi la
+ * tecnica funciona bien.
+ *
+ * `TrazoColumna` (la columna vertical, clase `.trazo-columna`) NO usa esa
+ * tecnica — se investigo a fondo y es un bug real de Chrome, no un error de
+ * este CSS. Con `alto="100%"` (catalogo, ficha) el viewBox "0 0 1 100" se
+ * estira varias veces en vertical (`preserveAspectRatio: none`); en ese caso
+ * `path.isPointInStroke()` confirma que Chrome calcula BIEN el guion — la
+ * geometria del trazo es continua de punta a punta — pero lo PINTA partido en
+ * pedazos con huecos. Es un bug de rasterizado ante un trazo punteado sobre
+ * un SVG estirado de forma no uniforme, no de calculo, y no tiene un fix de
+ * una linea: probamos `vector-effect: non-scaling-stroke` puesto y quitado, y
+ * los dos estados pintan mal, solo que distinto (con la propiedad, dos
+ * segmentos; sin ella, un solo tramo corto). Por eso `TrazoColumna` se dibuja
+ * con `clip-path` en vez de `stroke-dasharray`: nunca hay un guion que Chrome
+ * pueda pintar mal, y el resultado es identico se estire lo que se estire el
+ * SVG (verificado en un arnes aislado a 5.5x de estiramiento, la proporcion
+ * real de la columna de la ficha).
+ */
 .trazo path {
   fill: none;
   stroke: var(--line);
@@ -1748,7 +2576,8 @@
     transform: none;
   }
 
-  .trazo path {
+  /* TrazoCierre / TrazoPaso: dasharray de longitud 1 normalizada por pathLength="1" */
+  .trazo:not(.trazo-columna) path {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
   }
@@ -1757,13 +2586,22 @@
     opacity: 0;
   }
 
-  .trazo[data-drawn="true"] path {
+  .trazo[data-drawn="true"]:not(.trazo-columna) path {
     animation: trazo-draw var(--dur-trazo) var(--ease) forwards;
   }
 
   .trazo[data-drawn="true"] circle {
     animation: trazo-dot 400ms var(--ease) forwards;
     animation-delay: var(--dur-trazo);
+  }
+
+  /* TrazoColumna: revela con clip-path de arriba a abajo, sin dasharray (ver comentario arriba) */
+  .trazo-columna {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  .trazo-columna[data-drawn="true"] {
+    animation: trazo-clip var(--dur-trazo) var(--ease) forwards;
   }
 }
 
@@ -1776,6 +2614,12 @@
 @keyframes trazo-dot {
   to {
     opacity: 1;
+  }
+}
+
+@keyframes trazo-clip {
+  to {
+    clip-path: inset(0 0 0% 0);
   }
 }
 
@@ -1797,16 +2641,30 @@
     transition: none;
   }
 
-  /* La linea aparece dibujada, sin animacion (SPEC §11.1) */
+  /* La linea aparece dibujada, sin animacion (SPEC §11.1).
+     `!important` porque `.trazo[data-drawn="true"]:not(.trazo-columna) path` y
+     `.trazo-columna[data-drawn="true"]` (dentro de `@media (scripting: enabled)`)
+     tienen mas especificidad que estos selectores planos: sin `!important`, un
+     trazo que ya cargo visible (`data-drawn="true"` de una) le gana la cascada
+     a este reset, y uno que todavia no entro en vista se queda con el
+     `stroke-dashoffset: 1` de la regla que lo esconde antes de dibujarse. En
+     los dos casos el resultado visual es casi el mismo (nada se mueve, el
+     0.01ms de mas abajo lo asegura), pero el valor computado no era el que
+     promete "sin animacion", asi que `npm run verificar` lo marcaba en rojo. */
   .trazo path {
-    stroke-dasharray: none;
-    stroke-dashoffset: 0;
-    animation: none;
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
   }
 
   .trazo circle {
-    opacity: 1;
-    animation: none;
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
+  .trazo-columna {
+    clip-path: none !important;
+    animation: none !important;
   }
 
   *,
@@ -1820,6 +2678,12 @@
 }
 
 /* ---------- 13. Utilidades ---------- */
+
+/* Compartida por /sistema y la guia de tallas de la ficha: mismo envoltorio de scroll horizontal */
+.tabla-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
 
 .visually-hidden {
   position: absolute;

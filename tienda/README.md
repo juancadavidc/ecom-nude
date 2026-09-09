@@ -1,6 +1,6 @@
 # Tienda NUDE SPORTSWEAR
 
-Next.js 16 (App Router) + TypeScript + Tailwind 4 + Firestore.
+Next.js 16 (App Router) + TypeScript + Tailwind 4 + Postgres (Drizzle) + Better Auth.
 Especificación: [`../SPEC.md`](../SPEC.md). Este README documenta el estado real del código.
 
 ```bash
@@ -17,21 +17,26 @@ bloquea los recursos de desarrollo, la página carga pero nada responde.
 
 ---
 
-## Estado: fase 1 completa (§9.4)
+## Estado: fase 3 completa (§9.4) sobre catálogo mock
 
-**Entregado:** design system — tokens, tipografía, botones, formularios, header y footer.
+**Entregado:** design system (fase 1) + home completa, catálogo y ficha de producto.
 
 | Ruta | Qué es |
 |------|--------|
-| `/` | Cáscara de la home. Hero, manifiesto, tres pilares, franja de confianza. Existe para ver el sistema en contexto, **no es la home definitiva** (fase 6) |
-| `/sistema` | **Página de verificación del design system.** Todo token y todo componente en un scroll. `noindex`, no enlazada desde la tienda |
-| 404 | Isotipo + "Esta página se movió." + botón al catálogo |
+| `/` | Home completa, diez bloques del SPEC §4.1 |
+| `/leggings` · `/tops` · `/sets` | Catálogo por categoría con filtros en la URL |
+| `/colecciones` | Todo el catálogo. Destino de "Ver todo" |
+| `/[categoria]/[slug]` | Ficha de producto, renderizada en servidor |
+| `/sistema` | Verificación del design system. `noindex`, no enlazada |
+| 404 | Isotipo + "Esta página se movió." |
 
-**Pendiente de fases siguientes:** modelo de datos y panel (2) · catálogo y ficha (3) ·
-carrito y checkout (4) · panel de pedidos y correos (5) · home real, Nosotras, contenido, SEO (6).
+**El catálogo vive en Postgres.** `src/lib/productos.ts` consulta la base de datos
+vía Drizzle; `src/content/productos.json` ya no se lee en runtime, solo se usa como
+fuente del seed. Las ocho referencias siguen siendo inventadas y todas las fotos de
+producto siguen siendo placeholders planos.
 
-Los links del nav (`/leggings`, `/tops`, `/sets`, `/coleccion`, `/nosotras`) todavía llevan al 404.
-Las rutas entran en la fase 3; el 404 está diseñado y degrada bien mientras tanto.
+**Pendiente:** modelo de datos y panel (2) · carrito y checkout (4) · panel de
+pedidos y correos (5) · Nosotras y páginas de contenido (6).
 
 ---
 
@@ -80,6 +85,14 @@ solo archivo sirve para cualquier color de la paleta.
 **Nada se esconde sin JavaScript.** Todas las reglas que ponen `opacity: 0` viven dentro de
 `@media (scripting: enabled)`. Se verifica desactivando JS: nada desaparece (SPEC §9.5).
 
+**Ningún componente importa `productos.json`.** Todo pasa por `src/lib/productos.ts`,
+y sus cuatro funciones son `async` desde hoy aunque lean un archivo síncrono. Es lo
+que hace que la fase 2 sea cambiar un cuerpo de función en vez de cada página.
+
+**El filtrado es mejora progresiva.** El servidor renderiza la grilla entera —de ahí
+sale el SEO— y el cliente la reemplaza ya filtrada. El fallback del `<Suspense>` es
+esa misma grilla completa, así que sin JavaScript queda el catálogo entero.
+
 **Server Components por defecto.** Solo llevan `'use client'`: `NavMovil`, `BotonCarrito`,
 `Panel`, `Acordeon`, `Reveal`, `Trazo` y las demos de `/sistema`.
 
@@ -108,69 +121,117 @@ color. La etiqueta siempre está visible, así que el placeholder nunca hace de 
 | §9.5: clase en `<html>` puesta por script para el estado oculto | `@media (scripting: enabled)` | Es la misma condición evaluada por CSS. Un script menos y nada que hidratar mal |
 | §9.6: `import { X } from '@phosphor-icons/react'` | `@phosphor-icons/react/dist/ssr` reexportado desde `components/ui/icons.tsx` | La versión CSR arrastra contexto de React; la SSR son SVG planos que sirven en Server y Client. Un solo punto de entrada mantiene el set cerrado |
 | §11.1: dibujar el trazo con `stroke-dashoffset` | igual, pero con `pathLength="1"` | Normaliza la longitud del path: no hay que medirlo con JavaScript |
+| §11.1: `TrazoColumna` (la columna vertical de catálogo y ficha) también con `stroke-dashoffset` | se dibuja con `clip-path` en su lugar | Bug de rasterizado de Chrome: el dasharray normalizado se pinta partido en pedazos sobre un SVG estirado de forma no uniforme (`alto="100%"`). Detalle completo en el comentario de `.trazo path` en `globals.css` |
 | §5: acordeón | contenido siempre en el DOM, colapsado con `grid-template-rows: 0fr→1fr` | Google lo indexa aunque esté cerrado, y anima a altura automática sin medir |
 
 ---
 
 ## Verificado
 
-Con Playwright sobre Chrome real, en `/` y `/sistema`:
+```bash
+npm test          # vitest: adaptador de producto y filtros
+npm run verificar # build + Playwright sobre out/ en Chrome real
+```
 
-- Sin desborde horizontal a 375, 390, 768, 1024 y 1440px
-- Sin JavaScript: 0 elementos `.reveal` invisibles
-- `prefers-reduced-motion`: 0 elementos invisibles, trazo con `stroke-dashoffset: 0`
-- Sin errores de consola ni de hidratación
-- El botón en carga no cambia de ancho (0px de salto) y conserva su nombre accesible
-- `npm run lint` y `npm run build` limpios
+**`npm run verificar` queda temporalmente sin vigencia.** Corría Playwright contra
+`out/`, el export estático que este trabajo elimina. Adaptarlo para correr contra
+`next start` (o borrarlo) es un pendiente aparte — no está en el alcance de este
+plan. Mientras tanto, la verificación visual pasa por `run-tienda`
+(`.claude/skills/run-tienda/`) contra el dev server.
+
+**Cómo funcionaba antes de quedar sin vigencia:** el script corría contra `out/`,
+no contra el dev server, porque `out/` era lo que Firebase publicaba. Comprobaba,
+en `/`, los cuatro catálogos, tres fichas y `/sistema`, a 375, 768, 1024 y 1440px:
+
+- Sin desborde horizontal, sin errores de consola, `alt` en toda imagen, nombre
+  accesible en todo control y área táctil de 44px
+- Sin JavaScript: cero bloques `.reveal` invisibles, las ocho cards en
+  `/colecciones` y las cuatro fotos de galería en la ficha
+- `prefers-reduced-motion`: nada invisible y el trazo dibujado
+- Los filtros viven en la URL: `?color=Arena` y `?orden=precio-asc` llegan
+  aplicados en carga fría
+
+Antes de creer cualquiera de esos resultados de "sin JavaScript", el script se
+autoprobaba: comprobaba que `javaScriptEnabled: false` de Playwright de verdad
+apagara `@media (scripting: enabled)` en Chromium, usando un `.reveal` fuera de
+vista como sonda. Si esa autoprueba fallaba, el script abortaba con un mensaje
+explicando que la sección "sin JavaScript" no era confiable y cómo comprobarlo a
+mano (DevTools → Settings → Debugger → Disable JavaScript).
+
+Fuera del script y a mano (esto sigue vigente): contraste del texto sobre
+fotografía, encuadre de los recortes y tono del copy.
+
+Escribir el script encontró en su momento dos fallas reales, ya corregidas: `@media (prefers-reduced-motion: reduce)`
+perdía la guerra de especificidad CSS contra `.trazo[data-drawn="true"]` (visualmente
+casi idéntico, pero no era el "sin animación" que promete el SPEC — se corrigió con
+`!important`, ver el comentario junto a esa regla en `globals.css`); y el header, el
+footer, el nav móvil y la barra de anuncio precargaban con `next/link` rutas de menú
+que hoy caen en 404 a propósito, lo que llenaba la consola de errores en cada carga —
+ver `prefetchable()` en `src/lib/site.ts`.
 
 ---
 
 ## Despliegue
 
-**En vivo en https://nudesportswear.co** desde el 2 de septiembre de 2026, por decisión
-explícita de Daniela — sabiendo que la tienda está en fase 1 y no puede vender.
+**Ya no es export estático.** La app corre en modo servidor (Server Actions,
+cookies de sesión, `POST` en `/api/auth/*`) — ver
+`docs/superpowers/specs/2026-09-07-postgres-better-auth-docker.md` §2.
 
 ```bash
-npm run build                    # escribe out/ (export estatico)
-firebase deploy --only hosting   # publica out/ en el dominio
-
-# revisar antes de publicar, sin tocar el dominio:
-firebase hosting:channel:deploy pre-ecom --expires 2d
+docker compose -f docker-compose-local.yaml up -d   # Postgres local, puerto 5434
+npm run dev                                          # migra solo, sirve en :3000
 ```
 
-**⚠️ Este sitio y la landing comparten el mismo sitio de Firebase (`nudesportswear-landing`).**
-La landing vive en **otro repo** — el de marca, en
-`~/Documents/Claude/Projects/NUDE SPORTWEAR/landing/landing-page/` — y apunta al mismo
-proyecto de Firebase. Un `firebase deploy` corrido desde allá **reemplaza el ecom por la
-landing sin avisar**, y al revés. El último que despliega gana. Como ahora son dos repos
-distintos, git no te va a avisar de nada: antes de desplegar cualquiera de los dos, confirmá
-desde qué carpeta estás corriendo el comando.
+**Producción:** GitHub Actions construye la imagen en cada push a `main` y la
+publica en `ghcr.io/juancadavidc/ecom-nude/tienda`. Coolify hace `pull` de esa
+imagen — no construye nada. El corte de DNS de `nudesportswear.co` hacia Coolify es
+una tarea aparte, todavía no hecha: el sitio en vivo sigue siendo el último build
+estático publicado en Firebase hasta que ese corte ocurra.
 
-**Rollback a la landing:**
+**Migraciones:** automáticas en `npm run dev` (`src/instrumentation.ts`) y como
+paso explícito del `entrypoint.sh` del contenedor, antes de `next start`. Nunca a
+mano.
 
-```bash
-cd ~/Documents/Claude/Projects/NUDE\ SPORTWEAR/landing/landing-page
-firebase deploy --only hosting
-```
+**Variables de entorno que Coolify tiene que tener configuradas** en el recurso
+"Docker Image" para que el contenedor funcione en producción:
 
-También sirve revertir el release desde la consola de Firebase (Hosting → historial de versiones),
-que no depende de tener el otro repo a mano.
-
-**El export estático se cae en la fase 3.** Hoy funciona porque las cuatro rutas se
-prerenderizan en build. Catálogo y ficha leen de Firestore y necesitan renderizado en
-servidor — que es de lo que depende el SEO (§9.5, §12) — y el checkout necesita Server
-Actions. Nada de eso existe en `output: 'export'`. Hay que migrar a **Firebase App Hosting**
-(producto distinto, otro flujo) antes de esa fase.
+| Variable | Obligatoria | Nota |
+|---|---|---|
+| `DATABASE_URL` | Sí | Postgres accesible desde el contenedor — nunca `localhost:5434` en producción |
+| `BETTER_AUTH_SECRET` | Sí | 32+ caracteres, alta entropía — sin esto el contenedor arranca pero la autenticación queda rota (ver más abajo) |
+| `BETTER_AUTH_URL` | Sí | El origen público https del sitio (no localhost) |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Sí, para que el login funcione | Sin esto el proveedor Google queda deshabilitado |
+| `ADMIN_ALLOWLIST` | Sí | Correos separados por coma; cualquiera fuera de la lista no puede crear sesión |
 
 **`robots: { index: false }`** está en el layout raíz. Como el dominio ahora sirve esta app,
 **todo `nudesportswear.co` está en `noindex, nofollow`** — la landing anterior sí era
 indexable. Se deja así a propósito: es preferible que Google no indexe una tienda cuyo menú
 cae en 404. Quitarlo cuando el catálogo esté publicado (fase 3+).
 
-**Rutas del menú en 404.** `/leggings`, `/tops`, `/sets`, `/coleccion` y `/nosotras` no
-existen todavía y caen en el 404 diseñado. Entran en la fase 3.
+**Rutas del menú todavía en 404:** `/ropa-deportiva`, `/nosotros`, `/contacto`,
+`/guia-de-tallas`, `/envios`, `/cambios`, `/legales`, `/cuenta` y `/buscar`. Fuera de
+alcance de esta fase (spec de diseño §8). `prefetchable()` en `src/lib/site.ts` apaga
+la precarga de `next/link` sobre esta misma lista — sin eso, Next intenta precargar
+cada una apenas entra en el viewport y llena la consola de 404, cosa que el propio
+`npm run verificar` detectó al comprobar errores de consola. Cuando una ruta se
+construya, sale de esa lista y no hay que tocar nada más.
 
 **Placeholders en `src/lib/site.ts`:** el WhatsApp es `+57 300 000 0000`, el mismo del linktree.
+
+**El correo del newsletter no se guarda.** `src/components/home/Newsletter.tsx`
+valida y confirma, pero no escribe en ningún lado (`TODO(fase-6)`). Conectarlo
+antes de quitar el `noindex`.
+
+**Las medidas de la guía de tallas son provisionales** (`src/lib/tallas.ts`,
+`TODO(decision-abierta-1)`). Las confirma el proveedor; publicar medidas
+equivocadas sube las devoluciones, que es justo lo que la guía existe para bajar.
+
+**La confiabilidad de `useEnVista` queda como pregunta abierta, no como bug confirmado.**
+Dos investigaciones separadas no lograron determinar si su `IntersectionObserver`
+siempre dispara `data-drawn`/`data-visible`, o si las fallas que se vieron eran
+artefactos del scroll automatizado con el que se probó. Si la fragilidad es real,
+un trazo o un `.reveal` podría, en un caso raro, no llegar a aparecer nunca. No se
+reprodujo de forma confiable como para convertirlo en una corrección.
 
 **`npm audit`** reporta vulnerabilidades altas en `brace-expansion`, `minimatch` y `postcss`,
 todas transitivas de ESLint y de herramientas de build. No llegan al bundle del navegador.

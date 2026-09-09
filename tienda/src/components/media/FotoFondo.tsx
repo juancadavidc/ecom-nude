@@ -3,10 +3,9 @@ import { cx } from '@/lib/format'
 /**
  * Foto a sangre que llena su contenedor (el padre pone `position: relative`).
  *
- * No usa `next/image` a proposito: el sitio se exporta estatico
- * (`next.config.ts`, `output: 'export'`) y Firebase Hosting no corre el
- * optimizador de Next, asi que `<Image>` acabaria sirviendo el original crudo.
- * Las variantes ya salen de `scripts/gen-fotos.mjs` y aqui solo se declaran:
+ * No usa `next/image` a proposito: las variantes ya salen precalculadas de
+ * `scripts/gen-fotos.mjs` (AVIF/WebP/JPG en varios anchos), asi que no hace
+ * falta el optimizador de Next en tiempo de ejecucion. Aqui solo se declaran:
  * AVIF primero, WebP despues y JPG de red de seguridad.
  *
  * `alt` es obligatorio y sin valor por defecto: una foto de fondo puede ser

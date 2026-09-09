@@ -26,6 +26,28 @@ export const navPrincipal = [
   { label: 'Contacto', href: '/contacto' },
 ] as const
 
+/**
+ * Rutas del menu que hoy caen en el 404 a proposito (fuera de alcance de esta
+ * fase, spec de diseno §8). Next.js precarga cualquier `<Link>` que entre en
+ * el viewport; precargar una ruta que ya sabemos que no existe solo llena la
+ * consola de errores 404 en cada visita, sin ningun beneficio. `prefetchable`
+ * apaga esa precarga solo para estas.
+ */
+const SIN_CONSTRUIR = new Set([
+  '/ropa-deportiva',
+  '/nosotros',
+  '/contacto',
+  '/guia-de-tallas',
+  '/envios',
+  '/cambios',
+  '/legales',
+  '/cuenta',
+])
+
+export function prefetchable(href: string) {
+  return !SIN_CONSTRUIR.has(href.split('#')[0])
+}
+
 export const navPie = [
   {
     titulo: 'Tienda',
@@ -55,9 +77,28 @@ export const navPie = [
   },
 ] as const
 
-/** SPEC §4.1 bloque 7 — franja de confianza */
+/**
+ * SPEC §4.1 bloque 7 — franja de confianza.
+ * El tratamiento con icono viene de la referencia (femaleforce.com.co): icono de
+ * linea + titulo + una linea. El contenido es el del SPEC, no el de alla.
+ *
+ * El icono se nombra, no se importa: `site.ts` no debe arrastrar componentes de
+ * React a cualquiera que lea configuracion.
+ */
 export const promesas = [
-  { titulo: 'Envio a todo Colombia', detalle: 'Llega en 2 a 4 dias habiles.' },
-  { titulo: 'Pago contra entrega', detalle: 'Pagas en efectivo cuando recibas.' },
-  { titulo: 'Cambios en 15 dias', detalle: 'Si no es tu talla, la cambiamos.' },
+  {
+    icono: 'envio',
+    titulo: 'Envio a todo Colombia',
+    detalle: 'Llega en 2 a 4 dias habiles.',
+  },
+  {
+    icono: 'pago',
+    titulo: 'Pago contra entrega',
+    detalle: 'Pagas en efectivo cuando recibas.',
+  },
+  {
+    icono: 'cambio',
+    titulo: 'Cambios en 15 dias',
+    detalle: 'Si no es tu talla, la cambiamos.',
+  },
 ] as const

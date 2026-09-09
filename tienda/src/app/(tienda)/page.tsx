@@ -1,27 +1,41 @@
 import type { Metadata } from 'next'
+import { Comunidad } from '@/components/home/Comunidad'
+import { Newsletter } from '@/components/home/Newsletter'
+import { TileCategoria } from '@/components/home/TileCategoria'
 import { FotoFondo } from '@/components/media/FotoFondo'
 import { Reveal } from '@/components/motion/Reveal'
 import { TrazoColumna } from '@/components/motion/Trazo'
+import { GridProducto } from '@/components/producto/GridProducto'
 import { BotonLink } from '@/components/ui/Button'
-import { manifiesto, pilares } from '@/lib/copy'
+import { ArrowsClockwise, Truck, Wallet } from '@/components/ui/icons'
+import { manifiesto, microcopy, pilares } from '@/lib/copy'
+import { destacados } from '@/lib/productos'
 import { promesas, site } from '@/lib/site'
 
+export const dynamic = 'force-dynamic'
+
+/* `site.ts` nombra el icono; la pagina lo resuelve. Asi la configuracion no
+   arrastra componentes de React. */
+const ICONO_PROMESA = {
+  envio: Truck,
+  pago: Wallet,
+  cambio: ArrowsClockwise,
+} as const
+
 /**
- * FASE 1 — cascara de la home.
+ * Home. Las categorias y los destacados llevan al catalogo (tarea 10). El
+ * formulario de correo (`Newsletter`) ya esta montado, pero todavia no guarda
+ * nada — ver el TODO(fase-6) en ese componente.
  *
- * Existe para ver el design system en contexto real (header fijo, eje izquierdo,
- * franja Umber centrada, el trazo, los reveals) y no para ser la home definitiva:
- * las tres tiles de categoria, los destacados y la captura de correo son de la
- * fase 6, cuando haya catalogo. El hero ya es fotografico.
- *
- * Los bloques que si estan usan copy ya aprobado — manifiesto de la tarjeta de
+ * Los bloques que ya estaban usan copy aprobado — manifiesto de la tarjeta de
  * agradecimiento y los tres pilares de la landing. No se invento nada.
  */
 export const metadata: Metadata = {
   title: 'Inicio',
 }
 
-export default function Home() {
+export default async function Home() {
+  const productosDestacados = await destacados(4)
   return (
     <>
       {/* Hero — SPEC §4.1 bloque 2. La foto va a sangre y el texto encima en
@@ -58,8 +72,8 @@ export default function Home() {
             </p>
           </Reveal>
           <Reveal delay={240}>
-            <BotonLink href="/sistema" variante="outline-invert">
-              Ver el sistema
+            <BotonLink href="/colecciones" variante="outline-invert">
+              Ver la coleccion
             </BotonLink>
           </Reveal>
         </div>
@@ -85,6 +99,58 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Categorias — SPEC §4.1 bloque 4. A sangre: la foto toca el borde de la
+          pantalla. Es el contraste con el margen amplio del texto lo que hace que
+          esto lea como editorial y no como plantilla centrada.
+
+          Los tres anchos no son iguales: el crop de leggings se rehizo en la
+          tarea 3 a 280x373 porque a 588 de alto ningun offset libraba la
+          barbilla de la modelo. `TileCategoria` recibe ancho/alto por tile en
+          vez de asumir 441x588 para no reservar la caja equivocada ni pedir un
+          archivo que no existe. */}
+      <section className="tiles" aria-label="Categorias">
+        <TileCategoria
+          categoria="leggings"
+          foto="categoria-leggings"
+          alt="Detalle de la cinturilla alta de un legging NUDE, de perfil"
+          ancho={280}
+          alto={373}
+        />
+        <TileCategoria
+          categoria="tops"
+          foto="categoria-tops"
+          alt="Top corto NUDE con panel de malla, vista frontal"
+          ancho={441}
+          alto={588}
+        />
+        <TileCategoria
+          categoria="sets"
+          foto="categoria-sets"
+          alt="Conjunto NUDE de top y legging, cuerpo entero"
+          ancho={441}
+          alto={588}
+        />
+      </section>
+
+      {/* Destacados — SPEC §4.1 bloque 5. Grilla, no carrusel: el carrusel
+          esconde producto detras de una flecha. */}
+      <section className="section">
+        <div className="container-nude">
+          <div className="eje destacados-head">
+            <Reveal>
+              <p className="label text-muted">Lo nuevo</p>
+              <h2 className="title">Primera Piel</h2>
+            </Reveal>
+            <Reveal className="eje-fin" delay={80}>
+              <BotonLink href="/colecciones" variante="secundario">
+                {microcopy.verTodo}
+              </BotonLink>
+            </Reveal>
+          </div>
+          <GridProducto productos={productosDestacados} className="grid-cuatro" />
+        </div>
+      </section>
+
       {/* Los tres pilares — SPEC §4.1 bloque 6. Eje izquierdo constante (§11.2). */}
       <section className="section">
         <div className="container-nude">
@@ -106,17 +172,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Franja de confianza — SPEC §4.1 bloque 7 */}
-      <section className="on-sahara promesas-franja">
-        <div className="container-nude promesas">
-          {promesas.map((promesa) => (
-            <div key={promesa.titulo} className="promesa">
-              <h3 className="card-name">{promesa.titulo}</h3>
-              <p className="body-s text-muted">{promesa.detalle}</p>
-            </div>
-          ))}
+      {/* Franja de confianza — SPEC §4.1 bloque 7. El tratamiento con icono
+          viene de la referencia; el contenido, del SPEC. */}
+      <section className="on-sahara franja-confianza">
+        <div className="container-nude franja-iconos">
+          {promesas.map((promesa) => {
+            const Icono = ICONO_PROMESA[promesa.icono]
+            return (
+              <div key={promesa.titulo} className="franja-icono">
+                <Icono size={24} weight="light" aria-hidden="true" />
+                <h3 className="card-name">{promesa.titulo}</h3>
+                <p className="body-s text-muted">{promesa.detalle}</p>
+              </div>
+            )
+          })}
         </div>
       </section>
+
+      <Comunidad />
+
+      <Newsletter />
     </>
   )
 }
