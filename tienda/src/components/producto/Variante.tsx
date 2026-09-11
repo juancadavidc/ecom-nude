@@ -3,6 +3,7 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
 import type { Producto, Talla, Variante } from '@/lib/producto-modelo'
 import { coloresDe, stockDe, tallasDe, varianteDe } from '@/lib/producto-modelo'
+import { useCarrito } from '@/components/carrito/CarritoProvider'
 
 /**
  * Color y talla elegidos en la ficha. Es el unico estado con el que la clienta
@@ -57,6 +58,10 @@ export function VarianteProvider({
   const [talla, setTalla] = useState<Talla | null>(null)
   const [confirmado, setConfirmado] = useState(false)
 
+  const carrito = useCarrito()
+
+  const variante = talla ? varianteDe(producto, color, talla) : null
+
   const valor = useMemo<ContextoVariante>(
     () => ({
       producto,
@@ -65,7 +70,7 @@ export function VarianteProvider({
       color,
       talla,
       imagenes: producto.imagenes[color] ?? [],
-      variante: talla ? varianteDe(producto, color, talla) : null,
+      variante,
       elegirColor: (nuevo) => {
         setColor(nuevo)
         // La talla se conserva solo si el color nuevo la tiene. Dejarla puesta
@@ -75,10 +80,25 @@ export function VarianteProvider({
       elegirTalla: setTalla,
       stockDeTalla: (t) => stockDe(producto, color, t),
       confirmado,
-      agregar: () => setConfirmado(true),
+      agregar: () => {
+        if (!talla || !variante) return
+        carrito.agregar(
+          {
+            sku: variante.sku,
+            productoSlug: producto.slug,
+            nombre: producto.nombre,
+            color,
+            talla,
+            precio: producto.precio,
+            imagen: producto.imagenes[color][0],
+          },
+          1,
+        )
+        setConfirmado(true)
+      },
       cerrarConfirmacion: () => setConfirmado(false),
     }),
-    [producto, colores, tallas, color, talla, confirmado],
+    [producto, colores, tallas, color, talla, confirmado, carrito, variante],
   )
 
   return <Ctx.Provider value={valor}>{children}</Ctx.Provider>
