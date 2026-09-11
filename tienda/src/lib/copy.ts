@@ -55,6 +55,8 @@ export const microcopy = {
   ordenar: 'Ordenar',
   seguirViendo: 'Seguir viendo',
   finalizar: 'Finalizar compra',
+  envioEnCheckout: 'El envio se calcula en el siguiente paso.',
+  eliminarDelCarrito: 'Eliminar del carrito',
   guiaTallas: 'Guia de tallas',
   elegirTalla: 'Elige una talla',
   error404: 'Esta pagina se movio.',
