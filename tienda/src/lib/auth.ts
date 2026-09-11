@@ -16,15 +16,24 @@ if (
 const allowlist = leerAllowlist()
 
 /**
- * Acceso con Google SSO y allowlist de correos (SPEC §9.3). La tienda publica no
- * tiene cuentas de clienta: esta instancia solo protege /admin.
+ * Acceso con Google SSO (SPEC §9.3). Cualquier correo puede crear cuenta —
+ * `/admin` no es la puerta de entrada, es un panel que unos pocos correos
+ * pueden ver. La allowlist decide el rol, no si se puede loguear.
  *
- * La allowlist se aplica en `databaseHooks.user.create.before`, que corre en el
- * primer inicio de sesion de cada correo (no hay email/password, asi que no hay
- * otra via de creacion de usuario). Devolver `false` aborta la creacion — Better
- * Auth responde con un error generico al cliente y no se crea sesion. Un correo
- * de la allowlist se promueve a `role: 'admin'` en el mismo hook: en esta app
- * cualquiera que pase el filtro ES la administradora, no hay un rol intermedio.
+ * `databaseHooks.user.create.before` corre en el primer inicio de sesion de
+ * cada correo (no hay email/password, asi que no hay otra via de creacion de
+ * usuario): si el correo esta en `ADMIN_ALLOWLIST`, se promueve a
+ * `role: 'admin'`; si no, no se toca `role` y el plugin `admin()` le pone su
+ * default (`'user'`) — el hook simplemente no participa. `AdminLayout`
+ * (`src/app/admin/layout.tsx`) es quien de verdad protege el panel, exigiendo
+ * `session.user.role === 'admin'`.
+ *
+ * OJO al tocar este hook: devolver `false` en vez de dejar pasar sin
+ * modificar rompe el login de Google — es un bug real de better-auth@1.5.6.
+ * En el flujo de OAuth (`db/internal-adapter.ts` → `createOAuthUser`), un
+ * `before` que devuelve `false` hace que `createWithHooks` devuelva `null`,
+ * y el paso siguiente (crear la cuenta vinculada) lee `.id` de ese `null` sin
+ * verificar — `TypeError` en vez de un rechazo limpio.
  */
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: 'pg' }),
@@ -41,7 +50,7 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
-          if (!correoPermitido(user.email, allowlist)) return false
+          if (!correoPermitido(user.email, allowlist)) return
           return { data: { ...user, role: 'admin' } }
         },
       },
