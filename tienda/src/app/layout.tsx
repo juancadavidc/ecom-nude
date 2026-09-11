@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { fontClassNames } from '@/lib/fonts'
 import { site } from '@/lib/site'
+import { CarritoProvider } from '@/components/carrito/CarritoProvider'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -43,7 +44,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es-CO" className={fontClassNames}>
-      <body>{children}</body>
+      <body>
+        <CarritoProvider>{children}</CarritoProvider>
+      </body>
     </html>
   )
 }
