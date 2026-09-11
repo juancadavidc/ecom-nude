@@ -81,7 +81,8 @@ export function VarianteProvider({
       stockDeTalla: (t) => stockDe(producto, color, t),
       confirmado,
       agregar: () => {
-        if (!talla || !variante) return
+        const foto = producto.imagenes[color]?.[0]
+        if (!talla || !variante || !foto) return
         carrito.agregar(
           {
             sku: variante.sku,
@@ -90,7 +91,7 @@ export function VarianteProvider({
             color,
             talla,
             precio: producto.precio,
-            imagen: `/fotos/${producto.imagenes[color][0]}-900.jpg`,
+            imagen: `/fotos/${foto}-900.jpg`,
           },
           1,
         )
