@@ -35,6 +35,9 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const guardado = localStorage.getItem(CLAVE_STORAGE)
+      // Hidrata el estado leyendo localStorage (sistema externo) una sola vez al montar;
+      // no hay evento al que suscribirse.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (guardado) setItems(JSON.parse(guardado))
     } catch {
       // localStorage no disponible o el JSON guardado esta corrupto: se sigue con carrito vacio.
