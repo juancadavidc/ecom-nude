@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { agregarItem, actualizarCantidad, eliminarItem, totalesDe, type ItemCarrito } from './carrito'
+import {
+  agregarItem,
+  actualizarCantidad,
+  eliminarItem,
+  leerCarritoGuardado,
+  totalesDe,
+  type ItemCarrito,
+} from './carrito'
 
 function item(sku: string, overrides: Partial<ItemCarrito> = {}): Omit<ItemCarrito, 'cantidad'> {
   return {
@@ -74,5 +81,26 @@ describe('totalesDe', () => {
     let items = agregarItem([], item('LEG-DUN-M', { precio: 145000 }), 2)
     items = agregarItem(items, item('TOP-BRI-S', { talla: 'S', precio: 89000 }), 1)
     expect(totalesDe(items)).toEqual({ cantidad: 3, subtotal: 379000 })
+  })
+})
+
+describe('leerCarritoGuardado', () => {
+  it('sin nada guardado da carrito vacio', () => {
+    expect(leerCarritoGuardado(null)).toEqual([])
+  })
+
+  it('un array guardado se parsea tal cual', () => {
+    const items = [{ ...item('LEG-DUN-M'), cantidad: 2 }]
+    expect(leerCarritoGuardado(JSON.stringify(items))).toEqual(items)
+  })
+
+  it('un valor JSON valido que no es un array da carrito vacio', () => {
+    expect(leerCarritoGuardado('{"a":1}')).toEqual([])
+    expect(leerCarritoGuardado('"hola"')).toEqual([])
+    expect(leerCarritoGuardado('42')).toEqual([])
+  })
+
+  it('JSON invalido da carrito vacio sin reventar', () => {
+    expect(leerCarritoGuardado('{not json')).toEqual([])
   })
 })

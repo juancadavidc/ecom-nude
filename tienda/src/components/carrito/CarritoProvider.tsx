@@ -5,6 +5,7 @@ import {
   agregarItem,
   actualizarCantidad as actualizarCantidadDe,
   eliminarItem,
+  leerCarritoGuardado,
   totalesDe,
   type ItemCarrito,
 } from '@/lib/carrito'
@@ -36,11 +37,12 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
     try {
       const guardado = localStorage.getItem(CLAVE_STORAGE)
       // Hidrata el estado leyendo localStorage (sistema externo) una sola vez al montar;
-      // no hay evento al que suscribirse.
+      // no hay evento al que suscribirse. leerCarritoGuardado valida que el JSON
+      // parseado sea realmente un array antes de usarlo (nunca lanza).
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (guardado) setItems(JSON.parse(guardado))
+      setItems(leerCarritoGuardado(guardado))
     } catch {
-      // localStorage no disponible o el JSON guardado esta corrupto: se sigue con carrito vacio.
+      // localStorage no disponible (modo privado, etc.): se sigue con carrito vacio.
     }
   }, [])
 

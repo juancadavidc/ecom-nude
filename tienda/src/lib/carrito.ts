@@ -43,3 +43,14 @@ export function totalesDe(items: ItemCarrito[]): { cantidad: number; subtotal: n
     { cantidad: 0, subtotal: 0 },
   )
 }
+
+/** `localStorage` puede tener JSON valido con una forma equivocada (no es un array) — eso no lo atrapa un try/catch de JSON.parse. */
+export function leerCarritoGuardado(raw: string | null): ItemCarrito[] {
+  if (!raw) return []
+  try {
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
