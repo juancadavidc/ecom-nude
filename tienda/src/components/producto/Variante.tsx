@@ -90,7 +90,7 @@ export function VarianteProvider({
             color,
             talla,
             precio: producto.precio,
-            imagen: producto.imagenes[color][0],
+            imagen: `/fotos/${producto.imagenes[color][0]}-900.jpg`,
           },
           1,
         )
