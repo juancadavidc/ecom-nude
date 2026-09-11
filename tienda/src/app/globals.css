@@ -1241,7 +1241,7 @@
 
 .carrito-item {
   display: grid;
-  grid-template-columns: 64px 1fr auto;
+  grid-template-columns: 64px 1fr auto auto;
   gap: 12px;
   align-items: start;
   padding-block: 4px;
