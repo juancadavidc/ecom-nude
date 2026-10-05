@@ -1,4 +1,3 @@
--- allow-destructive: el catalogo real retira el inventario (variantes.stock) y pasa las categorias de enum a tabla; ningun ambiente tenia datos que conservar ahi.
 CREATE TYPE "public"."estado_pedido" AS ENUM('nuevo', 'confirmado', 'pagado', 'enviado', 'entregado', 'cancelado');--> statement-breakpoint
 CREATE TYPE "public"."metodo_pago" AS ENUM('transferencia', 'contraentrega');--> statement-breakpoint
 ALTER TYPE "public"."estado_producto" ADD VALUE 'borrador';--> statement-breakpoint
