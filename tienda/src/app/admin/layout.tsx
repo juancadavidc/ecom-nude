@@ -23,9 +23,10 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth.api.getSession({ headers: await headers() })
 
-  if (!session || session.user.role !== 'admin') {
-    redirect('/')
-  }
+  // Sin sesion, a la puerta del panel; con sesion pero sin rol, tambien, pero con el
+  // motivo: mandar al home sin decir nada parece un login roto.
+  if (!session) redirect('/login')
+  if (session.user.role !== 'admin') redirect('/login?error=sin-permiso')
 
   return (
     <div className="adm">

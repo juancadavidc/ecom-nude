@@ -1,4 +1,7 @@
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { auth } from '@/lib/auth'
 import { BotonGoogle } from './BotonGoogle'
 
 /**
@@ -14,7 +17,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-export default function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (session?.user.role === 'admin') redirect('/admin')
+
   return (
     <div className="login">
       <p className="label text-muted">Acceso interno</p>
@@ -22,6 +29,12 @@ export default function LoginPage() {
       <p className="body text-muted measure">
         Solo para el equipo de Nude. Inicia sesion con la cuenta de Google autorizada.
       </p>
+      {error === 'sin-permiso' && session && (
+        <p className="body measure" role="alert">
+          {session.user.email} no tiene permiso de administración. Entra con otra cuenta o
+          pide que agreguen ese correo a ADMIN_EMAILS (solo aplica a cuentas nuevas).
+        </p>
+      )}
       <BotonGoogle />
     </div>
   )
