@@ -1,5 +1,5 @@
 import type { Orden, Producto, Talla } from './producto-modelo'
-import { TALLAS, coloresDe } from './producto-modelo'
+import { TALLAS, coloresDe, rangoPrecio } from './producto-modelo'
 
 /**
  * Filtros del catalogo: leerlos de la URL, escribirlos a la URL y aplicarlos a
@@ -82,7 +82,7 @@ export function escribirFiltros(f: FiltrosActivos): string {
 }
 
 /**
- * Color y talla se cruzan sobre la MISMA variante y solo cuentan si tiene stock:
+ * Color y talla se cruzan sobre la MISMA variante y solo cuentan si esta disponible:
  * pedir "Duna" y "XL" tiene que devolver lo que existe en Duna talla XL, no lo
  * que existe en Duna por un lado y en XL por otro.
  */
@@ -90,7 +90,7 @@ function pasaVariantes(p: Producto, f: FiltrosActivos): boolean {
   if (!f.colores.length && !f.tallas.length) return true
   return p.variantes.some(
     (v) =>
-      v.stock > 0 &&
+      v.disponible &&
       (!f.colores.length || f.colores.includes(v.color)) &&
       (!f.tallas.length || f.tallas.includes(v.talla)),
   )
@@ -102,6 +102,8 @@ function pasaVariantes(p: Producto, f: FiltrosActivos): boolean {
  * alguien tendria que mantener a mano sin usarlo.
  * TODO(fase-2): ordenar por `creado` cuando Firestore lo tenga.
  */
+// `p.precio` es el precio base, que es el menor del producto (un color solo
+// puede costar mas): filtro y orden usan el "desde" que la clienta ve en la card.
 export function aplicarFiltros(productos: Producto[], f: FiltrosActivos): Producto[] {
   const filtrados = productos.filter(
     (p) =>
@@ -125,8 +127,9 @@ export function opcionesDe(productos: Producto[]): OpcionesFiltro {
   for (const p of productos) {
     for (const c of coloresDe(p)) if (!colores.has(c.nombre)) colores.set(c.nombre, c.hex)
     for (const v of p.variantes) tallas.add(v.talla)
-    min = Math.min(min, p.precio)
-    max = Math.max(max, p.precio)
+    const rango = rangoPrecio(p)
+    min = Math.min(min, rango.min)
+    max = Math.max(max, rango.max)
   }
 
   return {

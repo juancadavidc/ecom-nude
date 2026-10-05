@@ -102,7 +102,7 @@ warning es inofensivo; instalar en el lugar equivocado no.
 `tienda/node_modules`. Lanzarlo desde otra carpeta —aunque le des la ruta completa—
 muere con `ERR_MODULE_NOT_FOUND: Cannot find package 'playwright'`.
 
-**`/colecciones` muestra 6 de 8 productos.** Es la paginación (botón `CARGAR MAS`), no
+**`/colecciones` no muestra todo de entrada.** Es la paginación (botón `CARGAR MAS`), no
 un filtro pegado ni datos faltantes. El HTML del servidor sí trae los 8.
 
 **Los 404 del menú son a propósito.** `/ropa-deportiva`, `/nosotros`, `/contacto`,
@@ -110,10 +110,9 @@ un filtro pegado ni datos faltantes. El HTML del servidor sí trae los 8.
 todavía. Clickear el header y caer en 404 es el comportamiento esperado, no una
 regresión.
 
-**Las fotos de producto son placeholders planos con el isotipo.** El catálogo es un mock
-(`src/content/productos.json`, 8 referencias inventadas). Las fotos reales sí aparecen en
-el hero, los tiles de categoría y la grilla de Instagram. Un beige liso con una `N` no es
-una imagen rota.
+**Un bloque Sahara con el isotipo no es una imagen rota.** Es un color sin foto todavía
+(`SinFoto`). El catálogo es real (`src/content/productos.json`: 46 productos, 32 publicados);
+los 14 borradores dan 404 en la tienda a propósito.
 
 **Los filtros se aplican en cliente.** Con export estático no hay `searchParams` en
 servidor, así que `curl 'localhost:3000/leggings?color=Arena'` devuelve el catálogo

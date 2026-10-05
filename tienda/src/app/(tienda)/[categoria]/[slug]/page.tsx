@@ -7,9 +7,9 @@ import { Galeria } from '@/components/producto/Galeria'
 import { GridProducto } from '@/components/producto/GridProducto'
 import { MigaDePan } from '@/components/producto/MigaDePan'
 import {
-  AvisoInventario,
   BotonAgregar,
   PanelConfirmacion,
+  PrecioActivo,
   SelectorColor,
   SelectorTalla,
   SkuActivo,
@@ -18,8 +18,6 @@ import { VarianteProvider } from '@/components/producto/Variante'
 import { Acordeon, ItemAcordeon } from '@/components/ui/Acordeon'
 import { Truck, Wallet } from '@/components/ui/icons'
 import { politicas } from '@/lib/copy'
-import { formatCOP } from '@/lib/format'
-import { esCategoria } from '@/lib/producto-modelo'
 import { combinaCon, obtenerProducto } from '@/lib/productos'
 
 /**
@@ -47,12 +45,12 @@ export default async function FichaPage({ params }: Props) {
   const producto = await obtenerProducto(slug)
   const relacionados = await combinaCon(slug)
 
-  // El slug manda sobre el segmento de categoria: /tops/legging-duna no existe.
-  if (!producto || !esCategoria(categoria) || producto.categoria !== categoria) notFound()
+  // El slug manda sobre el segmento de categoria: /tops/legging-rib no existe.
+  if (!producto || producto.categoria !== categoria) notFound()
 
   return (
     <article className="container-nude ficha-pagina">
-      <MigaDePan categoria={producto.categoria} nombre={producto.nombre} />
+      <MigaDePan categoria={producto.categoria} categoriaNombre={producto.categoriaNombre} nombre={producto.nombre} />
 
       <VarianteProvider producto={producto}>
         <div className="ficha">
@@ -72,7 +70,7 @@ export default async function FichaPage({ params }: Props) {
             </div>
 
             <div className="ficha-bloque">
-              <p className="price">{formatCOP(producto.precio)}</p>
+              <PrecioActivo />
               {/* Aporte de la referencia: el pago, a la altura del precio */}
               <div className="ficha-pagos body-s">
                 <span className="ficha-pago">
@@ -88,7 +86,6 @@ export default async function FichaPage({ params }: Props) {
 
             <SelectorColor />
             <SelectorTalla />
-            <AvisoInventario />
             <BotonAgregar />
           </div>
         </div>

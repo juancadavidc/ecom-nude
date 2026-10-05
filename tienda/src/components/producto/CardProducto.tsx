@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { FotoFondo } from '@/components/media/FotoFondo'
+import { SinFoto } from '@/components/media/SinFoto'
+import { ANCHOS_PRODUCTO } from '@/lib/fotos'
 import { cx, formatCOP } from '@/lib/format'
 import type { EstadoVisible, Producto } from '@/lib/producto-modelo'
-import { coloresDe, estadoVisible } from '@/lib/producto-modelo'
+import { coloresDe, estadoVisible, rangoPrecio } from '@/lib/producto-modelo'
 
 /**
  * SPEC §4.2 — card de producto. Imagen 3:4, cruce a la segunda foto en 300ms,
@@ -12,40 +14,47 @@ import { coloresDe, estadoVisible } from '@/lib/producto-modelo'
  * un control dentro de otro control no es navegable por teclado y el lector de
  * pantalla lee dos cosas donde hay una.
  *
- * El badge sale del stock, no de un campo del archivo: "ultimas unidades" tiene
- * que ser cierto (SPEC §7). Nunca porcentajes, nunca rojo.
+ * Sin inventario no hay "ultimas unidades": el badge solo dice agotado o
+ * proximamente (SPEC §7). Nunca porcentajes, nunca rojo.
+ *
+ * La foto de la card es la del primer color que tenga fotos: un color nuevo sin
+ * sesion todavia no deja la card en blanco.
  */
 
 const BADGE: Record<EstadoVisible, { texto: string; solido: boolean } | null> = {
   activo: null,
-  ultimas: { texto: 'Ultimas unidades', solido: false },
-  agotado: { texto: 'Agotado', solido: true },
-  proximamente: { texto: 'Proximamente', solido: false },
+  agotado: { texto: 'Agotado por ahora', solido: true },
+  proximamente: { texto: 'Próximamente', solido: false },
 }
 
 export function CardProducto({ producto }: { producto: Producto }) {
   const colores = coloresDe(producto)
-  const fotos = producto.imagenes[colores[0].nombre] ?? []
+  const fotos = colores.map((c) => producto.imagenes[c.nombre]).find((f) => f?.length) ?? []
   const badge = BADGE[estadoVisible(producto)]
+  const { min, max } = rangoPrecio(producto)
 
   return (
     <Link href={`/${producto.categoria}/${producto.slug}`} className="card">
       <div className="card-foto">
-        <FotoFondo
-          nombre={fotos[0]}
-          anchos={[900]}
-          ancho={900}
-          alto={1200}
-          sizes="(min-width: 768px) 33vw, 50vw"
-          alt={producto.seo.alt}
-        />
+        {fotos[0] ? (
+          <FotoFondo
+            nombre={fotos[0]}
+            anchos={[...ANCHOS_PRODUCTO]}
+            ancho={960}
+            alto={1280}
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+            alt={producto.seo.alt}
+          />
+        ) : (
+          <SinFoto />
+        )}
         {fotos[1] && (
           <FotoFondo
             nombre={fotos[1]}
-            anchos={[900]}
-            ancho={900}
-            alto={1200}
-            sizes="(min-width: 768px) 33vw, 50vw"
+            anchos={[...ANCHOS_PRODUCTO]}
+            ancho={960}
+            alto={1280}
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
             // Es la misma prenda en otra toma: describirla otra vez solo repite
             // el mismo texto en el lector de pantalla.
             alt=""
@@ -61,7 +70,9 @@ export function CardProducto({ producto }: { producto: Producto }) {
 
       <div className="card-info">
         <h3 className="card-name">{producto.nombre}</h3>
-        <p className="price-sm">{formatCOP(producto.precio)}</p>
+        <p className="price-sm">
+          {min === max ? formatCOP(min) : `Desde ${formatCOP(min)}`}
+        </p>
         <ul className="card-swatches" aria-label={`Colores: ${colores.map((c) => c.nombre).join(', ')}`}>
           {colores.map((color) => (
             <li key={color.nombre}>

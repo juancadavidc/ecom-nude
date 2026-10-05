@@ -11,7 +11,7 @@ export const manifiesto = {
   label: 'Manifiesto',
   // Tarjeta de agradecimiento oficial (branding/tarjeta-agradecimiento/)
   parrafos: [
-    'Lo que llevas puesto deberia sentirse tan bien como lo que eres.',
+    'Lo que llevas puesto debería sentirse tan bien como lo que eres.',
     'No hacemos ropa para que te veas entrenando. Hacemos prendas que se sienten como parte de ti — suaves, seguras, sin esfuerzo.',
   ],
 } as const
@@ -26,40 +26,40 @@ export const pilares = [
   {
     nombre: 'Movimiento',
     texto:
-      'Del yoga al cafe, del gym a la calle. Prendas que se adaptan a como vives, no al reves.',
+      'Del yoga al café, del gym a la calle. Prendas que se adaptan a cómo vives, no al revés.',
   },
   {
     nombre: 'Confianza',
     texto:
-      'Confianza silenciosa. Sin gritar, sin demostrar. Ropa que te acompana sin pedir atencion.',
+      'Confianza silenciosa. Sin gritar, sin demostrar. Ropa que te acompaña sin pedir atención.',
   },
 ] as const
 
 /** SPEC §7 — microcopy de comercio. Un solo lugar para que el tono no se pierda. */
 export const microcopy = {
   agregar: 'Agregar al carrito',
-  agregado: 'Listo. Esta en tu carrito.',
+  agregado: 'Listo. Está en tu carrito.',
   agotado: 'Agotado por ahora',
-  carritoVacio: 'Todavia no has elegido nada.',
+  carritoVacio: 'Todavía no has elegido nada.',
   confirmacion: 'Recibimos tu pedido.',
-  envio: 'Llega en 2 a 4 dias habiles.',
-  newsletter: 'Se la primera en enterarte.',
+  envio: 'Llega en 2 a 4 días hábiles.',
+  newsletter: 'Sé la primera en enterarte.',
   newsletterListo: 'Listo. Te escribimos cuando abramos.',
   newsletterError: 'Nos falta tu correo para escribirte.',
   newsletterInvalido: 'Revisa el correo: parece que le falta algo.',
   verTodo: 'Ver todo',
-  cargarMas: 'Cargar mas',
+  cargarMas: 'Cargar más',
   sinResultados: 'No hay nada con esos filtros.',
   quitarFiltros: 'Quitar filtros',
   filtrar: 'Filtrar',
   ordenar: 'Ordenar',
   seguirViendo: 'Seguir viendo',
   finalizar: 'Finalizar compra',
-  envioEnCheckout: 'El envio se calcula en el siguiente paso.',
+  envioEnCheckout: 'El envío se calcula en el siguiente paso.',
   eliminarDelCarrito: 'Eliminar del carrito',
-  guiaTallas: 'Guia de tallas',
+  guiaTallas: 'Guía de tallas',
   elegirTalla: 'Elige una talla',
-  error404: 'Esta pagina se movio.',
+  error404: 'Esta página se movió.',
 } as const
 
 /**
@@ -74,18 +74,64 @@ export const microcopy = {
  */
 export const politicas = [
   {
-    titulo: 'Envios y entregas',
+    titulo: 'Envíos y entregas',
     texto:
-      'Enviamos a todo Colombia. Llega en 2 a 4 dias habiles. El costo del envio se calcula al finalizar la compra, y puedes pagar contra entrega, en efectivo, cuando recibas.',
+      'Enviamos a todo Colombia. Llega en 2 a 4 días hábiles. El costo del envío se calcula al finalizar la compra, y puedes pagar contra entrega, en efectivo, cuando recibas.',
   },
   {
     titulo: 'Cambios y devoluciones',
     texto:
-      'Tienes 15 dias desde que recibes para cambiar la talla o el color. La prenda tiene que volver sin usar y con su etiqueta. Escribinos por WhatsApp y coordinamos la recogida.',
+      'Tienes 15 días desde que recibes para cambiar la talla o el color. La prenda tiene que volver sin usar y con su etiqueta. Escríbenos por WhatsApp y coordinamos la recogida.',
   },
   {
-    titulo: 'Como cuidar tu prenda',
+    titulo: 'Cómo cuidar tu prenda',
     texto:
-      'Lava a mano en agua fria y con jabon suave. Sin blanqueador y sin secadora. Seca a la sombra y extendida: el sol abre el elastano y la prenda pierde la forma.',
+      'Lava a mano en agua fría y con jabón suave. Sin blanqueador y sin secadora. Seca a la sombra y extendida: el sol abre el elastano y la prenda pierde la forma.',
   },
 ] as const
+
+/**
+ * SPEC §4.5 — microcopy del checkout y de la confirmación. Los errores de cada
+ * campo viven en `pedido-modelo.ts` (los usa también el servidor).
+ */
+export const checkoutCopy = {
+  titulo: 'Finaliza tu pedido',
+  contacto: 'Contacto',
+  contactoNota: 'Te escribimos por WhatsApp para coordinar la entrega.',
+  entrega: 'Entrega',
+  pago: 'Pago',
+  resumen: 'Tu pedido',
+  transferencia: 'Transferencia',
+  transferenciaDetalle: 'Nequi o Bancolombia',
+  transferenciaTexto:
+    'Te mostramos los datos al confirmar. Envías el comprobante por WhatsApp y despachamos el mismo día.',
+  contraentrega: 'Pago contra entrega',
+  contraentregaTexto: 'Pagas en efectivo cuando recibas.',
+  envioElegirCiudad: 'Elige la ciudad',
+  envioMetro: 'Área metropolitana',
+  envioNacional: 'Envío nacional',
+  codigoLabel: 'Código de descuento',
+  codigoAplicar: 'Aplicar',
+  codigoQuitar: 'Quitar código',
+  codigoVacio: 'Escribe el código antes de aplicarlo.',
+  confirmar: 'Confirmar pedido',
+  revisarCampos: 'Revisa los campos marcados para poder confirmar.',
+  errorGeneral: 'No pudimos guardar el pedido. Inténtalo otra vez en un momento; tu carrito sigue aquí.',
+  quitar: 'Quitar',
+  vacioTexto: 'Todavía no has elegido nada.',
+  vacioBoton: 'Ver la colección',
+  // Confirmación
+  recibido: 'Recibimos tu pedido.',
+  /** Tarjeta de agradecimiento oficial (branding/tarjeta-agradecimiento/). */
+  bienvenida: 'Lo que llevas puesto debería sentirse tan bien como lo que eres.',
+  transfiereExacto: 'Transfiere exactamente',
+  sinCuentas: 'Te enviamos los datos de la cuenta por WhatsApp. Escríbenos y te respondemos con ellos.',
+  despachoTransferencia: 'Cuando nos llegue el comprobante, lo despachamos el mismo día.',
+  enviarComprobante: 'Enviar comprobante por WhatsApp',
+  pedirDatos: 'Pedir los datos por WhatsApp',
+  llega: 'Llega en 2 a 4 días hábiles.',
+  efectivoListo: 'Ten listo en efectivo',
+  confirmacionContraentrega: 'Antes de despacharlo te escribimos por WhatsApp para confirmarlo.',
+  confirmarWhatsapp: 'Confirmar por WhatsApp',
+  seguirViendo: 'Seguir viendo',
+} as const

@@ -3,15 +3,15 @@
   "tono": "oscuro",
   "mensajes": [
     {
-      "id": "envio-gratis",
+      "id": "contra-entrega",
       "activo": true,
-      "texto": "Envio gratis en compras desde $250.000",
+      "texto": "Pago contra entrega en todo Colombia",
       "href": "/envios"
     },
     {
       "id": "cambios",
       "activo": false,
-      "texto": "Cambios sin costo durante 30 dias",
+      "texto": "Cambios en 15 días",
       "href": "/cambios"
     }
   ]

@@ -13,14 +13,14 @@ export const dynamic = 'force-dynamic'
  * esto pasa a ser una portada editorial y el catalogo completo se queda debajo.
  */
 const INTRO =
-  'Toda la coleccion Primera Piel: leggings, tops y sets en tonos tierra. Disenada para moverte, hecha para quedarse.'
+  'Toda la colección: enterizos, sets, leggings, tops y accesorios. Diseñada para moverte, hecha para quedarse.'
 
 export const metadata: Metadata = {
-  title: 'Colecciones',
+  title: 'La colección',
   description: INTRO,
 }
 
 export default async function ColeccionesPage() {
   const { productos } = await listarProductos()
-  return <Catalogo titulo="Colecciones" intro={INTRO} productos={productos} />
+  return <Catalogo titulo="La colección" intro={INTRO} productos={productos} />
 }

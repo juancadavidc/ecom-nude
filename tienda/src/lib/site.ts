@@ -8,7 +8,7 @@ export const site = {
   nombreCorto: 'NUDE',
   tagline: 'Tu segunda piel.',
   descripcion:
-    'Leggings y tops disenados para moverte. Hechos para quedarse. Ropa deportiva femenina colombiana en tonos tierra.',
+    'Enterizos, sets, leggings y tops diseñados para moverte. Hechos para quedarse. Ropa deportiva femenina colombiana.',
   url: 'https://nudesportswear.co',
   instagram: 'nudesportswear.co',
   instagramUrl: 'https://instagram.com/nudesportswear.co',
@@ -18,14 +18,6 @@ export const site = {
   email: 'somosnudesw@gmail.com',
 } as const
 
-/** SPEC §3 — dos entradas de catalogo, dos de contenido. Sin ramas vacias. */
-export const navPrincipal = [
-  { label: 'Colecciones', href: '/colecciones' },
-  { label: 'Ropa Deportiva', href: '/ropa-deportiva' },
-  { label: 'Nosotros', href: '/nosotros' },
-  { label: 'Contacto', href: '/contacto' },
-] as const
-
 /**
  * Rutas del menu que hoy caen en el 404 a proposito (fuera de alcance de esta
  * fase, spec de diseno §8). Next.js precarga cualquier `<Link>` que entre en
@@ -34,12 +26,6 @@ export const navPrincipal = [
  * apaga esa precarga solo para estas.
  */
 const SIN_CONSTRUIR = new Set([
-  '/ropa-deportiva',
-  '/nosotros',
-  '/contacto',
-  '/guia-de-tallas',
-  '/envios',
-  '/cambios',
   '/legales',
   '/cuenta',
 ])
@@ -52,17 +38,18 @@ export const navPie = [
   {
     titulo: 'Tienda',
     links: [
-      { label: 'Leggings', href: '/leggings' },
-      { label: 'Tops', href: '/tops' },
+      { label: 'Enterizos', href: '/enterizos' },
       { label: 'Sets', href: '/sets' },
-      { label: 'Colecciones', href: '/colecciones' },
+      { label: 'Leggings', href: '/leggings' },
+      { label: 'Tops y buzos', href: '/tops' },
+      { label: 'Ver todo', href: '/colecciones' },
     ],
   },
   {
     titulo: 'Ayuda',
     links: [
-      { label: 'Guia de tallas', href: '/guia-de-tallas' },
-      { label: 'Envios y entregas', href: '/envios' },
+      { label: 'Guía de tallas', href: '/guia-de-tallas' },
+      { label: 'Envíos y entregas', href: '/envios' },
       { label: 'Cambios y devoluciones', href: '/cambios' },
       { label: 'Contacto', href: '/contacto' },
     ],
@@ -70,8 +57,8 @@ export const navPie = [
   {
     titulo: 'NUDE',
     links: [
-      { label: 'Nosotros', href: '/nosotros' },
-      { label: 'Terminos y condiciones', href: '/legales' },
+      { label: 'Nosotras', href: '/nosotros' },
+      { label: 'Términos y condiciones', href: '/legales' },
       { label: 'Tratamiento de datos', href: '/legales#datos' },
     ],
   },
@@ -88,8 +75,8 @@ export const navPie = [
 export const promesas = [
   {
     icono: 'envio',
-    titulo: 'Envio a todo Colombia',
-    detalle: 'Llega en 2 a 4 dias habiles.',
+    titulo: 'Envío a todo Colombia',
+    detalle: 'Llega en 2 a 4 días hábiles.',
   },
   {
     icono: 'pago',
@@ -98,7 +85,7 @@ export const promesas = [
   },
   {
     icono: 'cambio',
-    titulo: 'Cambios en 15 dias',
+    titulo: 'Cambios en 15 días',
     detalle: 'Si no es tu talla, la cambiamos.',
   },
 ] as const

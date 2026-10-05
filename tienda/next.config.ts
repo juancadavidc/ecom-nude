@@ -9,6 +9,17 @@ const nextConfig: NextConfig = {
    * pero nada responde. Se permiten loopback y rangos de red local privada.
    */
   allowedDevOrigins: ['127.0.0.1', '192.168.0.0/16', '10.0.0.0/8'],
+  experimental: {
+    serverActions: {
+      /**
+       * Las fotos del panel suben por Server Action, una por llamada. El tope
+       * por foto es 15 MB (`MAX_BYTES` en src/lib/admin/fotos-proceso.ts); el
+       * MB extra cubre las cabeceras del multipart. Sin esto Next corta en 1 MB
+       * y una foto de celular nunca llega.
+       */
+      bodySizeLimit: '16mb',
+    },
+  },
 }
 
 export default nextConfig

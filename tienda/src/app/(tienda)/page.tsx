@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { Comunidad } from '@/components/home/Comunidad'
 import { Newsletter } from '@/components/home/Newsletter'
 import { TileCategoria } from '@/components/home/TileCategoria'
@@ -9,7 +10,7 @@ import { GridProducto } from '@/components/producto/GridProducto'
 import { BotonLink } from '@/components/ui/Button'
 import { ArrowsClockwise, Truck, Wallet } from '@/components/ui/icons'
 import { manifiesto, microcopy, pilares } from '@/lib/copy'
-import { destacados } from '@/lib/productos'
+import { destacados, listarCategorias } from '@/lib/productos'
 import { promesas, site } from '@/lib/site'
 
 export const dynamic = 'force-dynamic'
@@ -34,8 +35,35 @@ export const metadata: Metadata = {
   title: 'Inicio',
 }
 
+/**
+ * Los tres tiles: las categorias con mas fuerza de la sesion de fotos. Si una
+ * se queda sin productos publicados, su tile no se pinta (ver abajo).
+ */
+const TILES = [
+  {
+    categoria: 'enterizos',
+    foto: 'p/enterizo-largo-tela-fria-manga-larga-1',
+    alt: 'Modelo agachada con enterizo largo negro de manga larga y espalda abierta',
+  },
+  {
+    categoria: 'sets',
+    foto: 'p/set-halo-1',
+    alt: 'Modelo sentada con el Set Halo: body halter rosado y short marfil',
+  },
+  {
+    categoria: 'leggings',
+    foto: 'p/legging-mesh-1',
+    alt: 'Modelo con body y legging marfil con paneles de malla',
+  },
+] as const
+
 export default async function Home() {
-  const productosDestacados = await destacados(4)
+  const [productosDestacados, categorias] = await Promise.all([
+    destacados(8),
+    listarCategorias({ conProductos: true }),
+  ])
+  const nombreDe = new Map(categorias.map((c) => [c.slug, c.nombre]))
+  const tiles = TILES.filter((t) => nombreDe.has(t.categoria))
   return (
     <>
       {/* Hero — SPEC §4.1 bloque 2. La foto va a sangre y el texto encima en
@@ -61,19 +89,17 @@ export default async function Home() {
         <div className="hero-velo" aria-hidden="true" />
         <div className="container-nude hero-inner">
           <Reveal>
-            <p className="label text-muted">Proximamente</p>
-          </Reveal>
-          <Reveal delay={80}>
             <h1 className="display-xl hero-titulo">{site.tagline}</h1>
           </Reveal>
-          <Reveal delay={160}>
+          <Reveal delay={80}>
             <p className="body measure hero-texto">
-              Leggings y tops en tonos tierra. Disenada para moverte. Hecha para quedarse.
+              Enterizos, sets y leggings que se mueven contigo. Diseñada para moverte. Hecha para
+              quedarse.
             </p>
           </Reveal>
-          <Reveal delay={240}>
+          <Reveal delay={160}>
             <BotonLink href="/colecciones" variante="outline-invert">
-              Ver la coleccion
+              Ver la colección
             </BotonLink>
           </Reveal>
         </div>
@@ -101,35 +127,32 @@ export default async function Home() {
 
       {/* Categorias — SPEC §4.1 bloque 4. A sangre: la foto toca el borde de la
           pantalla. Es el contraste con el margen amplio del texto lo que hace que
-          esto lea como editorial y no como plantilla centrada.
-
-          Los tres anchos no son iguales: el crop de leggings se rehizo en la
-          tarea 3 a 280x373 porque a 588 de alto ningun offset libraba la
-          barbilla de la modelo. `TileCategoria` recibe ancho/alto por tile en
-          vez de asumir 441x588 para no reservar la caja equivocada ni pedir un
-          archivo que no existe. */}
-      <section className="tiles" aria-label="Categorias">
-        <TileCategoria
-          categoria="leggings"
-          foto="categoria-leggings"
-          alt="Detalle de la cinturilla alta de un legging NUDE, de perfil"
-          ancho={280}
-          alto={373}
-        />
-        <TileCategoria
-          categoria="tops"
-          foto="categoria-tops"
-          alt="Top corto NUDE con panel de malla, vista frontal"
-          ancho={441}
-          alto={588}
-        />
-        <TileCategoria
-          categoria="sets"
-          foto="categoria-sets"
-          alt="Conjunto NUDE de top y legging, cuerpo entero"
-          ancho={441}
-          alto={588}
-        />
+          esto lea como editorial y no como plantilla centrada. Debajo, el resto
+          de categorias en una linea: son ocho y no caben como tiles. */}
+      <section aria-label="Categorías">
+        <div className="tiles">
+          {tiles.map((t) => (
+            <TileCategoria
+              key={t.categoria}
+              categoria={t.categoria}
+              nombre={nombreDe.get(t.categoria)!}
+              foto={t.foto}
+              alt={t.alt}
+            />
+          ))}
+        </div>
+        <nav className="container-nude categorias-linea" aria-label="Todas las categorías">
+          <ul>
+            {categorias.map((c) => (
+              <li key={c.slug}>
+                <Link href={`/${c.slug}`} className="link-nav">
+                  {c.nombre}
+                  <span className="categorias-linea-n text-muted">{c.cantidad}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </section>
 
       {/* Destacados — SPEC §4.1 bloque 5. Grilla, no carrusel: el carrusel
@@ -138,8 +161,7 @@ export default async function Home() {
         <div className="container-nude">
           <div className="eje destacados-head">
             <Reveal>
-              <p className="label text-muted">Lo nuevo</p>
-              <h2 className="title">Primera Piel</h2>
+              <h2 className="title">Para empezar</h2>
             </Reveal>
             <Reveal className="eje-fin" delay={80}>
               <BotonLink href="/colecciones" variante="secundario">

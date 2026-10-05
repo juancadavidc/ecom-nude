@@ -5,7 +5,7 @@ import { Panel } from '@/components/ui/Panel'
 import { BotonTalla, Swatch } from '@/components/ui/Selectores'
 import { microcopy } from '@/lib/copy'
 import { formatCOP } from '@/lib/format'
-import { estadoVisible } from '@/lib/producto-modelo'
+import { NOMBRE_TALLA, estadoVisible } from '@/lib/producto-modelo'
 import { GuiaTallas } from './GuiaTallas'
 import { useVariante } from './Variante'
 
@@ -51,7 +51,8 @@ export function SelectorColor() {
 
 /** SPEC §4.3 — las agotadas se ven tachadas, no desaparecen. */
 export function SelectorTalla() {
-  const { tallas, talla, elegirTalla, stockDeTalla } = useVariante()
+  const { tallas, talla, elegirTalla, disponibleTalla } = useVariante()
+  const unica = tallas.length === 1 && tallas[0] === 'U'
 
   return (
     // El id es el ancla de la barra de compra de movil (tarea 9): sin talla
@@ -59,15 +60,15 @@ export function SelectorTalla() {
     <div className="ficha-bloque" id="ficha-tallas">
       <div className="ficha-talla-head">
         <span className="label text-muted">Talla</span>
-        <GuiaTallas />
+        {!unica && <GuiaTallas />}
       </div>
       <div className="ficha-opciones">
         {tallas.map((t) => (
           <BotonTalla
             key={t}
-            talla={t}
+            talla={NOMBRE_TALLA[t]}
             seleccionada={t === talla}
-            agotada={stockDeTalla(t) === 0}
+            agotada={!disponibleTalla(t)}
             onClick={() => elegirTalla(t)}
           />
         ))}
@@ -76,23 +77,10 @@ export function SelectorTalla() {
   )
 }
 
-/**
- * SPEC §7 — "Ultimas 3 unidades" solo si es cierto. Sin contadores regresivos y
- * sin "12 personas viendo esto": la urgencia falsa es lo contrario a confianza
- * silenciosa. Por eso solo se pinta cuando hay talla elegida y el numero sale
- * del stock de esa variante.
- */
-export function AvisoInventario() {
-  const { talla, variante } = useVariante()
-  if (!talla || !variante || variante.stock === 0 || variante.stock > 3) return null
-
-  return (
-    <p className="body-s ficha-inventario" role="status">
-      {variante.stock === 1
-        ? `Ultima unidad en talla ${talla}`
-        : `Ultimas ${variante.stock} unidades en talla ${talla}`}
-    </p>
-  )
+/** Precio del color elegido: cambia si ese color cuesta distinto. */
+export function PrecioActivo() {
+  const { precio } = useVariante()
+  return <p className="price">{formatCOP(precio)}</p>
 }
 
 /** SPEC §4.3 — boton Umber solido, ancho completo. */
@@ -100,7 +88,7 @@ export function BotonAgregar() {
   const { producto, talla, variante, agregar } = useVariante()
 
   const agotado = estadoVisible(producto) === 'agotado'
-  const listo = Boolean(talla && variante && variante.stock > 0)
+  const listo = Boolean(talla && variante?.disponible)
 
   return (
     <Boton ancho disabled={agotado || !listo} onClick={agregar}>
@@ -118,7 +106,7 @@ export function BotonAgregar() {
  * fase 4. Lo que falta es persistir lo elegido, no la pantalla.
  */
 export function PanelConfirmacion() {
-  const { producto, color, talla, confirmado, cerrarConfirmacion } = useVariante()
+  const { producto, color, talla, precio, confirmado, cerrarConfirmacion } = useVariante()
 
   return (
     <Panel
@@ -134,9 +122,9 @@ export function PanelConfirmacion() {
       <div className="flex flex-col gap-3">
         <p className="quote">{microcopy.agregado}</p>
         <p className="body-s text-muted">
-          {producto.nombre} · {color} · Talla {talla}
+          {producto.nombre} · {color} · Talla {talla && NOMBRE_TALLA[talla]}
         </p>
-        <p className="price-sm">{formatCOP(producto.precio)}</p>
+        <p className="price-sm">{formatCOP(precio)}</p>
       </div>
     </Panel>
   )

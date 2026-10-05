@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { LogoNude, MarcaNude } from '@/components/brand/Logo'
 import { TrazoCierre } from '@/components/motion/Trazo'
 import { Envelope, InstagramLogo, WhatsappLogo } from '@/components/ui/icons'
+import { leerClave } from '@/lib/config'
 import { navPie, prefetchable, site } from '@/lib/site'
 
 /**
@@ -11,8 +12,10 @@ import { navPie, prefetchable, site } from '@/lib/site'
  * El trazo continuo (§11.1) cierra aqui: baja bajo el isotipo y termina en el
  * punto, el mismo gesto con el que esta construido el logo.
  */
-export function Footer() {
+export async function Footer() {
   const ano = 2026 // se actualiza a mano: Date en render rompe el cache estatico
+  // El numero vive en la configuracion del panel, no en el codigo.
+  const whatsapp = await leerClave('whatsapp')
 
   return (
     <footer className="on-dark footer">
@@ -40,11 +43,11 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href={site.whatsappUrl}
+                  href={`https://wa.me/${whatsapp}`}
                   target="_blank"
                   rel="noreferrer"
                   className="icon-btn"
-                  aria-label="Escribinos por WhatsApp"
+                  aria-label="Escríbenos por WhatsApp"
                 >
                   <WhatsappLogo size={20} weight="light" />
                 </a>
@@ -53,7 +56,7 @@ export function Footer() {
                 <a
                   href={`mailto:${site.email}`}
                   className="icon-btn"
-                  aria-label={`Escribinos a ${site.email}`}
+                  aria-label={`Escríbenos a ${site.email}`}
                 >
                   <Envelope size={20} weight="light" />
                 </a>

@@ -68,43 +68,40 @@ describe('aplicarFiltros', () => {
   })
 
   it('filtra por color', async () => {
-    const lista = aplicarFiltros(await todos(), { ...FILTROS_VACIOS, colores: ['Umbra'] })
-    expect(lista.map((p) => p.slug).sort()).toEqual(['legging-cauce', 'top-ocre'])
+    const lista = aplicarFiltros(await todos(), { ...FILTROS_VACIOS, colores: ['Chocolate'] })
+    expect(lista.map((p) => p.slug)).toEqual(['legging-rib-push', 'top-premium'])
   })
 
-  it('solo cuenta la talla si esa variante tiene stock', async () => {
-    const lista = aplicarFiltros(await todos(), { ...FILTROS_VACIOS, tallas: ['XL'] })
-    expect(lista.map((p) => p.slug)).not.toContain('legging-medano')
-    expect(lista.map((p) => p.slug)).not.toContain('top-umbra')
+  it('solo cuenta la talla si esa variante esta disponible', async () => {
+    const lista = await todos()
+    const bra = lista.find((p) => p.slug === 'top-bra')!
+    const sinS = { ...bra, variantes: bra.variantes.map((v) => (v.talla === 'S' ? { ...v, disponible: false } : v)) }
+    const filtrada = aplicarFiltros([sinS], { ...FILTROS_VACIOS, tallas: ['S'] })
+    expect(filtrada).toEqual([])
   })
 
   it('cruza color y talla sobre la misma variante', async () => {
-    // Legging Medano solo tiene stock en Duna S/M y Arena S/M
-    const lista = aplicarFiltros(await todos(), {
-      ...FILTROS_VACIOS,
-      colores: ['Duna'],
-      tallas: ['S'],
-    })
-    expect(lista.map((p) => p.slug)).toContain('legging-medano')
-
-    const vacia = aplicarFiltros(await todos(), {
-      ...FILTROS_VACIOS,
-      colores: ['Duna'],
-      tallas: ['XL'],
-    })
-    expect(vacia.map((p) => p.slug)).not.toContain('legging-medano')
+    const lista = await todos()
+    const bra = lista.find((p) => p.slug === 'top-bra')!
+    // Gris S agotado, Blanco S disponible: pedir Gris + S no debe pasar
+    const mixto = {
+      ...bra,
+      variantes: bra.variantes.map((v) => (v.color === 'Gris' && v.talla === 'S' ? { ...v, disponible: false } : v)),
+    }
+    expect(aplicarFiltros([mixto], { ...FILTROS_VACIOS, colores: ['Gris'], tallas: ['S'] })).toEqual([])
+    expect(aplicarFiltros([mixto], { ...FILTROS_VACIOS, colores: ['Blanco'], tallas: ['S'] })).toHaveLength(1)
   })
 
   it('filtra por rango de precio', async () => {
     const lista = aplicarFiltros(await todos(), {
       ...FILTROS_VACIOS,
-      precio: { min: 100000, max: 150000 },
+      precio: { min: 160000 },
     })
-    expect(lista.map((p) => p.slug).sort()).toEqual([
-      'legging-duna',
-      'legging-medano',
-      'top-ocre',
-      'top-umbra',
+    expect(lista.map((p) => p.slug)).toEqual([
+      'enterizo-largo-tela-fria-manga-larga',
+      'enterizo-halter-sin-costuras',
+      'set-halo',
+      'body-mesh-manga-larga',
     ])
   })
 
@@ -112,22 +109,19 @@ describe('aplicarFiltros', () => {
     const lista = await todos()
     const copia = [...lista]
     const ordenada = aplicarFiltros(lista, { ...FILTROS_VACIOS, orden: 'precio-asc' })
-    expect(ordenada[0].slug).toBe('top-brisa')
+    expect(ordenada[0].slug).toBe('calentadoras-small')
     expect(lista).toEqual(copia)
   })
 })
 
 describe('opcionesDe', () => {
-  it('reune colores sin repetir y tallas en el orden de la etiqueta', async () => {
+  it('reune colores sin repetir, tallas en el orden de la etiqueta y el rango por color', async () => {
     const o = opcionesDe(await todos())
-    expect(o.colores.map((c) => c.nombre).sort()).toEqual([
-      'Arena',
-      'Duna',
-      'Negro Humo',
-      'Umbra',
-    ])
-    expect(o.tallas).toEqual(['XS', 'S', 'M', 'L', 'XL'])
-    expect(o.precio).toEqual({ min: 98000, max: 239000 })
+    const nombres = o.colores.map((c) => c.nombre)
+    expect(new Set(nombres).size).toBe(nombres.length)
+    expect(nombres).toContain('Chocolate')
+    expect(o.tallas).toEqual(['S', 'M', 'L', 'U'])
+    expect(o.precio).toEqual({ min: 36000, max: 185000 })
   })
 })
 

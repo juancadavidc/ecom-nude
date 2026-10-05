@@ -21,10 +21,10 @@ import { useVariante } from './Variante'
  * `padding-inline` para no perder el respiro interno al ir a sangre.
  */
 export function BarraCompra() {
-  const { producto, talla, variante, agregar } = useVariante()
+  const { producto, talla, variante, precio, agregar } = useVariante()
 
   const agotado = estadoVisible(producto) === 'agotado'
-  const listo = Boolean(talla && variante && variante.stock > 0)
+  const listo = Boolean(talla && variante?.disponible)
 
   function irATallas() {
     const destino = document.getElementById('ficha-tallas')
@@ -35,7 +35,7 @@ export function BarraCompra() {
 
   return (
     <div className="barra-compra a-sangre">
-      <p className="price-sm">{formatCOP(producto.precio)}</p>
+      <p className="price-sm">{formatCOP(precio)}</p>
       <Boton disabled={agotado} onClick={listo ? agregar : irATallas}>
         {agotado ? microcopy.agotado : listo ? microcopy.agregar : microcopy.elegirTalla}
       </Boton>

@@ -9,21 +9,25 @@ type ProductoJson = {
   slug: string
   categoria: Categoria
   coleccion: string
+  marca: string | null
   precio: number
   descripcion: string
   detalles: string[]
   estado: EstadoProducto
+  destacado: boolean
   combina_con: string[]
   imagenes: Record<string, string[]>
-  variantes: { color: string; hex: string; talla: Talla; sku: string; stock: number }[]
+  variantes: { color: string; hex: string; talla: Talla; sku: string; disponible: boolean; precio: number | null }[]
   seo: { titulo: string; descripcion: string; alt: string }
 }
 
 const catalogo = archivo.productos as unknown as ProductoJson[]
 
 /**
- * Vacia y vuelve a llenar las cuatro tablas de negocio desde
- * `src/content/productos.json`. El JSON deja de ser fuente de verdad y queda solo
+ * Vacia y vuelve a llenar las cuatro tablas de catalogo desde
+ * `src/content/productos.json` — el catalogo real, armado a partir del listado
+ * de productos (Productos_20261005_1445.xlsx) y las fotos de la sesion. Las
+ * categorias no se tocan: las crea la migracion 0001 y se editan en el panel. El JSON deja de ser fuente de verdad y queda solo
  * como semilla. Se corre en tres pasadas porque `combina_con` necesita que todos
  * los productos existan primero, y `creadoEn` recibe timestamps que preservan el
  * orden del archivo (asi el orden por defecto -- "novedad" -- sigue siendo el
@@ -46,10 +50,12 @@ export async function seed() {
         nombre: p.nombre,
         categoria: p.categoria,
         coleccion: p.coleccion,
+        marca: p.marca,
         precio: p.precio,
         descripcion: p.descripcion,
         detalles: p.detalles,
         estado: p.estado,
+        destacado: p.destacado,
         seoTitulo: p.seo.titulo,
         seoDescripcion: p.seo.descripcion,
         seoAlt: p.seo.alt,
@@ -84,6 +90,13 @@ export async function seed() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
+  // En produccion la semilla BORRA el catalogo que se edito desde /admin. Se
+  // corre una sola vez, en el primer despliegue con el catalogo real, y a
+  // proposito: SEMBRAR_CATALOGO=si npm run db:seed
+  if (process.env.NODE_ENV === 'production' && process.env.SEMBRAR_CATALOGO !== 'si') {
+    console.error('La semilla reemplaza todo el catalogo. En produccion: SEMBRAR_CATALOGO=si npm run db:seed')
+    process.exit(1)
+  }
   seed()
     .then(() => {
       console.log(`Seed OK: ${catalogo.length} productos.`)

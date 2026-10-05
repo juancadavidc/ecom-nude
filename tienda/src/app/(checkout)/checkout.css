@@ -1,0 +1,642 @@
+/*
+ * Checkout y confirmacion (SPEC §4.5). Solo tokens de globals.css: ningun hex
+ * suelto, sin sombras, radio 2px, separacion por fondo y linea Ochre 25%.
+ * El unico color que no es token es el hex de la tela en la miniatura sin
+ * foto, que es dato de producto y llega en linea.
+ */
+
+/* globals.css pone el logo en la columna 2 del header de tres columnas; el
+   header del checkout tiene una sola, y esa regla creaba una columna fantasma
+   que empujaba el logo a la derecha en movil. */
+.header-inner-checkout .header-logo {
+  grid-column: 1;
+}
+
+.co-main {
+  min-height: calc(100vh - 80px);
+}
+
+.co-pagina {
+  padding-top: 28px;
+  padding-bottom: 64px;
+}
+
+@media (min-width: 768px) {
+  .co-pagina {
+    padding-top: 48px;
+    padding-bottom: 96px;
+  }
+}
+
+/* ---------- Estructura: formulario + resumen ---------- */
+
+.co-grid {
+  display: grid;
+  gap: 8px;
+}
+
+@media (min-width: 1024px) {
+  .co-grid {
+    grid-template-columns: minmax(0, 1fr) 400px;
+    column-gap: 72px;
+    align-items: start;
+  }
+}
+
+@media (min-width: 1280px) {
+  .co-grid {
+    grid-template-columns: minmax(0, 1fr) 440px;
+    column-gap: 96px;
+  }
+}
+
+.co-bloques {
+  max-width: 680px;
+}
+
+.co-titulo {
+  margin: 0 0 8px;
+  font-size: clamp(34px, 4.4vw, 46px);
+  line-height: 1.15;
+}
+
+.co-bloque {
+  padding-block: 32px 36px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.co-bloque:first-of-type {
+  border-top: 0;
+  padding-top: 20px;
+}
+
+/* Titulo de bloque: Cormorant, sin etiqueta encima ni numeracion — cuatro
+   bloques en una sola pagina no son un asistente de pasos. */
+.co-h2 {
+  margin: 0 0 20px;
+  font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+  font-weight: 300;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .co-h2 {
+    font-size: 28px;
+  }
+}
+
+.co-campos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+}
+
+@media (min-width: 640px) {
+  .co-campos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+  }
+}
+
+.co-ancho {
+  grid-column: 1 / -1;
+}
+
+.co-indicaciones .textarea {
+  min-height: 96px;
+}
+
+/* Un select deshabilitado se lee como "todavia no", no como roto */
+.co-campos .select:disabled {
+  background-color: var(--cream);
+  border-style: dashed;
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.co-envio-aviso {
+  margin: -6px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.co-envio-aviso strong {
+  font-weight: 400;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Pago ---------- */
+
+.co-pago {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.co-pago-opcion {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background-color: var(--bg-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+@media (hover: hover) {
+  .co-pago-opcion:hover {
+    border-color: var(--dune);
+  }
+}
+
+.co-pago-opcion[data-activo] {
+  border-color: var(--umber);
+}
+
+.co-pago[data-error] .co-pago-opcion {
+  border-color: var(--ochre);
+}
+
+/* El foco del radio se dibuja en la fila entera: el circulo es chico y el
+   anillo alrededor de 20px se pierde. */
+.co-pago-opcion:has(.co-radio:focus-visible) {
+  outline: 2px solid var(--line);
+  outline-offset: 2px;
+}
+
+.co-radio {
+  appearance: none;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  border: 1px solid var(--ochre);
+  border-radius: 9999px;
+  background-color: var(--bg-raised);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+/* Punto interior dibujado con el fondo: sin sombras (SPEC §12) */
+.co-radio:checked {
+  border-color: var(--umber);
+  background-image: radial-gradient(circle, var(--umber) 0 5px, transparent 5.5px);
+}
+
+.co-radio:focus-visible {
+  outline: none;
+}
+
+.co-pago-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.co-pago-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 10px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.co-pago-detalle {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-muted);
+}
+
+.co-pago-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* ---------- Resumen ---------- */
+
+.co-resumen {
+  /* en movil va a sangre: el Sahara marca que ya no es formulario */
+  margin-inline: -24px;
+  padding: 32px 24px 36px;
+}
+
+@media (min-width: 1024px) {
+  .co-resumen {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    margin: 20px 0 0;
+    padding: 32px;
+    border-radius: var(--radius);
+  }
+}
+
+.co-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.co-item {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 4px 14px;
+  align-items: start;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.co-mini {
+  display: block;
+  width: 56px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background-color: var(--bg-raised);
+}
+
+.co-mini-color {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.co-mini-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background-color: var(--sahara);
+}
+
+.co-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 2px;
+}
+
+.co-item-nombre {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.co-item-variante {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.co-item-precio {
+  margin: 0;
+  padding-top: 2px;
+  font-size: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.co-item-problema .co-mini,
+.co-item-problema .co-item-info,
+.co-item-problema .co-item-precio {
+  opacity: 0.55;
+}
+
+.co-item-aviso {
+  grid-column: 2 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.co-quitar {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text);
+  background-image: linear-gradient(var(--line), var(--line));
+  background-repeat: no-repeat;
+  background-position: 0 calc(50% + 10px);
+  background-size: 100% 1px;
+}
+
+.co-codigo {
+  margin-block: 20px 24px;
+}
+
+.co-codigo-fila {
+  display: flex;
+  gap: 8px;
+}
+
+.co-codigo-fila .input {
+  flex: 1;
+  min-width: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.co-codigo-fila .input::placeholder {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.co-codigo-fila .btn {
+  flex: none;
+  min-height: 52px;
+  padding-inline: 22px;
+}
+
+.co-codigo-aplicado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.co-codigo-aplicado p {
+  margin: 0;
+}
+
+.co-codigo-aplicado strong {
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.co-totales {
+  margin: 0 0 24px;
+}
+
+.co-totales > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding-block: 5px;
+  font-size: 14px;
+}
+
+.co-totales dt {
+  font-weight: 300;
+}
+
+.co-totales dd {
+  margin: 0;
+  font-weight: 400;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.co-totales-nota {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-muted);
+}
+
+.co-totales > .co-total {
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  align-items: center;
+}
+
+.co-total dt {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.co-total dd {
+  font-size: 22px;
+  letter-spacing: 0.02em;
+}
+
+.co-total dd .co-totales-nota {
+  display: block;
+  max-width: 26ch;
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+.co-mensaje {
+  margin-top: 14px;
+}
+
+/* ---------- Vacio y carga ---------- */
+
+.co-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding-block: 12vh 8vh;
+  text-align: center;
+}
+
+.co-vacio .quote {
+  margin: 0;
+}
+
+.co-cargando {
+  min-height: 60vh;
+}
+
+/* ---------- Pie del checkout ---------- */
+
+.co-pie {
+  padding-block: 20px 28px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.co-pie-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 14px;
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 4px;
+}
+
+.co-pie-link svg {
+  flex: none;
+  color: var(--line);
+}
+
+@media (hover: hover) {
+  .co-pie-link:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* ---------- Confirmacion ---------- */
+
+.co-confirmacion {
+  max-width: calc(680px + 48px);
+}
+
+.co-conf-cabeza {
+  padding-bottom: 32px;
+}
+
+.co-conf-cabeza h1 {
+  margin: 0;
+}
+
+.co-conf-numero {
+  margin: 16px 0 0;
+  max-width: 46ch;
+}
+
+.co-conf-numero strong {
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.co-conf-pago {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-inline: -24px;
+  padding: 32px 24px;
+}
+
+@media (min-width: 768px) {
+  .co-conf-pago {
+    margin-inline: 0;
+    padding: 40px;
+    border-radius: var(--radius);
+  }
+}
+
+.co-conf-pago .co-h2 {
+  margin: 0;
+}
+
+.co-conf-pago p {
+  margin: 0;
+}
+
+.co-conf-pago strong {
+  font-weight: 400;
+}
+
+/* El monto exacto: Jost, nunca serif (SPEC §2.2), grande porque es lo que se copia */
+.co-monto {
+  font-family: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  font-size: clamp(40px, 9vw, 56px);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.co-monto-label {
+  margin-top: 4px !important;
+}
+
+.co-cuentas {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 8px 0 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.co-cuenta {
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.co-cuenta-banco {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.co-cuenta-banco span {
+  letter-spacing: 0.1em;
+}
+
+.co-cuenta-numero {
+  margin: 4px 0 !important;
+  font-size: clamp(26px, 6vw, 32px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  user-select: all;
+}
+
+.co-cuenta-titular {
+  font-size: 14px;
+}
+
+.co-whatsapp {
+  margin-top: 8px;
+  padding-inline: 20px;
+  letter-spacing: 0.18em;
+  text-indent: 0.18em;
+  line-height: 1.6;
+}
+
+.co-whatsapp svg {
+  flex: none;
+}
+
+.co-conf-celular {
+  color: var(--text-muted);
+}
+
+.co-conf-resumen {
+  padding-block: 48px 8px;
+}
+
+.co-conf-metodo {
+  margin: -8px 0 0;
+  color: var(--text-muted);
+}
+
+.co-conf-bienvenida {
+  margin: 40px 0 0;
+  padding-top: 40px;
+  border-top: 1px solid var(--line-soft);
+  text-align: center;
+}
+
+.co-conf-seguir {
+  display: flex;
+  width: fit-content;
+  margin: 32px auto 0;
+}

@@ -12,18 +12,18 @@ import type { Talla } from './producto-modelo'
  */
 const CASOS: { nombre: string; filtros: FiltrosActivos }[] = [
   { nombre: 'sin filtros', filtros: { colores: [], tallas: [], precio: {}, orden: 'novedad' } },
-  { nombre: 'un color', filtros: { colores: ['Duna'], tallas: [], precio: {}, orden: 'novedad' } },
-  { nombre: 'una talla, precio ascendente', filtros: { colores: [], tallas: ['XL' as Talla], precio: {}, orden: 'precio-asc' } },
+  { nombre: 'un color', filtros: { colores: ['Negro'], tallas: [], precio: {}, orden: 'novedad' } },
+  { nombre: 'una talla, precio ascendente', filtros: { colores: [], tallas: ['U' as Talla], precio: {}, orden: 'precio-asc' } },
   {
     nombre: 'color y talla cruzados, precio descendente',
-    filtros: { colores: ['Arena'], tallas: ['S' as Talla], precio: {}, orden: 'precio-desc' },
+    filtros: { colores: ['Gris'], tallas: ['S' as Talla], precio: {}, orden: 'precio-desc' },
   },
   { nombre: 'precio minimo', filtros: { colores: [], tallas: [], precio: { min: 100000 }, orden: 'novedad' } },
   { nombre: 'precio maximo, precio ascendente', filtros: { colores: [], tallas: [], precio: { max: 150000 }, orden: 'precio-asc' } },
   {
     nombre: 'colores, tallas y rango de precio combinados',
     filtros: {
-      colores: ['Umbra', 'Duna'],
+      colores: ['Café', 'Marfil'],
       tallas: ['M', 'L'] as Talla[],
       precio: { min: 90000, max: 230000 },
       orden: 'precio-desc',
