@@ -129,11 +129,11 @@ const bytea = customType<{ data: Buffer; driverData: Buffer }>({
 })
 
 /**
- * Fotos subidas desde el panel. Viven en Postgres y no en disco porque el
- * contenedor de Coolify es desechable: una foto en el sistema de archivos se
- * pierde en el siguiente despliegue, una fila no. Cada subida se guarda ya
- * redimensionada en los mismos anchos y formatos que `scripts/gen-fotos.mjs`,
- * asi que `FotoFondo` las sirve igual que a las estaticas.
+ * LEGADO: aqui guardaba el panel las fotos subidas antes de pasar a R2 (ver
+ * `src/lib/admin/medios.ts`). Ya nadie escribe ni lee esta tabla; queda solo
+ * para que `npm run medios:a-r2` copie lo que haya al almacen. Se retira con
+ * una migracion `-- allow-destructive` cuando todos los ambientes la hayan
+ * copiado.
  */
 export const medios = pgTable(
   'medios',

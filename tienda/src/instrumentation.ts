@@ -3,8 +3,8 @@
  * terminar antes de que el servidor acepte peticiones.
  *
  * Solo migra en local (`npm run dev`, NODE_ENV=development). En el contenedor
- * NODE_ENV=production (ver Dockerfile) y la migracion corre como paso explicito
- * del entrypoint, antes de `next start` — con mas de una replica, varios
+ * NODE_ENV=production (ver docker/Dockerfile) y la migracion corre como paso
+ * explicito de docker/entrypoint.ts, antes de levantar el servidor — con mas de una replica, varios
  * `register()` disparando la migracion a la vez no serian un paso serializado ni
  * quedarian en los logs del deploy como un solo evento.
  *
@@ -14,6 +14,7 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs' && process.env.NODE_ENV !== 'production') {
     const { runMigrations } = await import('./db/migrate')
-    await runMigrations()
+    const { env } = await import('./lib/env')
+    await runMigrations({ databaseUrl: env.databaseUrl })
   }
 }

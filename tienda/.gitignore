@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# almacen local de fotos (sin credenciales de R2) y scripts empaquetados por esbuild
+/.almacen/
+/dist/

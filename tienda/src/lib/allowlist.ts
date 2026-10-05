@@ -1,4 +1,7 @@
-export function leerAllowlist(valor = process.env.ADMIN_ALLOWLIST ?? ''): string[] {
+import { env } from './env'
+
+/** `ADMIN_EMAILS`: correos separados por coma que nacen admin. */
+export function leerAllowlist(valor = env.adminEmails): string[] {
   return valor
     .split(',')
     .map((correo) => correo.trim().toLowerCase())

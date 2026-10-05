@@ -2,19 +2,18 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 
 /**
- * Solo se prueban los modulos de `src/lib` y `src/db`: son las piezas puramente
- * logicas del sitio mas la capa de datos. Lo visual se verifica con
- * `npm run verificar`, no con jsdom.
+ * Se prueban las piezas logicas del sitio, la capa de datos y los scripts de CI
+ * (`scripts/*.test.ts`). Lo visual se verifica en el navegador, no con jsdom.
  *
- * `globalSetup` migra y siembra la base local antes de correr cualquier test — ver
- * `vitest.global-setup.ts`. Los tests asumen `docker compose -f
- * docker-compose-local.yaml up -d` ya corrido.
+ * `globalSetup` crea, migra y siembra `<base>_test` antes de correr cualquier
+ * test — ver `vitest.global-setup.ts`. La base de desarrollo no se toca.
  */
 export default defineConfig({
   test: {
     environment: 'node',
-    include: ['src/lib/**/*.test.ts', 'src/db/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'scripts/**/*.test.ts'],
     globalSetup: './vitest.global-setup.ts',
+    setupFiles: ['./vitest.setup.ts'],
     fileParallelism: false,
   },
   resolve: {

@@ -1,9 +1,11 @@
 import { eq } from 'drizzle-orm'
 import { afterAll, describe, expect, it } from 'vitest'
 import { db } from '@/db'
-import { medios, pedidos } from '@/db/schema'
+import { imagenes, pedidos, productos } from '@/db/schema'
+import { almacen } from '@/lib/almacen'
+import { ANCHOS_PRODUCTO, FORMATOS } from '@/lib/fotos'
 import { listarProductosPanel, obtenerProductoPanel, resumenPedidos, resumenProductos } from './datos'
-import { parsearArchivo } from './medios'
+import { clavesMedio, guardarMedio, limpiarMedios, parsearArchivo } from './medios'
 
 /** Corre contra la semilla: 46 productos, 32 publicados, 14 borradores sin foto. */
 
@@ -71,11 +73,28 @@ describe('medios', () => {
     expect(parsearArchivo('../../etc/passwd')).toBeNull()
   })
 
-  it('la tabla medios guarda bytea', async () => {
+  it('guarda las seis variantes en el almacen y las borra cuando ya nadie las usa', async () => {
     const id = crypto.randomUUID()
-    await db.insert(medios).values({ id, ancho: 480, formato: 'jpg', datos: Buffer.from([1, 2, 3]) })
-    const [f] = await db.select().from(medios).where(eq(medios.id, id))
-    expect([...f.datos]).toEqual([1, 2, 3])
-    await db.delete(medios).where(eq(medios.id, id))
+    const procesados = ANCHOS_PRODUCTO.flatMap((ancho) =>
+      FORMATOS.map((formato) => ({ ancho, formato, datos: Buffer.from(`${ancho}.${formato}`) })),
+    )
+    await guardarMedio(id, procesados)
+    expect((await almacen().listar(`media/${id}`)).sort()).toEqual(clavesMedio(id).sort())
+
+    await limpiarMedios([`/media/${id}`])
+    expect(await almacen().listar(`media/${id}`)).toEqual([])
+  })
+
+  it('no borra un medio que alguna imagen todavia usa', async () => {
+    const id = crypto.randomUUID()
+    await guardarMedio(id, [{ ancho: 480, formato: 'jpg', datos: Buffer.from([1]) }])
+    const [p] = await db.select({ id: productos.id }).from(productos).limit(1)
+    const [img] = await db.insert(imagenes).values({ productoId: p.id, color: 'X', ruta: `/media/${id}`, orden: 99 }).returning()
+
+    await limpiarMedios([`/media/${id}`])
+    expect(await almacen().listar(`media/${id}`)).toHaveLength(1)
+
+    await db.delete(imagenes).where(eq(imagenes.id, img.id))
+    await limpiarMedios([`/media/${id}`])
   })
 })

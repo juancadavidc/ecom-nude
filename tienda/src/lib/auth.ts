@@ -4,16 +4,48 @@ import { nextCookies } from 'better-auth/next-js'
 import { admin } from 'better-auth/plugins'
 import { db } from '@/db'
 import { correoPermitido, leerAllowlist } from './allowlist'
+import { env, required } from './env'
 
-if (
-  process.env.NODE_ENV === 'production' &&
-  process.env.NEXT_PHASE !== 'phase-production-build' &&
-  !process.env.BETTER_AUTH_SECRET
-) {
-  throw new Error('BETTER_AUTH_SECRET es obligatorio en produccion — el contenedor no debe arrancar sin el.')
+/**
+ * En produccion Google es el unico login: sin credenciales la app no debe
+ * arrancar (en `next build` corre con SKIP_ENV_VALIDATION=1 y no aplica). En
+ * desarrollo, sin credenciales, se entra con `scripts/sesion-admin-dev.mjs`.
+ */
+function socialProviders() {
+  if (env.googleClientId && env.googleClientSecret) {
+    return { google: { clientId: env.googleClientId, clientSecret: env.googleClientSecret } }
+  }
+  if (env.nodeEnv === 'production') {
+    required('GOOGLE_CLIENT_ID')
+    required('GOOGLE_CLIENT_SECRET')
+  }
+  return {}
 }
 
-const allowlist = leerAllowlist()
+/**
+ * Endpoints HTTP del plugin admin (/api/auth/admin/*). El panel no los usa: los
+ * roles salen de ADMIN_EMAILS al crear la cuenta. Expuestos, cualquier admin
+ * podria cambiar roles, banear o suplantar por HTTP sin pasar por ninguna regla
+ * de la app. Se apagan todos, como en starter-next-auth; `auth.api.*` en el
+ * servidor sigue funcionando porque `disabledPaths` solo filtra peticiones HTTP.
+ */
+export const DISABLED_ADMIN_PATHS = [
+  '/admin/set-role',
+  '/admin/get-user',
+  '/admin/create-user',
+  '/admin/update-user',
+  '/admin/list-users',
+  '/admin/list-user-sessions',
+  '/admin/unban-user',
+  '/admin/ban-user',
+  '/admin/impersonate-user',
+  '/admin/stop-impersonating',
+  '/admin/revoke-user-session',
+  '/admin/revoke-user-sessions',
+  '/admin/remove-user',
+  '/admin/set-user-password',
+  '/admin/has-permission',
+]
 
 /**
  * Acceso con Google SSO (SPEC §9.3). Cualquier correo puede crear cuenta —
@@ -22,7 +54,7 @@ const allowlist = leerAllowlist()
  *
  * `databaseHooks.user.create.before` corre en el primer inicio de sesion de
  * cada correo (no hay email/password, asi que no hay otra via de creacion de
- * usuario): si el correo esta en `ADMIN_ALLOWLIST`, se promueve a
+ * usuario): si el correo esta en `ADMIN_EMAILS`, se promueve a
  * `role: 'admin'`; si no, no se toca `role` y el plugin `admin()` le pone su
  * default (`'user'`) — el hook simplemente no participa. `AdminLayout`
  * (`src/app/admin/layout.tsx`) es quien de verdad protege el panel, exigiendo
@@ -37,20 +69,17 @@ const allowlist = leerAllowlist()
  */
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: 'pg' }),
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: env.betterAuthUrl,
   basePath: '/api/auth',
-  secret: process.env.BETTER_AUTH_SECRET,
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-    },
-  },
+  secret: env.betterAuthSecret,
+  disabledPaths: DISABLED_ADMIN_PATHS,
+  socialProviders: socialProviders(),
   databaseHooks: {
     user: {
       create: {
         before: async (user) => {
-          if (!correoPermitido(user.email, allowlist)) return
+          // Se lee en cada alta para que cambiar la variable no requiera reiniciar.
+          if (!correoPermitido(user.email, leerAllowlist())) return
           return { data: { ...user, role: 'admin' } }
         },
       },

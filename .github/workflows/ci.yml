@@ -1,0 +1,40 @@
+name: CI
+
+# Verificacion de cada PR con los workflows comunes de juancadavidc/shared-gha-stackless:
+# lint, tipos, migraciones solo aditivas, migrate y tests contra un Postgres efimero, mas
+# el smoke de la imagen. Publicar y desplegar vive en staging.yml y release.yml.
+# La app vive en tienda/: de ahi salen el package.json, el contexto y el Dockerfile.
+
+on:
+  pull_request:
+
+# Un push nuevo al mismo PR deja obsoleta la validacion anterior.
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Lint, tipos y tests
+    uses: juancadavidc/shared-gha-stackless/.github/workflows/node-ci.yml@v1
+    with:
+      working-directory: tienda
+      node-version-file: tienda/.nvmrc
+      # El build de Next ya lo cubre image-smoke.
+      skip-scripts: build
+
+  image-smoke:
+    name: La imagen arranca y migra
+    uses: juancadavidc/shared-gha-stackless/.github/workflows/image-smoke.yml@v1
+    with:
+      context: tienda
+      dockerfile: tienda/docker/Dockerfile
+      health-paths: /api/health /api/health/db
+      env: |
+        BETTER_AUTH_SECRET=ci-secret-ci-secret-ci-secret-0000
+        BETTER_AUTH_URL=http://localhost:3000
+        GOOGLE_CLIENT_ID=ci
+        GOOGLE_CLIENT_SECRET=ci

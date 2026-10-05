@@ -2,6 +2,14 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   /**
+   * Imagen de Docker minima: `server.js` mas solo los node_modules que el
+   * servidor usa (ver docker/Dockerfile). La raiz de tracing es esta carpeta:
+   * sin fijarla, Next la infiere del lockfile de `ecom-nude/` y anida la salida.
+   */
+  output: 'standalone',
+  outputFileTracingRoot: process.cwd(),
+  poweredByHeader: false,
+  /**
    * Next 16 bloquea por defecto los recursos de desarrollo pedidos desde un host
    * distinto a `localhost`. Sin esto, abrir el dev server por IP —desde el
    * celular en la misma red, que es como se revisa el movil de verdad— carga el

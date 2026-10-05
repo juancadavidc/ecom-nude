@@ -9,7 +9,14 @@ import { cx } from '@/lib/format'
  * El checkout va aparte, en su propio grupo de rutas: ahi el header pierde la
  * navegacion y queda solo el logo (SPEC §4.5) porque cada salida es una venta
  * perdida. Por eso Header y Footer no viven en el layout raiz.
+ *
+ * `force-dynamic` en el layout cubre todo el grupo: el Header lee las categorias
+ * de Postgres, asi que ninguna pagina de la tienda se puede prerenderizar en
+ * `next build` — y el build no tiene base (lo corre docker/Dockerfile sin red a
+ * Postgres). Cada pagina se renderiza por peticion.
  */
+export const dynamic = 'force-dynamic'
+
 export default function TiendaLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
