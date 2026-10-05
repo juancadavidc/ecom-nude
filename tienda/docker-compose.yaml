@@ -1,0 +1,32 @@
+# Produccion (Coolify). Hace pull de la imagen de GHCR; nada se construye aqui.
+# Sin `ports`: Traefik de Coolify entra por la red interna de Docker; publicar 3000 en el
+# host choca con cualquier otro contenedor que ya lo use.
+# Sin defaults: si falta una variable en Coolify, el deploy falla en vez de arrancar con
+# placeholders.
+services:
+  tienda:
+    # Debe coincidir con lo que publica CI: ghcr.io/<owner>/<repo>/<service>.
+    # TAG=staging en la app de staging; produccion usa `latest` (lo mueve release.yml).
+    image: ghcr.io/juancadavidc/ecom-nude/tienda:${TAG:-latest}
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?falta DATABASE_URL}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?falta BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:?falta BETTER_AUTH_URL}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?falta GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?falta GOOGLE_CLIENT_SECRET}
+      # Vacio es un valor legitimo: significa "nadie nace admin".
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      # Fotos de producto (catalogo y panel). Un bucket por ambiente.
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:?falta R2_ACCOUNT_ID}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:?falta R2_ACCESS_KEY_ID}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:?falta R2_SECRET_ACCESS_KEY}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:?falta R2_BUCKET_NAME}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s

@@ -92,9 +92,9 @@ export async function seed() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   // En produccion la semilla BORRA el catalogo que se edito desde /admin. Se
   // corre una sola vez, en el primer despliegue con el catalogo real, y a
-  // proposito: SEMBRAR_CATALOGO=si npm run db:seed
+  // proposito, dentro del contenedor: SEMBRAR_CATALOGO=si node seed.mjs
   if (process.env.NODE_ENV === 'production' && process.env.SEMBRAR_CATALOGO !== 'si') {
-    console.error('La semilla reemplaza todo el catalogo. En produccion: SEMBRAR_CATALOGO=si npm run db:seed')
+    console.error('La semilla reemplaza todo el catalogo. En produccion: SEMBRAR_CATALOGO=si node seed.mjs')
     process.exit(1)
   }
   seed()

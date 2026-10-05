@@ -42,6 +42,6 @@ test-results/
 .worktrees/
 
 # Material de origen del catalogo (zip de la sesion de fotos y listado del POS).
-# El resultado procesado si se versiona: public/fotos/p y src/content/productos.json.
+# El resultado procesado si se versiona: tienda/semilla/fotos/p (fuente de `npm run fotos:subir`) y src/content/productos.json.
 tienda/catalogonude-*.zip
 tienda/Productos_*.xlsx

@@ -1,8 +1,16 @@
 node_modules
 .next
 out
+dist
 .git
 .env
 .env.local
 .env.*.local
 npm-debug.log*
+# Fuera de la imagen: el catalogo inicial vive en R2 (npm run fotos:subir) y el material
+# de origen de la sesion de fotos no se versiona.
+semilla
+.almacen
+catalogonude-*.zip
+Productos_*.xlsx
+tsconfig.tsbuildinfo

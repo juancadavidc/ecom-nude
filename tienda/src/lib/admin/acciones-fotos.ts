@@ -2,14 +2,9 @@
 
 import { and, asc, eq, max } from 'drizzle-orm'
 import { db } from '@/db'
-import {
-  imagenes as imagenesTabla,
-  medios as mediosTabla,
-  productos as productosTabla,
-  variantes as variantesTabla,
-} from '@/db/schema'
+import { imagenes as imagenesTabla, productos as productosTabla, variantes as variantesTabla } from '@/db/schema'
 import { ErrorFoto, procesarFoto, validarArchivo } from './fotos-proceso'
-import { limpiarMedios } from './medios'
+import { guardarMedio, limpiarMedios } from './medios'
 import { exito, fallo, type Resultado } from './resultado'
 import { revalidarTienda } from './revalidar'
 import { exigirAdmin } from './sesion'
@@ -91,9 +86,16 @@ export async function subirFoto(formData: FormData): Promise<Resultado> {
     return fallo(`No pudimos procesar "${archivo.name}". Inténtalo de nuevo o prueba con otra foto.`)
   }
 
+  // Primero el almacen y despues la fila: una fila sin archivos seria una foto rota en
+  // la tienda; archivos sin fila son solo basura en el bucket.
   const id = crypto.randomUUID()
+  try {
+    await guardarMedio(id, procesados)
+  } catch (e) {
+    console.error('subirFoto: almacen', e)
+    return fallo(`No pudimos guardar "${archivo.name}". Inténtalo de nuevo en un momento.`)
+  }
   await db.transaction(async (tx) => {
-    await tx.insert(mediosTabla).values(procesados.map((m) => ({ id, ancho: m.ancho, formato: m.formato, datos: m.datos })))
     const [ultimo] = await tx
       .select({ orden: max(imagenesTabla.orden) })
       .from(imagenesTabla)

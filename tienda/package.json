@@ -2,19 +2,26 @@
   "name": "tienda",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node .next/standalone/server.js",
     "lint": "eslint",
-    "test": "DOTENV_CONFIG_PATH=.env.local vitest run",
+    "typecheck": "tsc --noEmit",
+    "check-migrations": "node scripts/check-migrations.ts",
+    "test": "vitest run",
     "test:watch": "vitest",
-    "verificar": "npm run build && node scripts/verificar.mjs",
+    "db:up": "docker compose -f docker-compose.local.yaml up -d --wait",
     "db:generate": "DOTENV_CONFIG_PATH=.env.local drizzle-kit generate",
     "db:migrate": "DOTENV_CONFIG_PATH=.env.local tsx src/db/run-migrate.ts",
-    "db:seed": "DOTENV_CONFIG_PATH=.env.local tsx src/db/seed.ts"
+    "db:seed": "DOTENV_CONFIG_PATH=.env.local tsx src/db/seed.ts",
+    "fotos:subir": "DOTENV_CONFIG_PATH=.env.local tsx src/cli/subir-fotos.ts",
+    "medios:a-r2": "DOTENV_CONFIG_PATH=.env.local tsx src/cli/medios-a-r2.ts",
+    "verificar": "npm run build && node scripts/verificar.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1146.0",
     "@phosphor-icons/react": "^2.1.10",
     "better-auth": "1.5.6",
     "dotenv": "^17.2.3",
@@ -28,15 +35,19 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^24.19.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.8",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
     "playwright": "^1.63.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.7"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

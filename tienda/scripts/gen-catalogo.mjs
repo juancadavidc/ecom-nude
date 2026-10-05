@@ -5,7 +5,8 @@
  *
  * Fuente:  la carpeta del zip de la sesion (catalogonude-*.zip), ya pasada a JPG
  * Mapa:    scripts/catalogo-fotos.json  ({ salida, fuente, tratamiento })
- * Salida:  public/fotos/<salida>-<ancho>.<avif|webp|jpg>, siempre en 3:4
+ * Salida:  semilla/fotos/<salida>-<ancho>.<avif|webp|jpg>, siempre en 3:4;
+ *          despues `npm run fotos:subir` las lleva al almacen (R2)
  *
  * Las fotos llegaron como llegaron: cuadros de video con el icono de sonido
  * del celular, collages de tres poses, flatlays horizontales. La tienda las
@@ -33,7 +34,7 @@ import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const OUT = resolve(here, '../public/fotos')
+const OUT = resolve(here, '../semilla/fotos')
 const SRC = process.argv[2]
 if (!SRC || !existsSync(SRC)) {
   console.error('Uso: node scripts/gen-catalogo.mjs <carpeta-con-las-fotos>')

@@ -1,7 +1,7 @@
 # NUDE SPORTSWEAR — E-commerce
 
 Tienda en línea de [NUDE SPORTSWEAR](https://nudesportswear.co), marca colombiana de ropa
-deportiva femenina. Software a la medida: Next.js 16 + TypeScript + Tailwind 4 + Firestore.
+deportiva femenina. Software a la medida: Next.js 16 + TypeScript + Tailwind 4 + Postgres + Cloudflare R2.
 
 **En vivo:** https://nudesportswear.co — hoy sirve la **fase 1** (design system). La tienda
 todavía no puede vender: no hay catálogo, carrito ni checkout.
@@ -37,16 +37,15 @@ npm run dev      # http://localhost:3000
 
 ---
 
-## Dos cosas que muerden
+## Despliegue
 
-**El export estático se cae en la fase 3.** Hoy el sitio se despliega como `output: 'export'`
-porque las cuatro rutas se prerenderizan en build. Catálogo y ficha necesitan Firestore con
-renderizado en servidor, y el checkout necesita Server Actions — nada de eso existe en un
-export estático. Hay que migrar a Firebase App Hosting antes de esa fase.
+Arquitectura de referencia de `starter-next-auth`: GitHub Actions (`.github/workflows/`,
+con los workflows comunes de `shared-gha-stackless`) → imagen en GHCR → Coolify, con
+Postgres por ambiente y fotos de producto en Cloudflare R2. Detalle en
+[`tienda/README.md`](tienda/README.md#despliegue).
 
-**El deploy pisa a la landing.** Este repo y el repo de marca despliegan al *mismo* sitio de
-Firebase (`nudesportswear-landing`). El último que corre `firebase deploy` gana, y como son
-repos separados git no avisa. Detalle y rollback en [`tienda/README.md`](tienda/README.md).
+**El sitio en vivo sigue en Firebase** hasta el corte de DNS de `nudesportswear.co` hacia
+Coolify.
 
 ---
 
