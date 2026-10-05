@@ -27,7 +27,7 @@ export function Comunidad() {
     <section className="comunidad" aria-labelledby="comunidad-titulo">
       <div className="container-nude comunidad-head eje">
         <div>
-          <p className="label text-muted">Como la llevan</p>
+          <p className="label text-muted">Cómo la llevan</p>
           <h2 className="title" id="comunidad-titulo">
             En movimiento
           </h2>

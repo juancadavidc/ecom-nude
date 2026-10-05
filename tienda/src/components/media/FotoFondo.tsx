@@ -1,4 +1,5 @@
 import { cx } from '@/lib/format'
+import { baseFoto } from '@/lib/fotos'
 
 /**
  * Foto a sangre que llena su contenedor (el padre pone `position: relative`).
@@ -13,7 +14,7 @@ import { cx } from '@/lib/format'
  * pone, no del componente.
  */
 type FotoFondoProps = {
-  /** Nombre base del archivo en `public/fotos`, sin ancho ni extension. */
+  /** Nombre base en `public/fotos` o ruta `/media/<id>`, sin ancho ni extension (ver lib/fotos). */
   nombre: string
   alt: string
   /** Anchos generados para esa foto. Los escribe `gen-fotos.mjs` en consola. */
@@ -37,8 +38,8 @@ export function FotoFondo({
   sizes = '100vw',
   className,
 }: FotoFondoProps) {
-  const srcSet = (ext: string) =>
-    anchos.map((w) => `/fotos/${nombre}-${w}.${ext} ${w}w`).join(', ')
+  const base = baseFoto(nombre)
+  const srcSet = (ext: string) => anchos.map((w) => `${base}-${w}.${ext} ${w}w`).join(', ')
   const mayor = anchos[anchos.length - 1]
 
   return (
@@ -46,7 +47,7 @@ export function FotoFondo({
       <source type="image/avif" srcSet={srcSet('avif')} sizes={sizes} />
       <source type="image/webp" srcSet={srcSet('webp')} sizes={sizes} />
       <img
-        src={`/fotos/${nombre}-${mayor}.jpg`}
+        src={`${base}-${mayor}.jpg`}
         srcSet={srcSet('jpg')}
         sizes={sizes}
         alt={alt}

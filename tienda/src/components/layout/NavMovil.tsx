@@ -26,7 +26,7 @@ export function NavMovil({ items }: { items: readonly Item[] }) {
       <button
         type="button"
         className="icon-btn md:hidden"
-        aria-label="Abrir menu"
+        aria-label="Abrir menú"
         aria-expanded={abierto}
         onClick={() => setAbierto(true)}
       >
@@ -36,12 +36,12 @@ export function NavMovil({ items }: { items: readonly Item[] }) {
       <Panel
         abierto={abierto}
         onCerrar={() => setAbierto(false)}
-        titulo="Menu"
+        titulo="Menú"
         mostrarTitulo={false}
         lado="izquierda"
         tono="oscuro"
       >
-        <nav aria-label="Navegacion principal">
+        <nav aria-label="Navegación principal">
           <ul className="nav-movil">
             {items.map((item) => (
               <li key={item.href}>
@@ -64,12 +64,12 @@ export function NavMovil({ items }: { items: readonly Item[] }) {
         <ul className="nav-movil-links">
           <li>
             <Link href="/guia-de-tallas" onClick={() => setAbierto(false)} prefetch={false}>
-              Guia de tallas
+              Guía de tallas
             </Link>
           </li>
           <li>
             <Link href="/envios" onClick={() => setAbierto(false)} prefetch={false}>
-              Envios y entregas
+              Envíos y entregas
             </Link>
           </li>
           <li>

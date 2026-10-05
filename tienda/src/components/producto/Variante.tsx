@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
 import type { Producto, Talla, Variante } from '@/lib/producto-modelo'
-import { coloresDe, stockDe, tallasDe, varianteDe } from '@/lib/producto-modelo'
+import { coloresDe, disponibleDe, precioDe, tallasDe, varianteDe } from '@/lib/producto-modelo'
+import { urlFoto } from '@/lib/fotos'
 import { useCarrito } from '@/components/carrito/CarritoProvider'
 
 /**
@@ -22,14 +23,20 @@ type ContextoVariante = {
   colores: { nombre: string; hex: string }[]
   tallas: Talla[]
   color: string
-  /** null hasta que la clienta elige. Nunca se preselecciona una talla. */
+  /**
+   * null hasta que la clienta elige. No se preselecciona una talla — salvo
+   * cuando solo hay una (talla unica): ahi elegir no es una decision, es un
+   * clic de mas.
+   */
   talla: Talla | null
   /** Fotos del color activo. */
   imagenes: string[]
+  /** Precio del color activo (un color puede costar distinto). */
+  precio: number
   variante: Variante | null
   elegirColor: (color: string) => void
   elegirTalla: (talla: Talla) => void
-  stockDeTalla: (talla: Talla) => number
+  disponibleTalla: (talla: Talla) => boolean
   /**
    * Panel de confirmacion del SPEC §4.4. El estado vive aqui porque lo disparan
    * DOS botones: el de la columna de compra y el de la barra fija de movil, que
@@ -55,7 +62,7 @@ export function VarianteProvider({
   const tallas = useMemo(() => tallasDe(producto), [producto])
 
   const [color, setColor] = useState(colores[0].nombre)
-  const [talla, setTalla] = useState<Talla | null>(null)
+  const [talla, setTalla] = useState<Talla | null>(tallas.length === 1 ? tallas[0] : null)
   const [confirmado, setConfirmado] = useState(false)
 
   const carrito = useCarrito()
@@ -70,19 +77,22 @@ export function VarianteProvider({
       color,
       talla,
       imagenes: producto.imagenes[color] ?? [],
+      precio: precioDe(producto, color),
       variante,
       elegirColor: (nuevo) => {
         setColor(nuevo)
-        // La talla se conserva solo si el color nuevo la tiene. Dejarla puesta
-        // sin stock haria que el boton de comprar mintiera.
-        setTalla((actual) => (actual && stockDe(producto, nuevo, actual) > 0 ? actual : null))
+        // La talla se conserva solo si el color nuevo la tiene disponible.
+        // Dejarla puesta haria que el boton de comprar mintiera.
+        setTalla((actual) => (actual && disponibleDe(producto, nuevo, actual) ? actual : tallas.length === 1 ? tallas[0] : null))
       },
       elegirTalla: setTalla,
-      stockDeTalla: (t) => stockDe(producto, color, t),
+      disponibleTalla: (t) => disponibleDe(producto, color, t),
       confirmado,
       agregar: () => {
+        // Un color puede no tener foto todavia: se vende igual, el carrito
+        // muestra el swatch en su lugar.
         const foto = producto.imagenes[color]?.[0]
-        if (!talla || !variante || !foto) return
+        if (!talla || !variante || !variante.disponible) return
         carrito.agregar(
           {
             sku: variante.sku,
@@ -90,8 +100,8 @@ export function VarianteProvider({
             nombre: producto.nombre,
             color,
             talla,
-            precio: producto.precio,
-            imagen: `/fotos/${foto}-900.jpg`,
+            precio: precioDe(producto, color),
+            imagen: foto ? urlFoto(foto, 480) : '',
           },
           1,
         )

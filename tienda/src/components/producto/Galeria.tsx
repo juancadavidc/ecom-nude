@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { FotoFondo } from '@/components/media/FotoFondo'
+import { SinFoto } from '@/components/media/SinFoto'
+import { ANCHOS_PRODUCTO } from '@/lib/fotos'
 import { useVariante } from './Variante'
 
 /**
@@ -42,6 +44,16 @@ export function Galeria({ alt }: { alt: string }) {
     el.scrollTo({ left: i * el.clientWidth, behavior: suave ? 'smooth' : 'auto' })
   }
 
+  if (!imagenes.length) {
+    return (
+      <div className="galeria">
+        <div className="galeria-principal galeria-sin-foto">
+          <SinFoto texto="Este color todavía no tiene fotos." />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="galeria">
       <div className="galeria-principal">
@@ -61,9 +73,9 @@ export function Galeria({ alt }: { alt: string }) {
             <li key={foto + i} data-activa={i === activa}>
               <FotoFondo
                 nombre={foto}
-                anchos={[900]}
-                ancho={900}
-                alto={1200}
+                anchos={[...ANCHOS_PRODUCTO]}
+                ancho={960}
+                alto={1280}
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 prioridad={i === 0}
                 alt={`${alt}. Imagen ${i + 1} de ${imagenes.length}`}
@@ -100,9 +112,9 @@ export function Galeria({ alt }: { alt: string }) {
             >
               <FotoFondo
                 nombre={foto}
-                anchos={[900]}
-                ancho={900}
-                alto={1200}
+                anchos={[ANCHOS_PRODUCTO[0]]}
+                ancho={960}
+                alto={1280}
                 sizes="76px"
                 alt=""
               />

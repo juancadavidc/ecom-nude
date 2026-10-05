@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { LogoNude } from '@/components/brand/Logo'
-import { User } from '@/components/ui/icons'
-import { navPrincipal, prefetchable, site } from '@/lib/site'
+import { listarCategorias } from '@/lib/productos'
+import { prefetchable, site } from '@/lib/site'
 import { BarraAnuncio } from './BarraAnuncio'
 import { BotonCarrito } from './BotonCarrito'
 import { BotonBuscar, BuscadorProvider } from './Buscador'
@@ -21,7 +21,19 @@ import { NavMovil } from './NavMovil'
  * `variante="checkout"` quita anuncio y navegacion y deja solo el logo
  * (SPEC §4.5): cada salida del checkout es una venta perdida.
  */
-export function Header({ variante = 'tienda' }: { variante?: 'tienda' | 'checkout' }) {
+/**
+ * El menu sale de las categorias con producto publicado: crear una categoria en
+ * el panel la pone aqui. En escritorio caben las cuatro primeras mas "Ver todo";
+ * en movil van todas.
+ */
+async function itemsDeNavegacion() {
+  const categorias = await listarCategorias({ conProductos: true })
+  const todas = categorias.map((c) => ({ label: c.nombre, href: `/${c.slug}` }))
+  const verTodo = { label: 'Ver todo', href: '/colecciones' }
+  return { escritorio: [...todas.slice(0, 4), verTodo], movil: [...todas, verTodo] }
+}
+
+export async function Header({ variante = 'tienda' }: { variante?: 'tienda' | 'checkout' }) {
   if (variante === 'checkout') {
     return (
       <header className="header header-checkout">
@@ -34,6 +46,8 @@ export function Header({ variante = 'tienda' }: { variante?: 'tienda' | 'checkou
     )
   }
 
+  const nav = await itemsDeNavegacion()
+
   return (
     <header className="header">
       <BarraAnuncio />
@@ -44,7 +58,7 @@ export function Header({ variante = 'tienda' }: { variante?: 'tienda' | 'checkou
       <BuscadorProvider>
         <div className="container-nude header-inner">
           <div className="header-izq">
-            <NavMovil items={navPrincipal} />
+            <NavMovil items={nav.movil} />
             <BotonBuscar className="md:hidden" />
           </div>
 
@@ -52,9 +66,9 @@ export function Header({ variante = 'tienda' }: { variante?: 'tienda' | 'checkou
             <LogoNude alto={48} />
           </Link>
 
-          <nav className="header-nav" aria-label="Navegacion principal">
+          <nav className="header-nav" aria-label="Navegación principal">
             <ul>
-              {navPrincipal.map((item) => (
+              {nav.escritorio.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -70,11 +84,8 @@ export function Header({ variante = 'tienda' }: { variante?: 'tienda' | 'checkou
 
           <div className="header-der">
             <BotonBuscar className="hidden md:inline-flex" />
-            {/* TODO(fase-5): /cuenta llega con autenticacion. Hoy el icono ya
-                ocupa su sitio para que el header no se reordene despues. */}
-            <Link href="/cuenta" className="icon-btn" aria-label="Tu cuenta" prefetch={false}>
-              <User size={22} weight="light" />
-            </Link>
+            {/* Sin icono de cuenta: la v1 no tiene cuentas de clienta (SPEC §1).
+                Un icono que lleva a un 404 es peor que no tenerlo. */}
             <BotonCarrito />
           </div>
         </div>

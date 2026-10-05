@@ -33,12 +33,11 @@ describe('constraints de la base', () => {
     await expect(crearProductoDePrueba('constraint-test')).rejects.toThrow()
   })
 
-  it('rechaza una categoria fuera del vocabulario', async () => {
+  it('rechaza una categoria que no existe en la tabla de categorias', async () => {
     await expect(
       db.insert(productos).values({
         slug: 'constraint-test-2',
         nombre: 'Producto de prueba',
-        // @ts-expect-error — 'invalida' no existe en el enum, es justo lo que se prueba
         categoria: 'invalida',
         coleccion: 'Prueba',
         precio: 100000,
@@ -53,23 +52,22 @@ describe('constraints de la base', () => {
 
   it('rechaza un SKU de variante duplicado', async () => {
     const id = await crearProductoDePrueba('constraint-test')
-    await db.insert(variantes).values({ productoId: id, color: 'X', hex: '#000', talla: 'S', sku: 'DUP-SKU', stock: 1 })
+    await db.insert(variantes).values({ productoId: id, color: 'X', hex: '#000', talla: 'S', sku: 'DUP-SKU' })
     await expect(
-      db.insert(variantes).values({ productoId: id, color: 'Y', hex: '#111', talla: 'M', sku: 'DUP-SKU', stock: 1 }),
+      db.insert(variantes).values({ productoId: id, color: 'Y', hex: '#111', talla: 'M', sku: 'DUP-SKU' }),
     ).rejects.toThrow()
   })
 
   it('rechaza una talla fuera del vocabulario', async () => {
     const id = await crearProductoDePrueba('constraint-test')
     await expect(
+      // @ts-expect-error — XXL no existe en el enum, es justo lo que se prueba
       db.insert(variantes).values({
         productoId: id,
         color: 'X',
         hex: '#000',
-        // @ts-expect-error — XXL no existe en el enum, es justo lo que se prueba
         talla: 'XXL',
         sku: 'TALLA-INVALIDA',
-        stock: 1,
       }),
     ).rejects.toThrow()
   })

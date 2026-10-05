@@ -1,8 +1,14 @@
-import { and, asc, desc, eq, exists, gt, gte, inArray, lt, lte, or, sql, type SQL } from 'drizzle-orm'
+import { and, asc, count, desc, eq, exists, gt, gte, inArray, lt, lte, ne, or, type SQL } from 'drizzle-orm'
 import { db } from '@/db'
-import { combinaCon as combinaConTabla, imagenes as imagenesTabla, productos as productosTabla, variantes as variantesTabla } from '@/db/schema'
-import type { Categoria, Orden, Producto, Talla, Variante } from './producto-modelo'
-import { TALLAS, esCategoria } from './producto-modelo'
+import {
+  categorias as categoriasTabla,
+  combinaCon as combinaConTabla,
+  imagenes as imagenesTabla,
+  productos as productosTabla,
+  variantes as variantesTabla,
+} from '@/db/schema'
+import type { Categoria, InfoCategoria, Orden, Producto, Talla, Variante } from './producto-modelo'
+import { esTalla, estadoVisible } from './producto-modelo'
 
 /**
  * EL ADAPTADOR. Unico modulo del sitio que importa `@/db`.
@@ -62,14 +68,15 @@ function condicionCursor(orden: Orden, cursor: Cursor | null): SQL | undefined {
 }
 
 /**
- * Color y talla se cruzan sobre la MISMA variante y solo cuentan si tiene stock —
- * igual regla que `pasaVariantes` en filtros.ts, aqui como EXISTS correlacionado.
+ * Color y talla se cruzan sobre la MISMA variante y solo cuentan si esta
+ * disponible — igual regla que `pasaVariantes` en filtros.ts, aqui como EXISTS
+ * correlacionado.
  */
 function condicionVariantes(colores: string[], tallas: Talla[]): SQL | undefined {
   if (!colores.length && !tallas.length) return undefined
   const condiciones = [
     eq(variantesTabla.productoId, productosTabla.id),
-    sql`${variantesTabla.stock} > 0`,
+    eq(variantesTabla.disponible, true),
     colores.length ? inArray(variantesTabla.color, colores) : undefined,
     tallas.length ? inArray(variantesTabla.talla, tallas) : undefined,
   ].filter((c): c is SQL => c != null)
@@ -77,11 +84,8 @@ function condicionVariantes(colores: string[], tallas: Talla[]): SQL | undefined
 }
 
 function validarProducto(p: Producto): Producto {
-  if (!esCategoria(p.categoria)) {
-    throw new Error(`Producto ${p.slug}: categoria invalida "${p.categoria}"`)
-  }
   for (const v of p.variantes) {
-    if (!(TALLAS as readonly string[]).includes(v.talla)) {
+    if (!esTalla(v.talla)) {
       throw new Error(`Producto ${p.slug}: talla invalida "${v.talla}" en SKU ${v.sku}`)
     }
   }
@@ -115,7 +119,7 @@ async function armarProductos(filas: FilaProducto[]): Promise<Producto[]> {
   if (!filas.length) return []
   const ids = filas.map((f) => f.id)
 
-  const [variantesFilas, imagenesFilas, combinaConPorId] = await Promise.all([
+  const [variantesFilas, imagenesFilas, combinaConPorId, nombresCategoria] = await Promise.all([
     db.select().from(variantesTabla).where(inArray(variantesTabla.productoId, ids)),
     db
       .select()
@@ -123,12 +127,21 @@ async function armarProductos(filas: FilaProducto[]): Promise<Producto[]> {
       .where(inArray(imagenesTabla.productoId, ids))
       .orderBy(asc(imagenesTabla.orden)),
     combinaConDe(ids),
+    db.select({ slug: categoriasTabla.slug, nombre: categoriasTabla.nombre }).from(categoriasTabla),
   ])
+  const nombreDe = new Map(nombresCategoria.map((c) => [c.slug, c.nombre]))
 
   return filas.map((fila) => {
     const variantes: Variante[] = variantesFilas
       .filter((v) => v.productoId === fila.id)
-      .map((v) => ({ color: v.color, hex: v.hex, talla: v.talla, sku: v.sku, stock: v.stock }))
+      .map((v) => ({
+        color: v.color,
+        hex: v.hex,
+        talla: v.talla,
+        sku: v.sku,
+        disponible: v.disponible,
+        precio: v.precio,
+      }))
 
     const imagenes: Record<string, string[]> = {}
     for (const img of imagenesFilas.filter((i) => i.productoId === fila.id)) {
@@ -139,6 +152,7 @@ async function armarProductos(filas: FilaProducto[]): Promise<Producto[]> {
       nombre: fila.nombre,
       slug: fila.slug,
       categoria: fila.categoria,
+      categoriaNombre: nombreDe.get(fila.categoria) ?? fila.categoria,
       coleccion: fila.coleccion,
       precio: fila.precio,
       descripcion: fila.descripcion,
@@ -147,6 +161,7 @@ async function armarProductos(filas: FilaProducto[]): Promise<Producto[]> {
       imagenes,
       combina_con: combinaConPorId.get(fila.id) ?? [],
       estado: fila.estado,
+      destacado: fila.destacado,
       seo: { titulo: fila.seoTitulo, descripcion: fila.seoDescripcion, alt: fila.seoAlt },
     })
   })
@@ -160,14 +175,26 @@ export type OpcionesListado = {
   orden?: Orden
   cursor?: string
   limite?: number
+  /** Solo el panel ve los borradores. La tienda nunca. */
+  incluirBorradores?: boolean
 }
 
 export async function listarProductos(
   opts: OpcionesListado = {},
 ): Promise<{ productos: Producto[]; siguiente: string | null }> {
-  const { categoria, colores = [], tallas = [], precio = {}, orden = 'novedad', cursor, limite } = opts
+  const {
+    categoria,
+    colores = [],
+    tallas = [],
+    precio = {},
+    orden = 'novedad',
+    cursor,
+    limite,
+    incluirBorradores = false,
+  } = opts
 
   const condiciones = [
+    incluirBorradores ? undefined : ne(productosTabla.estado, 'borrador'),
     categoria ? eq(productosTabla.categoria, categoria) : undefined,
     precio.min != null ? gte(productosTabla.precio, precio.min) : undefined,
     precio.max != null ? lte(productosTabla.precio, precio.max) : undefined,
@@ -198,18 +225,36 @@ export async function listarProductos(
   }
 }
 
-export async function obtenerProducto(slug: string): Promise<Producto | null> {
-  const [fila] = await db.select().from(productosTabla).where(eq(productosTabla.slug, slug)).limit(1)
+export async function obtenerProducto(
+  slug: string,
+  { incluirBorradores = false }: { incluirBorradores?: boolean } = {},
+): Promise<Producto | null> {
+  const [fila] = await db
+    .select()
+    .from(productosTabla)
+    .where(
+      and(
+        eq(productosTabla.slug, slug),
+        incluirBorradores ? undefined : ne(productosTabla.estado, 'borrador'),
+      ),
+    )
+    .limit(1)
   if (!fila) return null
   const [producto] = await armarProductos([fila])
   return producto
 }
 
-/** SPEC §4.1 bloque 5 — cuatro en grilla. Nada agotado: no se destaca lo que no se puede vender. */
+/**
+ * SPEC §4.1 bloque 5 — los marcados como destacados en el panel primero; si no
+ * alcanzan, se completa con lo mas nuevo. Nada agotado: no se destaca lo que no
+ * se puede vender.
+ */
 export async function destacados(limite = 4): Promise<Producto[]> {
   const { productos } = await listarProductos()
-  const { estadoVisible } = await import('./producto-modelo')
-  return productos.filter((p) => estadoVisible(p) !== 'agotado').slice(0, limite)
+  const vendibles = productos.filter((p) => estadoVisible(p) !== 'agotado' && Object.keys(p.imagenes).length)
+  const marcados = vendibles.filter((p) => p.destacado)
+  const resto = vendibles.filter((p) => !p.destacado).reverse()
+  return [...marcados, ...resto].slice(0, limite)
 }
 
 /** SPEC §4.3 — "Completa el look". Respeta el orden de `combina_con`. */
@@ -218,4 +263,36 @@ export async function combinaCon(slug: string): Promise<Producto[]> {
   if (!producto) return []
   const resultados = await Promise.all(producto.combina_con.map((otro) => obtenerProducto(otro)))
   return resultados.filter((p): p is Producto => Boolean(p))
+}
+
+/**
+ * Categorias de la tienda en su orden. `conProductos` deja fuera las que no
+ * tienen nada publicado: un enlace de menu a una grilla vacia es un callejon.
+ */
+export async function listarCategorias(
+  { conProductos = false }: { conProductos?: boolean } = {},
+): Promise<(InfoCategoria & { cantidad: number })[]> {
+  const filas = await db
+    .select({
+      slug: categoriasTabla.slug,
+      nombre: categoriasTabla.nombre,
+      intro: categoriasTabla.intro,
+      orden: categoriasTabla.orden,
+      visible: categoriasTabla.visible,
+      cantidad: count(productosTabla.id),
+    })
+    .from(categoriasTabla)
+    .leftJoin(
+      productosTabla,
+      and(eq(productosTabla.categoria, categoriasTabla.slug), ne(productosTabla.estado, 'borrador')),
+    )
+    .groupBy(categoriasTabla.slug)
+    .orderBy(asc(categoriasTabla.orden), asc(categoriasTabla.nombre))
+
+  return conProductos ? filas.filter((c) => c.visible && c.cantidad > 0) : filas
+}
+
+export async function obtenerCategoria(slug: string): Promise<InfoCategoria | null> {
+  const [fila] = await db.select().from(categoriasTabla).where(eq(categoriasTabla.slug, slug)).limit(1)
+  return fila ?? null
 }

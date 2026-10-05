@@ -17,28 +17,35 @@ bloquea los recursos de desarrollo, la página carga pero nada responde.
 
 ---
 
-## Estado: fase 3 completa (§9.4) sobre catálogo mock
-
-**Entregado:** design system (fase 1) + home completa, catálogo y ficha de producto.
+## Estado: tienda completa con catálogo real (fases 2, 3 y 4 del SPEC §9.4)
 
 | Ruta | Qué es |
 |------|--------|
-| `/` | Home completa, diez bloques del SPEC §4.1 |
-| `/leggings` · `/tops` · `/sets` | Catálogo por categoría con filtros en la URL |
-| `/colecciones` | Todo el catálogo. Destino de "Ver todo" |
-| `/[categoria]/[slug]` | Ficha de producto, renderizada en servidor |
-| `/sistema` | Verificación del design system. `noindex`, no enlazada |
-| 404 | Isotipo + "Esta página se movió." |
+| `/` | Home: hero, manifiesto, tiles de Enterizos/Sets/Leggings, línea con todas las categorías, destacados |
+| `/[categoria]` | Catálogo por categoría (`/enterizos`, `/sets`, `/leggings`, `/tops`, `/bodys`, `/shorts-y-faldas`, `/accesorios`, `/bienestar`). Las categorías viven en Postgres |
+| `/colecciones` | Todo el catálogo publicado |
+| `/[categoria]/[slug]` | Ficha: precio por color, talla única preseleccionada, colores sin foto con marcador |
+| `/checkout` · `/pedido/[id]` | Checkout de una página (contra entrega o transferencia, envío por ciudad, código de descuento) y confirmación con WhatsApp |
+| `/envios` `/cambios` `/contacto` `/guia-de-tallas` `/nosotros` | Contenido, con copy ya aprobado |
+| `/admin` | Panel: productos (fotos, colores, tallas, disponibilidad), categorías, pedidos, configuración |
+| `/media/<id>-<ancho>.<ext>` | Fotos subidas desde el panel (se guardan en Postgres, tabla `medios`) |
 
-**El catálogo vive en Postgres.** `src/lib/productos.ts` consulta la base de datos
-vía Drizzle; `src/content/productos.json` ya no se lee en runtime, solo se usa como
-fuente del seed. Las ocho referencias siguen siendo inventadas y todas las fotos de
-producto siguen siendo placeholders planos.
+**No se maneja inventario.** Una variante (color × talla) está disponible o no, y eso se
+marca en el panel. No hay números de stock en ningún lado.
 
-**Pendiente:** modelo de datos y panel (2) · carrito y checkout (4) · panel de
-pedidos y correos (5) · Nosotras y páginas de contenido (6).
+**El catálogo es real.** Sale de `Productos_20261005_1445.xlsx` (78 filas, una por color) y
+de la sesión de fotos (`catalogonude-20261005T194331Z-1-001.zip`), vía
+`scripts/importar-catalogo.py` → `src/content/productos.json` + `scripts/catalogo-fotos.json`
+→ `scripts/gen-catalogo.mjs` → `public/fotos/p/`. Quedó en 46 productos: 32 publicados (109
+fotos) y 14 en **borrador** porque no tienen foto todavía. Un borrador existe en el panel y
+no en la tienda; se publica subiéndole una foto. Reglas de la agrupación en el docstring de
+`scripts/importar-catalogo.py`.
 
----
+**Panel en local** (Google OAuth no sirve sin credenciales):
+
+```bash
+node scripts/sesion-admin-dev.mjs   # imprime la cookie better-auth.session_token de una admin de prueba
+```
 
 ## Estructura
 
@@ -178,7 +185,7 @@ cookies de sesión, `POST` en `/api/auth/*`) — ver
 `docs/superpowers/specs/2026-09-07-postgres-better-auth-docker.md` §2.
 
 ```bash
-docker compose -f docker-compose-local.yaml up -d   # Postgres local, puerto 5434
+docker compose -f docker-compose-local.yaml up -d   # Postgres local, puerto 5435
 npm run dev                                          # migra solo, sirve en :3000
 ```
 
@@ -197,7 +204,7 @@ mano.
 
 | Variable | Obligatoria | Nota |
 |---|---|---|
-| `DATABASE_URL` | Sí | Postgres accesible desde el contenedor — nunca `localhost:5434` en producción |
+| `DATABASE_URL` | Sí | Postgres accesible desde el contenedor — nunca `localhost:5435` en producción |
 | `BETTER_AUTH_SECRET` | Sí | 32+ caracteres, alta entropía — sin esto el contenedor arranca pero la autenticación queda rota (ver más abajo) |
 | `BETTER_AUTH_URL` | Sí | El origen público https del sitio (no localhost) |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Sí, para que el login funcione | Sin esto el proveedor Google queda deshabilitado |
@@ -208,7 +215,9 @@ mano.
 indexable. Se deja así a propósito: es preferible que Google no indexe una tienda cuyo menú
 cae en 404. Quitarlo cuando el catálogo esté publicado (fase 3+).
 
-**Rutas del menú todavía en 404:** `/ropa-deportiva`, `/nosotros`, `/contacto`,
+**Rutas todavía en 404:** solo `/legales` (términos y tratamiento de datos: necesita texto
+legal real, no se inventa). El resto del texto viejo de abajo es historia:
+`/ropa-deportiva`, `/nosotros`, `/contacto`,
 `/guia-de-tallas`, `/envios`, `/cambios`, `/legales`, `/cuenta` y `/buscar`. Fuera de
 alcance de esta fase (spec de diseño §8). `prefetchable()` en `src/lib/site.ts` apaga
 la precarga de `next/link` sobre esta misma lista — sin eso, Next intenta precargar
@@ -216,7 +225,15 @@ cada una apenas entra en el viewport y llena la consola de 404, cosa que el prop
 `npm run verificar` detectó al comprobar errores de consola. Cuando una ruta se
 construya, sale de esa lista y no hay que tocar nada más.
 
-**Placeholders en `src/lib/site.ts`:** el WhatsApp es `+57 300 000 0000`, el mismo del linktree.
+**WhatsApp, cuentas bancarias, tarifas y códigos de descuento** se cambian en
+`/admin/configuracion` (tabla `config`, ver `src/lib/config.ts`). Hasta que alguien los
+cargue, el WhatsApp es el placeholder `573000000000`, no hay cuentas para transferencia (la
+confirmación dice que se envían por WhatsApp) y `SECONDSKIN` da 10 % (supuesto, el SPEC no
+fija el porcentaje).
+
+**Catálogo en producción:** las migraciones corren solas, la semilla no. La primera vez,
+una sola vez y a propósito: `SEMBRAR_CATALOGO=si npm run db:seed` dentro del contenedor.
+Reemplaza todo el catálogo, por eso en producción se niega a correr sin esa variable.
 
 **El correo del newsletter no se guarda.** `src/components/home/Newsletter.tsx`
 valida y confirma, pero no escribe en ningún lado (`TODO(fase-6)`). Conectarlo

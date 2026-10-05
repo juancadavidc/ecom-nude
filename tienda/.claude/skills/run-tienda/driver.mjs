@@ -23,7 +23,13 @@ mkdirSync(SHOTS, { recursive: true });
 async function fichas() {
   const raw = JSON.parse(await readFile('src/content/productos.json', 'utf8'));
   const arr = Array.isArray(raw) ? raw : raw.productos ?? Object.values(raw)[0];
-  return arr.map((p) => `/${p.categoria}/${p.slug}`);
+  // Los borradores no existen para la tienda (404): solo se prueban los publicados.
+  return arr.filter((p) => p.estado !== 'borrador').map((p) => `/${p.categoria}/${p.slug}`);
+}
+
+async function borradores() {
+  const raw = JSON.parse(await readFile('src/content/productos.json', 'utf8'));
+  return raw.productos.filter((p) => p.estado === 'borrador').map((p) => `/${p.categoria}/${p.slug}`);
 }
 
 async function servidorVivo() {
@@ -105,7 +111,11 @@ async function cmdSmoke() {
     }
   }
 
-  const catalogos = ['/', '/colecciones', '/leggings', '/tops', '/sets', '/sistema'];
+  const catalogos = [
+    '/', '/colecciones', '/enterizos', '/sets', '/leggings', '/tops', '/bodys', '/shorts-y-faldas',
+    '/accesorios', '/bienestar', '/sistema', '/envios', '/cambios', '/contacto', '/guia-de-tallas',
+    '/nosotros',
+  ];
   const listaFichas = await fichas();
 
   console.log('# HTTP');
@@ -113,15 +123,15 @@ async function cmdSmoke() {
     const c = (await fetch(BASE + r)).status;
     afirmar(c === 200, `200 ${r}`, `${c} ${r} (esperaba 200)`);
   }
-  // 404 a propósito: rutas de menú fuera de alcance + slug inexistente
-  for (const r of ['/nosotros', '/leggings/no-existe']) {
+  // 404 a propósito: un borrador, una ruta fuera de alcance y un slug inexistente
+  for (const r of [(await borradores())[0], '/legales', '/leggings/no-existe']) {
     const c = (await fetch(BASE + r)).status;
     afirmar(c === 404, `404 ${r} (esperado)`, `${c} ${r} (esperaba 404)`);
   }
 
   console.log('\n# HTML del servidor (el fallback sin JavaScript)');
   const html = await (await fetch(BASE + '/colecciones')).text();
-  const enServidor = new Set(html.match(/href="\/(?:leggings|tops|sets)\/[a-z-]+"/g) ?? []);
+  const enServidor = new Set(html.match(/href="\/[a-z-]+\/[a-z0-9-]+"/g)?.filter((h) => listaFichas.includes(h.slice(6, -1))) ?? []);
   afirmar(
     enServidor.size === listaFichas.length,
     `/colecciones trae ${enServidor.size}/${listaFichas.length} productos sin hidratar`,
@@ -146,17 +156,16 @@ async function cmdSmoke() {
 
   // El filtrado es client-side (export estático: no hay searchParams en servidor)
   const cuenta = () => page.evaluate(() =>
-    new Set([...document.querySelectorAll('a[href^="/leggings/"],a[href^="/tops/"],a[href^="/sets/"]')]
-      .map((a) => a.getAttribute('href'))).size);
+    new Set([...document.querySelectorAll('a.card')].map((a) => a.getAttribute('href'))).size);
   await page.goto(BASE + '/colecciones', { waitUntil: 'networkidle' });
   const antes = await cuenta();
-  await page.goto(BASE + '/colecciones?color=Arena', { waitUntil: 'networkidle' });
+  await page.goto(BASE + '/colecciones?color=Chocolate', { waitUntil: 'networkidle' });
   await page.waitForTimeout(800);
   const despues = await cuenta();
   afirmar(
     despues < antes,
-    `?color=Arena filtra en cliente: ${antes} → ${despues}`,
-    `?color=Arena no filtró (${antes} → ${despues})`,
+    `?color=Chocolate filtra en cliente: ${antes} → ${despues}`,
+    `?color=Chocolate no filtró (${antes} → ${despues})`,
   );
 
   await page.setViewportSize({ width: 375, height: 812 });

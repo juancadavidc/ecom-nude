@@ -2814,3 +2814,130 @@
   display: grid;
   place-items: center;
 }
+
+/* ── Sin foto ─────────────────────────────────────────────────────────────
+   Un color que todavia no tiene sesion. Ocupa la caja 3:4 de la card o de la
+   galeria; nunca un icono de imagen rota. */
+.sin-foto {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+  background-color: var(--sahara);
+}
+
+.galeria-sin-foto {
+  position: relative;
+  aspect-ratio: 3 / 4;
+}
+
+/* ── Linea de categorias (home) ───────────────────────────────────────────
+   Debajo de los tiles: todas las categorias con cuantas piezas tiene cada una.
+   El numero va en muted para que el nombre siga siendo lo que se lee. */
+.categorias-linea ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  padding-block: 24px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.categorias-linea a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: baseline;
+  gap: 6px;
+  padding-top: 12px;
+  font-size: 15px;
+}
+
+.categorias-linea-n {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Paginas de contenido (SPEC §4.6) ──────────────────────────────────────
+   Eje izquierdo como el catalogo; cada bloque separado por una regla Ochre
+   suave. Mas aire arriba de cada titulo que debajo. */
+.contenido {
+  padding-block: 48px 96px;
+}
+
+.contenido-head {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 40px;
+}
+
+.contenido-cuerpo {
+  display: flex;
+  flex-direction: column;
+}
+
+.contenido-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 40px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.contenido-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contenido-texto strong {
+  font-weight: 400;
+}
+
+.contenido-tarifas {
+  display: grid;
+  gap: 12px;
+  max-width: 420px;
+}
+
+.contenido-tarifas > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.contenido-tarifas dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.contenido-contacto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contenido-contacto a {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+}
+
+@media (min-width: 768px) {
+  .contenido {
+    padding-block: 72px 128px;
+  }
+}
+
+.carrito-item-sin-foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--sahara);
+}

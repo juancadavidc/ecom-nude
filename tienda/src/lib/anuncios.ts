@@ -6,7 +6,7 @@ import datos from '@/content/anuncios.json'
  * TODO(fase-2): el archivo pasa a `config/tienda` en Firestore. El tipo de
  * `ArchivoAnuncios` es el contrato que debe devolver ese documento.
  *
- * TODO(fase-2): el umbral de $200.000 es un placeholder — falta el real.
+ * No se anuncia envio gratis: SPEC §4.5 lo descarta en toda modalidad.
  *
  * El JSON lo edita una persona, no un compilador: todo lo que entra se valida
  * en `leerArchivo`. Un tono invalido no debe tumbar el build ni dejar el

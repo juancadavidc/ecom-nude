@@ -29,10 +29,10 @@ npm run dev      # http://localhost:3000
 ## Fases (SPEC §9.4)
 
 - [x] **1 — Design system.** Tokens, tipografía, componentes, header, footer
-- [ ] **2 — Modelo de datos y panel `/admin`**
-- [ ] **3 — Catálogo y ficha de producto**
-- [ ] **4 — Carrito y checkout**
-- [ ] **5 — Panel de pedidos y correos**
+- [x] **2 — Modelo de datos y panel `/admin`** (productos sin inventario, categorías, pedidos, configuración)
+- [x] **3 — Catálogo y ficha de producto** (catálogo real: 46 productos, 109 fotos)
+- [x] **4 — Carrito y checkout** (contra entrega y transferencia, sin pasarela)
+- [ ] **5 — Panel de pedidos y correos** (panel hecho; faltan los correos automáticos)
 - [ ] **6 — Home real, Nosotras, contenido, SEO**
 
 ---

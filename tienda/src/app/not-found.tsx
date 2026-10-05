@@ -9,7 +9,7 @@ import { microcopy } from '@/lib/copy'
  * rutas fuera de la tienda, como el checkout o el panel.
  */
 export const metadata: Metadata = {
-  title: 'Pagina no encontrada',
+  title: 'Página no encontrada',
   robots: { index: false, follow: false },
 }
 
@@ -18,8 +18,8 @@ export default function NoEncontrada() {
     <main className="no-encontrada">
       <MarcaNude alto={56} className="text-line" />
       <h1 className="quote">{microcopy.error404}</h1>
-      <BotonLink href="/leggings" variante="secundario">
-        Ver leggings
+      <BotonLink href="/colecciones" variante="secundario">
+        Ver la colección
       </BotonLink>
     </main>
   )

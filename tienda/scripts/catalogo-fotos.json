@@ -1,0 +1,547 @@
+[
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-1",
+    "fuente": "IMG_7727.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-2",
+    "fuente": "IMG_7726.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-3",
+    "fuente": "92D978E0-6B29-4D3E-85B8-E62504023A4B.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-4",
+    "fuente": "IMG_7590.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-5",
+    "fuente": "IMG_7730.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-6",
+    "fuente": "IMG_7731.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-7",
+    "fuente": "B83434DC-97EF-4C01-95AB-CC223C70534B.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-8",
+    "fuente": "IMG_7588.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-9",
+    "fuente": "IMG_7728.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-10",
+    "fuente": "IMG_7729.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-11",
+    "fuente": "0BFE6361-9BA2-49E7-BCAF-81ECFD34B4C1.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-12",
+    "fuente": "IMG_7589.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-13",
+    "fuente": "IMG_7734.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-14",
+    "fuente": "IMG_7735.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-15",
+    "fuente": "15940242-E6C2-4D12-BDBD-7758219B4401.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-16",
+    "fuente": "IMG_7592.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-17",
+    "fuente": "IMG_7724.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-18",
+    "fuente": "IMG_7725.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-19",
+    "fuente": "A9C97056-A2D2-459D-AB46-B1B334C6BD91.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-20",
+    "fuente": "IMG_7591.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-21",
+    "fuente": "IMG_7732.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-22",
+    "fuente": "IMG_7733.jpg",
+    "tratamiento": "mute"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-manga-larga-23",
+    "fuente": "867DDE70-14C9-491D-B4B4-EA6C8491497D.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-manga-larga-1",
+    "fuente": "IMG_7747.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-manga-larga-2",
+    "fuente": "IMG_7583.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-manga-larga-3",
+    "fuente": "IMG_7750.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-manga-larga-4",
+    "fuente": "IMG_7582.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-manga-larga-5",
+    "fuente": "IMG_7749.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-manga-larga-6",
+    "fuente": "IMG_7584.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-siso-1",
+    "fuente": "IMG_7579.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-siso-2",
+    "fuente": "45589940-1fe4-4cdd-bd9b-64979a068bf8.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-siso-3",
+    "fuente": "IMG_7577.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-siso-4",
+    "fuente": "IMG_7578.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-siso-5",
+    "fuente": "91c1dc65-f938-4c99-a75f-1bd8d44558da.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-siso-6",
+    "fuente": "8815ae23-ae31-4e69-9747-5794d1a7fae0.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-siso-1",
+    "fuente": "IMG_7751.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-siso-2",
+    "fuente": "IMG_7752.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-siso-3",
+    "fuente": "IMG_7753.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-siso-4",
+    "fuente": "IMG_7754.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-siso-5",
+    "fuente": "IMG_7755.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-siso-6",
+    "fuente": "IMG_7585.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tela-fria-siso-7",
+    "fuente": "IMG_7586.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-cuello-redondo-1",
+    "fuente": "IMG_7580.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-tela-fria-cuello-redondo-2",
+    "fuente": "IMG_7614.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-halter-sin-costuras-1",
+    "fuente": "IMG_7758.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-halter-sin-costuras-2",
+    "fuente": "IMG_7760.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-halter-sin-costuras-3",
+    "fuente": "IMG_7759.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-manga-corta-1",
+    "fuente": "enterizo-black-1.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-manga-corta-2",
+    "fuente": "enterizo-black-2.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-luxury-1",
+    "fuente": "enterizo-luxury-1.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-luxury-2",
+    "fuente": "enterizo-luxury-2.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-luxury-3",
+    "fuente": "enterizo-luxury-3.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tiras-1",
+    "fuente": "enterizo-espalda-abierta-1.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tiras-2",
+    "fuente": "enterizo-espalda-abierta-2.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tiras-3",
+    "fuente": "enterizo-espalda-abierta-4.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tiras-4",
+    "fuente": "enterizo-espalda-abierta-3.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tiras-sesgo-1",
+    "fuente": "EAA3F02C-826B-4C63-A722-F0EE63B61D9D.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-tiras-sesgo-2",
+    "fuente": "F4D51CF5-B746-410B-8452-0E74FE235106.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-manga-corta-marfil-1",
+    "fuente": "fec74a51-32c4-4ee3-b6cf-3b775756f1f4.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-manga-corta-marfil-2",
+    "fuente": "0724e9c5-947e-4674-902f-8a0fb1b8a00e.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-corto-halter-1",
+    "fuente": "CAF_.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-bota-campana-1",
+    "fuente": "IMG_8483.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-bota-campana-2",
+    "fuente": "IMG_8485.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-bota-campana-3",
+    "fuente": "IMG_8484.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-bota-campana-4",
+    "fuente": "ChatGPT_Image_8_sept_2026_22_48_15.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-manga-corta-sesgo-1",
+    "fuente": "enterizo-cafe-1.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/enterizo-largo-manga-corta-sesgo-2",
+    "fuente": "enterizo-cafe-3.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/set-halo-1",
+    "fuente": "set-body-pink-1.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/set-halo-2",
+    "fuente": "set-body-pink-2.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/set-halo-3",
+    "fuente": "set-body-pink-4.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/set-halo-4",
+    "fuente": "set-body-pink-3.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/set-legging-top-costura-1",
+    "fuente": "CF423696-AE53-4568-92EC-0821A15FAE83.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/legging-mesh-1",
+    "fuente": "set-body-mesh-1.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/legging-mesh-2",
+    "fuente": "set-body-mesh-3.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/legging-mesh-3",
+    "fuente": "trio-mesh-2.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/legging-mesh-4",
+    "fuente": "trio-mesh-3.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/legging-rib-sin-push-1",
+    "fuente": "MARFIL.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/legging-rib-sin-push-2",
+    "fuente": "NEGRO.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/legging-rib-push-1",
+    "fuente": "CHOCOLATE.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/legging-koko-1",
+    "fuente": "f2877108-63e9-41ab-9221-a511dbb51b05.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/top-premium-1",
+    "fuente": "D192FB32-E176-4FA9-94BB-40EF2EAED0E3.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/top-premium-2",
+    "fuente": "CHOCOLATE__1_.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/top-premium-3",
+    "fuente": "IMG_7743.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/top-bra-1",
+    "fuente": "e84cfd49-8cac-4f21-8aaa-ece45548a825.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/top-bra-2",
+    "fuente": "15457d19-329c-4518-b685-49aa4cd39921.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/top-bra-3",
+    "fuente": "set-coco-2.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/manguitas-1",
+    "fuente": "14775d41-5085-47a4-bf95-a40c4537b3d8.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/manguitas-2",
+    "fuente": "05a98569-01bd-4a88-b239-f1dbd356c176.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/manguitas-3",
+    "fuente": "9839e87e-fadd-4c45-9a04-bf22bcb2c997.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/manguitas-4",
+    "fuente": "56158051-e04c-4bc7-ab2b-0c751cf5fc45.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/manguitas-5",
+    "fuente": "set-coco-3.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/manguitas-6",
+    "fuente": "set-coco-4.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/blusita-mesh-con-top-1",
+    "fuente": "editorial-1.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/blusita-mesh-con-top-2",
+    "fuente": "trio-mesh-4.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/buzo-corto-sesgo-1",
+    "fuente": "DSC00233_2.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/buzo-corto-sesgo-2",
+    "fuente": "1ed9a872-231e-4179-9ee2-25c9970de428.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/buzo-sesgo-marfil-1",
+    "fuente": "D6F30E72-3FE5-428A-804F-37AA770287AC.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/body-mesh-manga-larga-1",
+    "fuente": "set-body-mesh-2.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/body-mesh-manga-larga-2",
+    "fuente": "eb73a2f0-1c9c-4635-a986-3f6c8f16962a.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/short-bucos-1",
+    "fuente": "IMG_8029.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/short-bucos-2",
+    "fuente": "23b7783e-0512-493d-acf1-5d00887af670.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/short-bucos-3",
+    "fuente": "IMG_8028.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/short-koko-1",
+    "fuente": "set-coco-1.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/calentadoras-classic-1",
+    "fuente": "calentadorasclassic-8.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/calentadoras-classic-2",
+    "fuente": "calentadorasclassic-2.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/calentadoras-classic-3",
+    "fuente": "calentadorasclassic-7.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/calentadoras-classic-4",
+    "fuente": "calentadorasclassic-5.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/calentadoras-small-1",
+    "fuente": "calentadorassmall-1.jpg",
+    "tratamiento": "auto"
+  },
+  {
+    "salida": "p/shot-de-curcuma-1",
+    "fuente": "146199F2-6CEF-4CEE-BC54-DC6BF4679700.jpg",
+    "tratamiento": "auto"
+  }
+]

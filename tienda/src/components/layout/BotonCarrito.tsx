@@ -7,6 +7,7 @@ import { Boton, BotonLink } from '@/components/ui/Button'
 import { Panel } from '@/components/ui/Panel'
 import { Handbag, Minus, Plus, Trash } from '@/components/ui/icons'
 import { microcopy } from '@/lib/copy'
+import { NOMBRE_TALLA } from '@/lib/producto-modelo'
 import { formatCOP } from '@/lib/format'
 import type { ItemCarrito } from '@/lib/carrito'
 
@@ -91,11 +92,18 @@ function FilaCarrito({
 }) {
   return (
     <li className="carrito-item">
-      <img src={item.imagen} alt="" className="carrito-item-img" />
+      {item.imagen ? (
+        <img src={item.imagen} alt="" className="carrito-item-img" />
+      ) : (
+        // Color sin foto todavia: el isotipo sobre Sahara, nunca una imagen rota.
+        <span className="carrito-item-img carrito-item-sin-foto" aria-hidden="true">
+          <MarcaNude alto={20} className="text-line" />
+        </span>
+      )}
       <div className="carrito-item-info">
         <p className="carrito-item-nombre">{item.nombre}</p>
         <p className="carrito-item-variante">
-          {item.color} · {item.talla}
+          {item.color} · {NOMBRE_TALLA[item.talla]}
         </p>
         <div className="carrito-item-cantidad">
           <button
@@ -136,8 +144,8 @@ function CarritoVacio({ onCerrar }: { onCerrar: () => void }) {
     <div className="carrito-vacio">
       <MarcaNude alto={44} className="text-line" />
       <p className="quote">{microcopy.carritoVacio}</p>
-      <BotonLink href="/leggings" variante="secundario" onClick={onCerrar}>
-        Ver leggings
+      <BotonLink href="/colecciones" variante="secundario" onClick={onCerrar}>
+        Ver la colección
       </BotonLink>
     </div>
   )
